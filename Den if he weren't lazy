@@ -8,10 +8,14 @@ local OpenedRooms = {"Start"}
 local NextUngeneratedRoom = nil
 
 local function GetNextUngeneratedRoom()
+	print("Start")
 	for _, Room in pairs(RoomsFolder:GetChildren()) do
+		print("Room to check: "..Room.Name)
 		if Room:FindFirstChild("Entrances") then
+			print("Has Entrances")
 			local Doors = 0
 			for _, Door in pairs(Room.Entrances:GetChildren()) do
+				print("Check Door: "..Door.Name)
 				Doors += 1
 				if Doors >= 2 then
 					return print("ERROR | 2 Entrances Doors")
