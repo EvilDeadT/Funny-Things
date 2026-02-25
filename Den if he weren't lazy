@@ -18,6 +18,7 @@ local function GetNextUngeneratedRoom()
 				end
 				
 				if Door.OpenValue == false then
+					print("Next Ungenerated Room: "..Room.Name)
 					NextUngeneratedRoom = Room
 				end
 			end
