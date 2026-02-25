@@ -1,42 +1,136 @@
-local Player = game.Players.LocalPlayer
-local Character = Player.Character
-
 local GameplayFolder = game.Workspace.GameplayFolder
 local RoomsFolder = GameplayFolder.Rooms
 
-local OpenedRooms = {"Start"}
-local NextUngeneratedRoom = nil
+local CurrencyColor = {
+	[10] = {
+		Fill = Color3.fromRGB(162, 35, 113)
+	},
+	[15] = {
+		Fill = Color3.fromRGB(111, 30, 161)
+	},
+	[25] = {
+		Fill = Color3.fromRGB(41, 3, 255)
+	},
+	[50] = {
+		Fill = Color3.fromRGB(5, 180, 255)
+	},
+	[75] = {
+		Fill = Color3.fromRGB(0, 97, 243),
+		Outline = Color3.fromRGB(6, 255, 234)
+	},
+	[100] = {
+		Fill = Color3.fromRGB(26, 255, 0)
+	},
+	[200] = {
+		Fill = Color3.fromRGB(150, 179, 4)
+	},
+	[500] = {
+		Fill = Color3.fromRGB(255, 238, 0)
+	}
+}
 
-local function GetNextUngeneratedRoom()
-	print("Start")
-	for _, Room in pairs(RoomsFolder:GetChildren()) do
-		print("Room to check: "..Room.Name)
-		if Room:FindFirstChild("Entrances") then
-			print("Has Entrances")
-			local Doors = 0
-			for _, Door in pairs(Room.Entrances:GetChildren()) do
-				print("Check Door: "..Door.Name)
-				Doors += 1
-				if Doors >= 2 then
-					return print("ERROR | 2 Entrances Doors")
-				end
-				
-				if Door.OpenValue == false then
-					print("Next Ungenerated Room: "..Room.Name)
-					NextUngeneratedRoom = Room
-				end
-			end
+local function MostSimilarNumber(Number,Table)
+	local SmallestDifference = math.huge
+	local ChosenNum = nil
+	
+	for TableNum, TableColor in Table do
+		local Difference = math.abs(Number - TableNum)
+		
+		if Difference < SmallestDifference then
+			SmallestDifference = Difference
+			ChosenNum = TableNum
 		end
 	end
+	
+	if ChosenNum == nil then
+		print("ERROR | function MostSimilarNumber -- ChosenNum = nil")
+	end
+	
+	return ChosenNum
 end
 
-local function TeleportToDoor()
-	if NextUngeneratedRoom ~= nil then
-		if NextUngeneratedRoom.Parent == game.Workspace.GameplayFolder.Rooms then
-			if NextUngeneratedRoom:FindFirstChild("Entrances") then
-				if NextUngeneratedRoom.Entrances:FindFirstChild("NormalDoor") then
-					if NextUngeneratedRoom.Entrances.NormalDoor:FindFirstChild("Root") then
-						Character:MoveTo(NextUngeneratedRoom.Entrances.NormalDoor.Root.Position)
+for _, Room in pairs(RoomsFolder:GetChildren()) do
+	for _, RoomFile in pairs(Room:GetChildren()) do
+		if RoomFile:FindFirstChild("SpawnLocations") then
+			for _, SpawnLoc in pairs(RoomFile.SpawnLocations:GetChildren()) do
+				for _, SpawnLocContent in pairs(SpawnLoc:GetChildren()) do
+					if string.find(SpawnLocContent.Name, "Currency") then
+						local Currency = tonumber(string.split(string.split(SpawnLocContent.Name, "Currency")[2], "-")[1])
+						local PrintInfo = "Found "..Currency
+						local DetailedInfo =  " | Room: "..Room.Name.." | In: "..RoomFile.Name.." | On: "..SpawnLoc.Name
+						
+						if Currency >= 50 then
+							PrintInfo = PrintInfo..DetailedInfo
+						end
+						
+						print(PrintInfo)
+						
+						local Highlight = Instance.new("Highlight",SpawnLocContent)
+						Highlight.Name = "TooLazyToSpendExtraSecondsToOpenDrawersHuh?"
+						Highlight.OutlineTransparency = 0.75
+						if CurrencyColor[Currency] then
+							Highlight.FillColor = CurrencyColor[Currency].Fill
+							
+							if CurrencyColor[Currency].Outline ~= nil then
+								Highlight.OutlineColor = CurrencyColor[Currency].Outline
+							end
+						else
+							if Currency >= 10 then
+								local MostSimilarCurrency = MostSimilarNumber(Currency,CurrencyColor)
+								if tonumber(MostSimilarCurrency) then
+									Highlight.FillColor = CurrencyColor[MostSimilarCurrency].Fill
+									
+									if CurrencyColor[MostSimilarCurrency].Outline ~= nil then
+										Highlight.OutlineColor = CurrencyColor[MostSimilarCurrency].Outline
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+			
+		else
+			if RoomFile.Name == "Interactables" then
+				for _, OneItemSpawn in pairs(RoomFile:GetChildren()) do
+					for _, SpawnLoc in pairs(OneItemSpawn:GetChildren()) do
+						for _, SpawnLocPart in pairs(SpawnLoc:GetChildren()) do
+							for _, SpawnLocContent in pairs(SpawnLocPart:GetChildren()) do
+								if string.find(SpawnLocContent.Name, "Currency") then
+									local Currency = tonumber(string.split(string.split(SpawnLocContent.Name, "Currency")[2], "-")[1])
+									local PrintInfo = "Found "..Currency.." | In: Vent Under Floor"
+									local DetailedInfo =  " | Room: "..Room.Name
+
+									if Currency >= 50 then
+										PrintInfo = PrintInfo..DetailedInfo
+									end
+
+									print(PrintInfo)
+
+									local Highlight = Instance.new("Highlight",SpawnLocContent)
+									Highlight.Name = "TooLazyToSpendExtraSecondsToOpenDrawersHuh?"
+									Highlight.OutlineTransparency = 0.75
+									if CurrencyColor[Currency] then
+										Highlight.FillColor = CurrencyColor[Currency].Fill
+
+										if CurrencyColor[Currency].Outline ~= nil then
+											Highlight.OutlineColor = CurrencyColor[Currency].Outline
+										end
+									else
+										if Currency >= 10 then
+											local MostSimilarCurrency = MostSimilarNumber(Currency,CurrencyColor)
+											if tonumber(MostSimilarCurrency) then
+												Highlight.FillColor = CurrencyColor[MostSimilarCurrency].Fill
+
+												if CurrencyColor[MostSimilarCurrency].Outline ~= nil then
+													Highlight.OutlineColor = CurrencyColor[MostSimilarCurrency].Outline
+												end
+											end
+										end
+									end
+								end
+							end
+						end
 					end
 				end
 			end
@@ -44,18 +138,4 @@ local function TeleportToDoor()
 	end
 end
 
-game.Workspace.GameplayFolder.Rooms.ChildAdded:Connect(function(Room)
-	table.insert(OpenedRooms,NextUngeneratedRoom)
-	NextUngeneratedRoom = Room
-end)
-
-game:GetService("RunService").RenderStepped:Connect(function()
-	--TeleportToDoor()
-end)
-
-game.UserInputService.InputBegan:Connect(function(Input)
-	if Input.KeyCode == Enum.KeyCode.P then
-		GetNextUngeneratedRoom()
-		TeleportToDoor()
-	end
-end)
+print("Done")
