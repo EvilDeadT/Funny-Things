@@ -1,5 +1,6 @@
 local Player = game.Players.LocalPlayer
 local Character = Player.Character
+local CurrentCamera = game.Workspace.CurrentCamera
 
 local GameplayFolder = game.Workspace.GameplayFolder
 local RoomsFolder = GameplayFolder.Rooms
@@ -7,22 +8,26 @@ local RoomsFolder = GameplayFolder.Rooms
 local OpenedRooms = {"Start"}
 local NextUngeneratedRoom = nil
 
+local PressureDoors = {
+	["NormalDoor"] = {
+		Root = "Root"
+	},
+	["LargeRoundDoor"] = {
+		Root = "RootPart"
+	}
+}
+
 local function GetNextUngeneratedRoom()
-	print("Start")
 	for _, Room in pairs(RoomsFolder:GetChildren()) do
-		print("Room to check: "..Room.Name)
 		if Room:FindFirstChild("Entrances") then
-			print("Has Entrances")
 			local Doors = 0
 			for _, Door in pairs(Room.Entrances:GetChildren()) do
-				print("Check Door: "..Door.Name)
 				Doors += 1
 				if Doors >= 2 then
 					return print("ERROR | 2 Entrances Doors")
 				end
 				
 				if Door.OpenValue.Value == false then
-					print("Next Ungenerated Room: "..Room.Name)
 					NextUngeneratedRoom = Room
 				end
 			end
@@ -43,8 +48,13 @@ local function TeleportToDoor()
 						
 						Character.HumanoidRootPart.CFrame = DoorRoot.CFrame
 						
-						DoorRoot.Position = Character.Head.Position
-						DoorRoot.Position += Character.Head.CFrame.LookVector * 7
+						DoorRoot.Touched:Once(function(Part)
+							if Part.Parent:FindFirstOfClass("Humanoid") then
+								print("Touched Root")
+								DoorRoot.Position = CurrentCamera.CFrame.Position
+								DoorRoot.Position += CurrentCamera.CFrame.LookVector * 7
+							end
+						end)
 					end
 				end
 			end
