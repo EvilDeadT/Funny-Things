@@ -2,7 +2,7 @@ local Player = game.Players.LocalPlayer
 local Character = Player.Character
 
 local GameplayFolder = game.Workspace.GameplayFolder
-local RoomsFolder = game.Workspace.Rooms
+local RoomsFolder = GameplayFolder.Rooms
 
 local OpenedRooms = {"Start"}
 local NextUngeneratedRoom = nil
