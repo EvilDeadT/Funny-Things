@@ -7,6 +7,8 @@ local RoomsFolder = GameplayFolder.Rooms
 
 local OpenedRooms = {"Start"}
 local NextUngeneratedRoom = nil
+local DoorRoot = nil
+local DoorRootTouched = false
 
 local PressureDoors = {
 	["NormalDoor"] = {
@@ -26,7 +28,7 @@ local function GetNextUngeneratedRoom()
 				if Doors >= 2 then
 					return print("ERROR | 2 Entrances Doors")
 				end
-				
+
 				if Door.OpenValue.Value == false then
 					NextUngeneratedRoom = Room
 				end
@@ -44,15 +46,14 @@ local function TeleportToDoor()
 						if NextUngeneratedRoom.Entrances.NormalDoor:FindFirstChild("CollisionPart") then
 							NextUngeneratedRoom.Entrances.NormalDoor.CollisionPart.CanCollide = false
 						end
-						local DoorRoot = NextUngeneratedRoom.Entrances.NormalDoor.Root
-						
-						Character.HumanoidRootPart.CFrame = DoorRoot.CFrame
-						
+						DoorRoot = NextUngeneratedRoom.Entrances.NormalDoor.Root
+						DoorRoot.Transparency = 0
+
+						Character.HumanoidRootPart.CFrame = DoorRoot.CFrame + Vector3.new(0, 1, 0)
+
 						DoorRoot.Touched:Once(function(Part)
 							if Part.Parent:FindFirstChildOfClass("Humanoid") then
-								print("Touched Root")
-								DoorRoot.Position = CurrentCamera.CFrame.Position
-								DoorRoot.Position += CurrentCamera.CFrame.LookVector * 7
+								DoorRootTouched = true
 							end
 						end)
 					end
@@ -66,10 +67,20 @@ RoomsFolder.ChildAdded:Connect(function(Room)
 	print("New Room Spawned")
 	table.insert(OpenedRooms,NextUngeneratedRoom)
 	NextUngeneratedRoom = Room
+
+	DoorRoot = nil
+	DoorRootTouched = false
 end)
 
-game:GetService("RunService").RenderStepped:Connect(function()
-	--TeleportToDoor()
+CurrentCamera:GetPropertyChangedSignal("CFrame"):Connect(function()
+	if DoorRoot ~= nil and DoorRootTouched == true then
+		DoorRoot.CFrame = CFrame.new(
+				CurrentCamera.CFrame.Position
+					+ (CurrentCamera.CFrame.LookVector * 4)
+					+ (CurrentCamera.CFrame.UpVector * math.random(-2, 2))
+					+ (CurrentCamera.CFrame.RightVector * math.random(-2, 2))
+			) * CFrame.Angles(0, 0, 0)
+	end
 end)
 
 GetNextUngeneratedRoom()
