@@ -49,7 +49,7 @@ local function TeleportToDoor()
 						Character.HumanoidRootPart.CFrame = DoorRoot.CFrame
 						
 						DoorRoot.Touched:Once(function(Part)
-							if Part.Parent:FindFirstOfClass("Humanoid") then
+							if Part.Parent:FindFirstChildOfClass("Humanoid") then
 								print("Touched Root")
 								DoorRoot.Position = CurrentCamera.CFrame.Position
 								DoorRoot.Position += CurrentCamera.CFrame.LookVector * 7
