@@ -63,6 +63,7 @@ local function TeleportToDoor()
 end
 
 RoomsFolder.ChildAdded:Connect(function(Room)
+	print("New Room Spawned")
 	table.insert(OpenedRooms,NextUngeneratedRoom)
 	NextUngeneratedRoom = Room
 end)
@@ -71,9 +72,5 @@ game:GetService("RunService").RenderStepped:Connect(function()
 	--TeleportToDoor()
 end)
 
-game.UserInputService.InputBegan:Connect(function(Input)
-	if Input.KeyCode == Enum.KeyCode.P then
-		GetNextUngeneratedRoom()
-		TeleportToDoor()
-	end
-end)
+GetNextUngeneratedRoom()
+TeleportToDoor()
