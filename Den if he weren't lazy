@@ -9,6 +9,8 @@ local OpenedRooms = {"Start"}
 local NextUngeneratedRoom = nil
 local DoorRoot = nil
 local DoorRootTouched = false
+local DoorRootRightVectorValue = Instance.new("IntValue")
+DoorRootRightVectorValue.Value = -5
 
 local PressureDoors = {
 	["NormalDoor"] = {
@@ -54,6 +56,7 @@ local function TeleportToDoor()
 						DoorRoot.Touched:Once(function(Part)
 							if Part.Parent:FindFirstChildOfClass("Humanoid") then
 								DoorRootTouched = true
+								game.TweenService:Create(DoorRootRightVectorValue, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {Value = 5}):Play()
 							end
 						end)
 					end
@@ -70,6 +73,16 @@ RoomsFolder.ChildAdded:Connect(function(Room)
 
 	DoorRoot = nil
 	DoorRootTouched = false
+	DoorRootRightVectorValue.Value = -5
+end)
+
+
+game.UserInputService.InputBegan:Connect(function(Input)
+	if Input.KeyCode == Enum.KeyCode.P then
+		DoorRoot = nil
+		DoorRootTouched = false
+		DoorRootRightVectorValue.Value = -5
+	end
 end)
 
 CurrentCamera:GetPropertyChangedSignal("CFrame"):Connect(function()
@@ -77,8 +90,7 @@ CurrentCamera:GetPropertyChangedSignal("CFrame"):Connect(function()
 		DoorRoot.CFrame = CFrame.new(
 				CurrentCamera.CFrame.Position
 					+ (CurrentCamera.CFrame.LookVector * 4)
-					+ (CurrentCamera.CFrame.UpVector * math.random(-2, 2))
-					+ (CurrentCamera.CFrame.RightVector * math.random(-2, 2))
+					+ (CurrentCamera.CFrame.RightVector * DoorRootRightVectorValue)
 			) * CFrame.Angles(0, 0, 0)
 	end
 end)
