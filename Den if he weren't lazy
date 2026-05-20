@@ -49,7 +49,7 @@ local function TeleportToDoor()
 							NextUngeneratedRoom.Entrances.NormalDoor.CollisionPart.CanCollide = false
 						end
 						DoorRoot = NextUngeneratedRoom.Entrances.NormalDoor.Root
-						DoorRoot.Transparency = 0
+						--DoorRoot.Transparency = 0
 
 						Character.HumanoidRootPart.CFrame = DoorRoot.CFrame + Vector3.new(0, 1, 0)
 
