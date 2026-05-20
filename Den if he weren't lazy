@@ -82,6 +82,8 @@ game.UserInputService.InputBegan:Connect(function(Input)
 		DoorRoot = nil
 		DoorRootTouched = false
 		DoorRootRightVectorValue.Value = -5
+
+		TeleportToDoor()
 	end
 end)
 
