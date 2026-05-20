@@ -1,8 +1,14 @@
-local Character = game.Players.LocalPlayer.Character
+local Player = game.Players.LocalPlayer
+local Character = Player.Character
+local CurrentCamera = game.Workspace.CurrentCamera
 
-local RoomsFolder = game.Workspace.GameplayFolder.Rooms
+local GameplayFolder = game.Workspace.GameplayFolder
+local RoomsFolder = GameplayFolder.Rooms
+
+local OpenedRooms = {"Start"}
 local NextUngeneratedRoom = nil
 local DoorRoot = nil
+
 function GetNextUngeneratedRoom()
 	for _, Room in RoomsFolder:GetChildren() do
 		if Room:HasTag("Opened") then
