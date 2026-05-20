@@ -98,3 +98,10 @@ end
 
 GetNextUngeneratedRoom()
 TeleportToDoor()
+
+game.UserInputService.InputBegan:Connect(function(Input)
+	if Input.KeyCode == Enum.KeyCode.P then
+		DoorRoot = nil
+		TeleportToDoor()
+	end
+end)
