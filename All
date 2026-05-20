@@ -5,18 +5,8 @@ local NextUngeneratedRoom = nil
 local DoorRoot = nil
 function GetNextUngeneratedRoom()
 	for _, Room in RoomsFolder:GetChildren() do
-		if Room:FindFirstChild("Entrances") then
-			local Doors = 0
-			for _, Door in Room.Entrances:GetChildren() do
-				Doors += 1
-				if Doors >= 2 then
-					return print("ERROR | 2 Entrances Doors")
-				end
-
-				if Door.OpenValue.Value == false then
-					NextUngeneratedRoom = Room
-				end
-			end
+		if Room:HasTag("Opened") then
+			NextUngeneratedRoom = Room
 		end
 	end
 end
@@ -100,8 +90,9 @@ GetNextUngeneratedRoom()
 TeleportToDoor()
 
 game.UserInputService.InputBegan:Connect(function(Input)
-	if Input.KeyCode == Enum.KeyCode.P then
+	if Input.KeyCode == Enum.KeyCode.O then
 		DoorRoot = nil
+		GetNextUngeneratedRoom()
 		TeleportToDoor()
 	end
 end)
