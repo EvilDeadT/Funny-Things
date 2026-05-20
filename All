@@ -18,10 +18,27 @@ function OpenLockedRoom(LockedRoom, OpenItem, OpenItemType)
 			UncollisionBox.Size = Vector3.new(8, 8, 8)
 			UncollisionBox.Position = OpenItem.Parent.Position
 
+			local PartsWithCollision = {}
 			for _, Part in game.Workspace:GetPartsInPart(UncollisionBox) do
-				if Part.Parent ~= game.Players.LocalPlayer.Character then
+				if Part.CanCollide == true and Part.Parent ~= game.Players.LocalPlayer.Character then
+					table.insert(PartsWithCollision, Part)
 					Part.CanCollide = false
 				end
+			end
+
+			local TemporaryFloor = Instance.new("Part", LockedRoom)
+			TemporaryFloor.Name = "TemporaryFloor"
+			TemporaryFloor.Transparency = 0.5
+			TemporaryFloor.Anchored = true
+			TemporaryFloor.CanCollide = true
+			TemporaryFloor.CastShadow = false
+			TemporaryFloor.Size = Vector3.new(8, 1, 8)
+			TemporaryFloor.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0, -4, 0)
+
+			task.wait(15)
+
+			for _, Part in PartsWithCollision do
+				Part.CanCollide = true
 			end
 		end
 	end
