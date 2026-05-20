@@ -1,5 +1,8 @@
+local Character = game.Players.LocalPlayer.Character
+
 local RoomsFolder = game.Workspace.GameplayFolder.Rooms
 local NextUngeneratedRoom = RoomsFolder.LeftStraight2
+local DoorRoot = nil
 function OpenLockedRoom(LockedRoom, OpenItem, OpenItemType)
 	print("Door has locked by "..OpenItemType)
 	if OpenItem ~= nil then
@@ -9,7 +12,6 @@ function OpenLockedRoom(LockedRoom, OpenItem, OpenItemType)
 		else
 			Prompt.RequiresLineOfSight = false
 
-			print(OpenItem.Parent.Position)
 			local UncollisionBox = Instance.new("Part", game.Workspace)
 			UncollisionBox.Transparency = 0.5
 			UncollisionBox.Anchored = true
@@ -33,7 +35,7 @@ function OpenLockedRoom(LockedRoom, OpenItem, OpenItemType)
 			TemporaryFloor.CanCollide = true
 			TemporaryFloor.CastShadow = false
 			TemporaryFloor.Size = Vector3.new(8, 1, 8)
-			TemporaryFloor.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0, -4, 0)
+			TemporaryFloor.Position = Character.HumanoidRootPart.Position + Vector3.new(0, -4, 0)
 
 			task.wait(15)
 
