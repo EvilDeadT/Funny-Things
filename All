@@ -1,1 +1,45 @@
-print("work K")
+local RoomsFolder = game.Workspace.GameplayFolder.Rooms
+local NextUngeneratedRoom = RoomsFolder.LeftStraight2
+function TeleportToDoor()
+  if NextUngeneratedRoom ~= nil then
+		if NextUngeneratedRoom.Parent == RoomsFolder then
+			if NextUngeneratedRoom:FindFirstChild("Entrances") then
+				if NextUngeneratedRoom.Entrances:FindFirstChild("NormalDoor") then
+					if NextUngeneratedRoom.Entrances.NormalDoor:FindFirstChild("Root") then
+						if NextUngeneratedRoom.Entrances.NormalDoor:FindFirstChild("CollisionPart") then
+							NextUngeneratedRoom.Entrances.NormalDoor.CollisionPart.CanCollide = false
+						end
+						DoorRoot = NextUngeneratedRoom.Entrances.NormalDoor.Root
+
+						local Keycard = nil
+						local Password = nil
+						local RidgeKeycard = nil
+						for _, LockedRoom in RoomsFolder:GetChildren() do
+              print(LockedRoom.Name)
+							local Keycard = LockedRoom:FindFirstChild("NormalKeyCard", true)
+						end
+						if Keycard ~= nil then
+							print("Door has locked")
+							local Prompt = Keycard:FindFirstChildOfClass("ProximityPrompt", true)
+							if Prompt == nil then
+								print("ERROR | Keycard has not ProximityPrompt in "..NextUngeneratedRoom.Name)
+							else
+								Prompt.RequiresLineOfSight = false
+
+								local UncollisionBox = Instance.new("Part", workspace)
+								UncollisionBox.Transparency = 1
+								UncollisionBox.Anchored = true
+								UncollisionBox.CanCollide = false
+								UncollisionBox.Size = Vector3.new(8, 8, 8)
+								UncollisionBox.Position = Keycard.WorldPivot.Position
+							end
+						else
+							Character.HumanoidRootPart.CFrame = DoorRoot.CFrame + Vector3.new(0, 1, 0)
+						end
+					end
+				end
+			end
+		end
+	end
+end
+TeleportToDoor()
