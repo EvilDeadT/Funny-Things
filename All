@@ -1,8 +1,26 @@
 local Character = game.Players.LocalPlayer.Character
 
 local RoomsFolder = game.Workspace.GameplayFolder.Rooms
-local NextUngeneratedRoom = RoomsFolder.LeftStraight2
+local NextUngeneratedRoom = nil
 local DoorRoot = nil
+function GetNextUngeneratedRoom()
+	for _, Room in RoomsFolder:GetChildren() do
+		if Room:FindFirstChild("Entrances") then
+			local Doors = 0
+			for _, Door in Room.Entrances:GetChildren() do
+				Doors += 1
+				if Doors >= 2 then
+					return print("ERROR | 2 Entrances Doors")
+				end
+
+				if Door.OpenValue.Value == false then
+					NextUngeneratedRoom = Room
+				end
+			end
+		end
+	end
+end
+
 function OpenLockedRoom(LockedRoom, OpenItem, OpenItemType)
 	print("Door has locked by "..OpenItemType)
 	if OpenItem ~= nil then
@@ -77,4 +95,6 @@ function TeleportToDoor()
 		end
 	end
 end
+
+GetNextUngeneratedRoom()
 TeleportToDoor()
