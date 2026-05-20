@@ -1,5 +1,32 @@
 local RoomsFolder = game.Workspace.GameplayFolder.Rooms
 local NextUngeneratedRoom = RoomsFolder.LeftStraight2
+function OpenLockedRoom(LockedRoom, OpenItem, OpenItemType)
+	print("Door has locked by "..OpenItemType)
+	if OpenItem ~= nil then
+		local Prompt = OpenItem:FindFirstChildWhichIsA("ProximityPrompt", true)
+		if Prompt == nil then
+			print("ERROR | "..OpenItemType.." has not ProximityPrompt in "..LockedRoom.Name)
+		else
+			Prompt.RequiresLineOfSight = false
+
+			print(OpenItem.Parent.Position)
+			local UncollisionBox = Instance.new("Part", game.Workspace)
+			UncollisionBox.Transparency = 0.5
+			UncollisionBox.Anchored = true
+			UncollisionBox.CanCollide = false
+			UncollisionBox.CastShadow = false
+			UncollisionBox.Size = Vector3.new(8, 8, 8)
+			UncollisionBox.Position = OpenItem.Parent.Position
+
+			for _, Part in game.Workspace:GetPartsInPart(UncollisionBox) do
+				if Part.Parent ~= game.Players.LocalPlayer.Character then
+					Part.CanCollide = false
+				end
+			end
+		end
+	end
+end
+
 function TeleportToDoor()
   if NextUngeneratedRoom ~= nil then
 		if NextUngeneratedRoom.Parent == RoomsFolder then
@@ -15,25 +42,14 @@ function TeleportToDoor()
 						local Password = nil
 						local RidgeKeycard = nil
 						for _, LockedRoom in RoomsFolder:GetChildren() do
-              print(LockedRoom.Name)
-							local Keycard = LockedRoom:FindFirstChild("NormalKeyCard", true)
-						end
-						if Keycard ~= nil then
-							print("Door has locked")
-							local Prompt = Keycard:FindFirstChildOfClass("ProximityPrompt", true)
-							if Prompt == nil then
-								print("ERROR | Keycard has not ProximityPrompt in "..NextUngeneratedRoom.Name)
-							else
-								Prompt.RequiresLineOfSight = false
-
-								local UncollisionBox = Instance.new("Part", workspace)
-								UncollisionBox.Transparency = 1
-								UncollisionBox.Anchored = true
-								UncollisionBox.CanCollide = false
-								UncollisionBox.Size = Vector3.new(8, 8, 8)
-								UncollisionBox.Position = Keycard.WorldPivot.Position
+         			    	print(LockedRoom.Name)
+							Keycard = LockedRoom:FindFirstChild("NormalKeyCard", true)
+							if Keycard ~= nil then
+								OpenLockedRoom(LockedRoom, Keycard, "Keycard")
+								break
 							end
-						else
+						end
+						if Keycard == nil and Password == nil and RidgeKeycard == nil then
 							Character.HumanoidRootPart.CFrame = DoorRoot.CFrame + Vector3.new(0, 1, 0)
 						end
 					end
