@@ -21,7 +21,7 @@ local PressureDoors = {
 	}
 }
 
-local function GetNextUngeneratedRoom()
+function GetNextUngeneratedRoom()
 	for _, Room in pairs(RoomsFolder:GetChildren()) do
 		if Room:FindFirstChild("Entrances") then
 			local Doors = 0
@@ -39,7 +39,7 @@ local function GetNextUngeneratedRoom()
 	end
 end
 
-local function TeleportToDoor()
+function TeleportToDoor()
 	if NextUngeneratedRoom ~= nil then
 		if NextUngeneratedRoom.Parent == RoomsFolder then
 			if NextUngeneratedRoom:FindFirstChild("Entrances") then
@@ -49,16 +49,31 @@ local function TeleportToDoor()
 							NextUngeneratedRoom.Entrances.NormalDoor.CollisionPart.CanCollide = false
 						end
 						DoorRoot = NextUngeneratedRoom.Entrances.NormalDoor.Root
-						--DoorRoot.Transparency = 0
 
-						Character.HumanoidRootPart.CFrame = DoorRoot.CFrame + Vector3.new(0, 1, 0)
+						local Keycard = nil
+						local Password = nil
+						local RidgeKeycard = nil
+						for _, LockedRoom in RoomsFolder:GetChildren() do
+							local Keycard = LockedRoom:FindFirstChild("NormalKeyCard", true)
+						end
+						if Keycard ~= nil then
+							print("Door has locked")
+							local Prompt = Keycard:FindFirstChildOfClass("ProximityPrompt", true)
+							if Prompt == nil then
+								print("ERROR | Keycard has not ProximityPrompt in "..NextUngeneratedRoom.Name)
+							else
+								Prompt.RequiresLineOfSight = false
 
-						DoorRoot.Touched:Once(function(Part)
-							if Part.Parent:FindFirstChildOfClass("Humanoid") then
-								DoorRootTouched = true
-								game.TweenService:Create(DoorRootRightVectorValue, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {Value = 5}):Play()
+								local UncollisionBox = Instance.new("Part", workspace)
+								UncollisionBox.Transparency = 1
+								UncollisionBox.Anchored = true
+								UncollisionBox.CanCollide = false
+								UncollisionBox.Size = Vector3.new(8, 8, 8)
+								UncollisionBox.Position = Keycard.WorldPivot.Position
 							end
-						end)
+						else
+							Character.HumanoidRootPart.CFrame = DoorRoot.CFrame + Vector3.new(0, 1, 0)
+						end
 					end
 				end
 			end
@@ -67,33 +82,17 @@ local function TeleportToDoor()
 end
 
 RoomsFolder.ChildAdded:Connect(function(Room)
-	print("New Room Spawned")
+	print("New Room Spawned: "..Room.Name)
 	table.insert(OpenedRooms,NextUngeneratedRoom)
 	NextUngeneratedRoom = Room
-
 	DoorRoot = nil
-	DoorRootTouched = false
-	DoorRootRightVectorValue.Value = -5
 end)
 
 
 game.UserInputService.InputBegan:Connect(function(Input)
 	if Input.KeyCode == Enum.KeyCode.P then
 		DoorRoot = nil
-		DoorRootTouched = false
-		DoorRootRightVectorValue.Value = -5
-
 		TeleportToDoor()
-	end
-end)
-
-CurrentCamera:GetPropertyChangedSignal("CFrame"):Connect(function()
-	if DoorRoot ~= nil and DoorRootTouched == true then
-		DoorRoot.CFrame = CFrame.new(
-				CurrentCamera.CFrame.Position
-					+ (CurrentCamera.CFrame.LookVector * 4)
-					+ (CurrentCamera.CFrame.RightVector * DoorRootRightVectorValue)
-			) * CFrame.Angles(0, 0, 0)
 	end
 end)
 
