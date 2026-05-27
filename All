@@ -96,9 +96,9 @@ GetNextUngeneratedRoom()
 TeleportToDoor()
 
 game.UserInputService.InputBegan:Connect(function(Input)
-	if Input.KeyCode == Enum.KeyCode.O then
-		DoorRoot = nil
-		GetNextUngeneratedRoom()
-		TeleportToDoor()
+	if Input.KeyCode == Enum.KeyCode.P then
+		--DoorRoot = nil
+		--GetNextUngeneratedRoom()
+		--TeleportToDoor()
 	end
 end)
