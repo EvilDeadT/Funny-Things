@@ -95,7 +95,6 @@ function TeleportToDoor()
 						local Password = nil
 						local RidgeKeycard = nil
 						for _, LockedRoom in RoomsFolder:GetChildren() do
-         			    	print(LockedRoom.Name)
 							Keycard = LockedRoom:FindFirstChild("NormalKeyCard", true)
 							if Keycard ~= nil then
 								--OpenLockedRoom(LockedRoom, Keycard, "Keycard")
