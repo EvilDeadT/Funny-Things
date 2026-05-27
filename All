@@ -16,7 +16,7 @@ function GetNextUngeneratedRoom()
 	for _, Room in RoomsFolder:GetChildren() do
 		if Room:FindFirstChild("Entrances") then
 			if Room.Entrances:FindFirstChild("NormalDoor") then
-				if Room.Entrances.NormalDoor:FindFirstChild("Enter") and Room.Entrances.NormalDoor:FindFirstChild("Exit") then
+				if Room.Entrances.NormalDoor:FindFirstChild("Exit") then
 					local ExitRoom = Room.Entrances.NormalDoor.Exit.Value
 					if ExitRoom ~= nil then
 						if ExitRoom.Parent ~= nil then
