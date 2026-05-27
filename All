@@ -7,7 +7,9 @@ local RoomsFolder = GameplayFolder.Rooms
 
 local OpenedRooms = {"Start"}
 local NextUngeneratedRoom = nil
+local DoorCollisionPart = nil
 local DoorRoot = nil
+local DoorRootPrompt = nil
 
 function GetNextUngeneratedRoom()
 	for _, Room in RoomsFolder:GetChildren() do
@@ -15,7 +17,7 @@ function GetNextUngeneratedRoom()
 			NextUngeneratedRoom = Room
 		end
 	end
-	NextUngeneratedRoom = workspace.GameplayFolder.Rooms.MaintenanceElevatorEndStraight
+	NextUngeneratedRoom = workspace.GameplayFolder.Rooms["3WayRight"]
 end
 
 function OpenLockedRoom(LockedRoom, OpenItem, OpenItemType)
@@ -70,7 +72,9 @@ function TeleportToDoor()
 						if NextUngeneratedRoom.Entrances.NormalDoor:FindFirstChild("CollisionPart") then
 							NextUngeneratedRoom.Entrances.NormalDoor.CollisionPart.CanCollide = false
 						end
-						DoorRoot = NextUngeneratedRoom.Entrances.NormalDoor.Root
+						
+						DoorRoot = NextUngeneratedRoom.Entrances.NormalDoor:FindFirstChild("Root")
+						DoorCollisionPart = NextUngeneratedRoom.Entrances.NormalDoor:FindFirstChild("CollisionPart")
 
 						local Keycard = nil
 						local Password = nil
@@ -84,17 +88,11 @@ function TeleportToDoor()
 							end
 						end
 						if Keycard == nil and Password == nil and RidgeKeycard == nil then
-							Character.HumanoidRootPart.CFrame = DoorRoot.CFrame + Vector3.new(0, 1, 0)
+							Character.HumanoidRootPart.CFrame = DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
 
-							DoorRoot.CFrame = CFrame.new(
-								CurrentCamera.CFrame.Position + CurrentCamera.CFrame.LookVector * 7
-							) * CFrame.fromOrientation(0, 0, 0)
-							local DoorRootPrompt = DoorRoot:FindFirstChildWhichIsA("ProximityPrompt", true)
+							DoorRootPrompt = DoorRoot:FindFirstChildWhichIsA("ProximityPrompt", true)
 							if DoorRootPrompt == nil then
 								print("ERROR | DoorRoot has not ProximityPrompt in Entrances Door in"..NextUngeneratedRoom.Name)
-							else
-								DoorRootPrompt.MaxActivationDistance = 100
-								DoorRootPrompt:InputHoldBegin()
 							end
 						end
 					end
@@ -103,6 +101,16 @@ function TeleportToDoor()
 		end
 	end
 end
+
+game:GetService("RunService").RenderStepped:Connect(function()
+	if DoorRoot ~= nil and DoorRootPrompt ~= nil then
+		DoorRoot.CFrame = CFrame.new(
+			CurrentCamera.CFrame.Position + CurrentCamera.CFrame.LookVector * 7
+		) * CFrame.fromOrientation(0, 0, 0)
+		DoorRootPrompt.MaxActivationDistance = 100
+		DoorRootPrompt:InputHoldBegin()
+	end
+end)
 
 GetNextUngeneratedRoom()
 TeleportToDoor()
