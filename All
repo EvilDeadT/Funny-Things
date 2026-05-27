@@ -12,12 +12,28 @@ local DoorRoot = nil
 local DoorRootPrompt = nil
 
 function GetNextUngeneratedRoom()
+	--NextUngeneratedRoom = workspace.GameplayFolder.Rooms.RightStraightBrokenWall1 return
+	local RoomsInExitValue = {}
 	for _, Room in RoomsFolder:GetChildren() do
-		if Room:HasTag("Opened") then
-			NextUngeneratedRoom = Room
+		if Room:FindFirstChild("Entrances") then
+			if Room.Entrances:FindFirstChild("NormalDoor") then
+				if Room.Entrances.NormalDoor:FindFirstChild("Enter") and Room.Entrances.NormalDoor:FindFirstChild("Exit") then
+					local ExitRoom = Room.Entrances.NormalDoor.Exit.Value
+					if ExitRoom ~= nil then
+						if ExitRoom.Parent ~= nil then
+							table.insert(RoomsInExitValue, ExitRoom)
+						end
+					end
+				end
+			end
 		end
 	end
-	NextUngeneratedRoom = workspace.GameplayFolder.Rooms.RightStraightBrokenWall1
+
+	for _, Room in RoomsFolder:GetChildren() do
+		if table.find(RoomsInExitValue, Room) == nil then
+			print(Room.Name)
+		end
+	end
 end
 
 function OpenLockedRoom(LockedRoom, OpenItem, OpenItemType)
