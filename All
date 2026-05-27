@@ -109,6 +109,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		) * CFrame.fromOrientation(0, 0, 0)
 		DoorRootPrompt.MaxActivationDistance = 100
 		DoorRootPrompt:InputHoldBegin()
+		DoorRootPrompt:InputHoldEnd()
 	end
 end)
 
