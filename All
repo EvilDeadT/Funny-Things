@@ -29,7 +29,7 @@ function GetNextUngeneratedRoom()
 	end
 
 	for _, Room in RoomsFolder:GetChildren() do
-		if table.find(RoomsInExitValue, Room) == nil then
+		if table.find(RoomsInExitValue, Room) == nil and Room:GetAttribute("Room") then
 			NextUngeneratedRoom = Room
 		end
 	end
