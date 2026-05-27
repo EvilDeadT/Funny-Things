@@ -15,6 +15,7 @@ function GetNextUngeneratedRoom()
 			NextUngeneratedRoom = Room
 		end
 	end
+	NextUngeneratedRoom = workspace.GameplayFolder.Rooms.MaintenanceElevatorEndStraight
 end
 
 function OpenLockedRoom(LockedRoom, OpenItem, OpenItemType)
@@ -84,6 +85,17 @@ function TeleportToDoor()
 						end
 						if Keycard == nil and Password == nil and RidgeKeycard == nil then
 							Character.HumanoidRootPart.CFrame = DoorRoot.CFrame + Vector3.new(0, 1, 0)
+
+							DoorRoot.CFrame = CFrame.new(
+								CurrentCamera.CFrame.Position + CurrentCamera.CFrame.LookVector * 7
+							) * CFrame.fromOrientation(0, 0, 0)
+							local DoorRootPrompt = DoorRoot:FindFirstChildWhichIsA("ProximityPrompt", true)
+							if DoorRootPrompt == nil then
+								print("ERROR | DoorRoot has not ProximityPrompt in Entrances Door in"..NextUngeneratedRoom.Name)
+							else
+								DoorRootPrompt.MaxActivationDistance = 100
+								DoorRootPrompt:InputHoldBegin()
+							end
 						end
 					end
 				end
