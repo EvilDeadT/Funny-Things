@@ -17,7 +17,7 @@ function GetNextUngeneratedRoom()
 			NextUngeneratedRoom = Room
 		end
 	end
-	NextUngeneratedRoom = workspace.GameplayFolder.Rooms["3WayRight"]
+	NextUngeneratedRoom = workspace.GameplayFolder.Rooms.SplitBridge1
 end
 
 function OpenLockedRoom(LockedRoom, OpenItem, OpenItemType)
