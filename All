@@ -12,7 +12,6 @@ local DoorRoot = nil
 local DoorRootPrompt = nil
 
 function GetNextUngeneratedRoom()
-	--NextUngeneratedRoom = workspace.GameplayFolder.Rooms.RightStraightBrokenWall1 return
 	local RoomsInExitValue = {}
 	for _, Room in RoomsFolder:GetChildren() do
 		if Room:FindFirstChild("Entrances") then
@@ -31,7 +30,7 @@ function GetNextUngeneratedRoom()
 
 	for _, Room in RoomsFolder:GetChildren() do
 		if table.find(RoomsInExitValue, Room) == nil then
-			print(Room.Name)
+			NextUngeneratedRoom = Room
 		end
 	end
 end
@@ -99,7 +98,7 @@ function TeleportToDoor()
          			    	print(LockedRoom.Name)
 							Keycard = LockedRoom:FindFirstChild("NormalKeyCard", true)
 							if Keycard ~= nil then
-								OpenLockedRoom(LockedRoom, Keycard, "Keycard")
+								--OpenLockedRoom(LockedRoom, Keycard, "Keycard")
 								break
 							end
 						end
