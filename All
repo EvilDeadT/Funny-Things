@@ -110,6 +110,7 @@ function TeleportToDoor()
 						end
 						if Keycard == nil and RidgeKeycard == nil then
 							Character.HumanoidRootPart.CFrame = DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
+							game.ReplicatedStorage.Events.ZoneChange:FireServer(NextUngeneratedRoom)
 
 							if Password == nil then
 								DoorRootPrompt = DoorRoot:FindFirstChildWhichIsA("ProximityPrompt", true)
