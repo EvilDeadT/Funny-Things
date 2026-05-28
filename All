@@ -96,8 +96,12 @@ function TeleportToDoor()
 						local RidgeKeycard = nil
 						for _, LockedRoom in RoomsFolder:GetChildren() do
 							Keycard = LockedRoom:FindFirstChild("NormalKeyCard", true)
+							Password = LockedRoom:FindFirstChild("PasswordPaper", true)
 							if Keycard ~= nil then
 								--OpenLockedRoom(LockedRoom, Keycard, "Keycard")
+								break
+							elseif Password ~= nil then
+								print(Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel").Text)
 								break
 							end
 						end
@@ -132,9 +136,6 @@ TeleportToDoor()
 
 game.UserInputService.InputBegan:Connect(function(Input)
 	if Input.KeyCode == Enum.KeyCode.P then
-		DoorRoot = nil
-		DoorRootPrompt = nil
-		GetNextUngeneratedRoom()
-		TeleportToDoor()
+		--DoorRoot = nil DoorRootPrompt = nil GetNextUngeneratedRoom() TeleportToDoor()
 	end
 end)
