@@ -98,6 +98,9 @@ function TeleportToDoor()
 						Password = nil
 						for _, LockedRoom in RoomsFolder:GetChildren() do
 							Keycard = LockedRoom:FindFirstChild("NormalKeyCard", true)
+							if Keycard == nil then
+								Keycard = LockedRoom:FindFirstChild("RidgeKeyCard", true)
+							end
 							Password = LockedRoom:FindFirstChild("PasswordPaper", true)
 							if Keycard ~= nil then
 								--OpenLockedRoom(LockedRoom, Keycard, "Keycard")
