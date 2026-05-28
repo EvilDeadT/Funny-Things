@@ -13,7 +13,6 @@ local DoorRootPrompt = nil
 
 local Keycard = nil
 local Password = nil
-local RidgeKeycard = nil
 
 function GetNextUngeneratedRoom()
 	local RoomsInExitValue = {}
@@ -97,7 +96,6 @@ function TeleportToDoor()
 
 						Keycard = nil
 						Password = nil
-						RidgeKeycard = nil
 						for _, LockedRoom in RoomsFolder:GetChildren() do
 							Keycard = LockedRoom:FindFirstChild("NormalKeyCard", true)
 							Password = LockedRoom:FindFirstChild("PasswordPaper", true)
@@ -109,7 +107,7 @@ function TeleportToDoor()
 								break
 							end
 						end
-						if Keycard == nil and RidgeKeycard == nil then
+						if Keycard == nil then
 							Character.HumanoidRootPart.CFrame = DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
 							game.ReplicatedStorage.Events.ZoneChange:FireServer(NextUngeneratedRoom)
 
