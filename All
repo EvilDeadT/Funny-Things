@@ -104,7 +104,7 @@ function TeleportToDoor()
 							Password = LockedRoom:FindFirstChild("PasswordPaper", true)
 							if Keycard ~= nil then
 								--OpenLockedRoom(LockedRoom, Keycard, "Keycard")
-								Instance.new("Highlight", Keycard)
+								Character.HumanoidRootPart.CFrame = Keycard.WorldPivot + Vector3.new(0, 1, 0)
 								break
 							elseif Password ~= nil then
 								break
