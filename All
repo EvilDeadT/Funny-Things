@@ -11,6 +11,10 @@ local DoorCollisionPart = nil
 local DoorRoot = nil
 local DoorRootPrompt = nil
 
+local Keycard = nil
+local Password = nil
+local RidgeKeycard = nil
+
 function GetNextUngeneratedRoom()
 	local RoomsInExitValue = {}
 	for _, Room in RoomsFolder:GetChildren() do
@@ -91,9 +95,9 @@ function TeleportToDoor()
 						DoorRoot = NextUngeneratedRoom.Entrances.NormalDoor:FindFirstChild("Root")
 						DoorCollisionPart = NextUngeneratedRoom.Entrances.NormalDoor:FindFirstChild("CollisionPart")
 
-						local Keycard = nil
-						local Password = nil
-						local RidgeKeycard = nil
+						Keycard = nil
+						Password = nil
+						RidgeKeycard = nil
 						for _, LockedRoom in RoomsFolder:GetChildren() do
 							Keycard = LockedRoom:FindFirstChild("NormalKeyCard", true)
 							Password = LockedRoom:FindFirstChild("PasswordPaper", true)
@@ -101,16 +105,17 @@ function TeleportToDoor()
 								--OpenLockedRoom(LockedRoom, Keycard, "Keycard")
 								break
 							elseif Password ~= nil then
-								print(Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel").Text)
 								break
 							end
 						end
-						if Keycard == nil and Password == nil and RidgeKeycard == nil then
+						if Keycard == nil and RidgeKeycard == nil then
 							Character.HumanoidRootPart.CFrame = DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
 
-							DoorRootPrompt = DoorRoot:FindFirstChildWhichIsA("ProximityPrompt", true)
-							if DoorRootPrompt == nil then
-								print("ERROR | DoorRoot has not ProximityPrompt in Entrances Door in"..NextUngeneratedRoom.Name)
+							if Password == nil then
+								DoorRootPrompt = DoorRoot:FindFirstChildWhichIsA("ProximityPrompt", true)
+								if DoorRootPrompt == nil then
+									print("ERROR | DoorRoot has not ProximityPrompt in Entrances Door in"..NextUngeneratedRoom.Name)
+								end
 							end
 						end
 					end
@@ -128,6 +133,13 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		DoorRootPrompt.MaxActivationDistance = 100
 		DoorRootPrompt:InputHoldBegin()
 		DoorRootPrompt:InputHoldEnd()
+	end
+	if NextUngeneratedRoom ~= nil and Password ~= nil then
+		if Password.Parent ~= nil then
+			if Password:FindFirstChild("Code") then
+				NextUngeneratedRoom.Entrances.NormalDoor.Lock.Main.RemoteFunction:InvokeServer(Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel").Text)
+			end
+		end
 	end
 end)
 
