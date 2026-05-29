@@ -6,6 +6,7 @@ local Script = {
 local Main = {
 	Player = game.Players.LocalPlayer,
 	Character = game.Players.LocalPlayer.Character,
+	CharacterRoot = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart"),
 	CurrentCamera = game.Workspace.CurrentCamera,
 
 	GameplayFolder = game.Workspace.GameplayFolder,
@@ -95,6 +96,17 @@ local RoomSkip = {
 			LockRemoteFunction = {
 				[1] = "Lock",
 				[2] = "Main",
+			}
+		},
+		["LargeRoundDoor"] = {
+			Root = {
+				[1] = "RootPart"
+			},
+			CollisionPart = {
+				[1] = "CollisionPart"
+			},
+			TouchPart = {
+				[1] = "TouchPart"
 			}
 		}
 	}
@@ -243,31 +255,38 @@ function TeleportToDoor()
 end
 
 game:GetService("RunService").RenderStepped:Connect(function()
+	local ScriptActionNow = "Idle"
 	if Script.Mode == "RoomSkip" then
-		if (RoomSkip.DoorRoot ~= nil or RoomSkip.DoorTouchPart ~= nil) and RoomSkip.DoorCollisionPart ~= nil then
-			if RoomSkip.DoorRootPrompt ~= nil then
-				Script.Action = "Open ProgressDoor"
+		if RoomSkip.DoorCollisionPart ~= nil then
+			if RoomSkip.DoorRoot ~= nil and RoomSkip.DoorRootPrompt ~= nil then
+				ScriptActionNow = "Open ProgressDoor"
 				RoomSkip.DoorRoot.CFrame = CFrame.new(
 					Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * 7
 				) * CFrame.fromOrientation(0, 0, 0)
 				RoomSkip.DoorRootPrompt.MaxActivationDistance = 100
 				RoomSkip.DoorRootPrompt:InputHoldBegin()
 				RoomSkip.DoorRootPrompt:InputHoldEnd()
+			end
+			
+			if RoomSkip.Keycard ~= nil then
+				--ScriptActionNow = "Open Keycard ProgressDoor"
 			else
-				if RoomSkip.Keycard ~= nil then
-					--Script.Action = "Open Keycard ProgressDoor"
-				else
-					if RoomSkip.LockRemoteFunction ~= nil and RoomSkip.PasswordCode ~= nil then
-						Script.Action = "Open Password ProgressDoor"
-						RoomSkip.RemoteFunction:InvokeServer(RoomSkip.PasswordCode)
-					end
+				if RoomSkip.LockRemoteFunction ~= nil and RoomSkip.PasswordCode ~= nil then
+					ScriptActionNow = "Open Password ProgressDoor"
+					RoomSkip.RemoteFunction:InvokeServer(RoomSkip.PasswordCode)
 				end
 			end
+			
+			if RoomSkip.DoorTouchPart ~= nil then
+				print("Touch part. Still in progress")
+			end
 		end
-		if string.find(Script.Action, "ProgressDoor") and Main.Character ~= nil and RoomSkip.DoorCollisionPart ~= nil then
-			Main.Character.HumanoidRootPart.CFrame = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
+		if string.find(Script.Action, "ProgressDoor") and Main.CharacterRoot ~= nil and RoomSkip.DoorCollisionPart ~= nil then
+			CharacterRoot.CFrame = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
 		end
 	end
+	
+	Script.Action = ScriptActionNow
 end)
 
 game.UserInputService.InputBegan:Connect(function(Input)
