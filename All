@@ -1,20 +1,103 @@
+local Script = {
+	Mode = "RoomSkip",
+	Action = "Idle"
+}
+
 local Main = {
 	Player = game.Players.LocalPlayer,
 	Character = game.Players.LocalPlayer.Character,
 	CurrentCamera = game.Workspace.CurrentCamera,
-	
+
 	GameplayFolder = game.Workspace.GameplayFolder,
 	RoomsFolder = game.Workspace.GameplayFolder.Rooms
 }
+
 local RoomSkip = {
 	OpenedRooms = {},
 	NextUngeneratedRoom = nil,
+	
 	DoorCollisionPart = nil,
 	DoorRoot = nil,
+	DoorTouchPart = nil,
+	
 	DoorRootPrompt = nil,
 	
+	LockPrompt = nil,
+	LockRemoteFunction = nil,
+	
+	Enter = nil,
+	Exit = nil,
+
 	Keycard = nil,
-	Password = nil
+	Password = nil,
+	PasswordCode = nil,
+	
+	Doors = {
+		["NormalDoor"] = {
+			Root = {
+				[1] = "Root"
+			},
+			CollisionPart = {
+				[1] = "CollisionPart"
+			},
+			LockPrompt = {
+				[1] = "Lock",
+				[2] = "Main",
+			},
+			LockRemoteFunction = {
+				[1] = "Lock",
+				[2] = "Main",
+			}
+		},
+		["BigDoor"] = {
+			Root = {
+				[1] = "Root"
+			},
+			CollisionPart = {
+				[1] = "CollisionPart"
+			},
+			LockPrompt = {
+				[1] = "HeavyLock",
+				[2] = "Main",
+			}
+		},
+		["DoubleDoor"] = {
+			DoubleDoor = true,
+			DoorOfDoubleDoor = "NormalDoor",
+			Root = {
+				[1] = "Root"
+			},
+			CollisionPart = {
+				[1] = "CollisionPart"
+			},
+			LockPrompt = {
+				[1] = "Lock",
+				[2] = "Main",
+			},
+			LockRemoteFunction = {
+				[1] = "Lock",
+				[2] = "Main",
+			}
+		},
+		["DoubleDoorSewer"] = {
+			DoubleDoor = true,
+			DoorOfDoubleDoor = "NormalDoor",
+			Root = {
+				[1] = "Root"
+			},
+			CollisionPart = {
+				[1] = "CollisionPart"
+			},
+			LockPrompt = {
+				[1] = "Lock",
+				[2] = "Main",
+			},
+			LockRemoteFunction = {
+				[1] = "Lock",
+				[2] = "Main",
+			}
+		}
+	}
 }
 
 function GetNextUngeneratedRoom()
@@ -41,88 +124,110 @@ function GetNextUngeneratedRoom()
 	end
 end
 
-function OpenLockedRoom(LockedRoom, OpenItem, OpenItemType)
-	print("Door has locked by "..OpenItemType)
-	if OpenItem ~= nil then
-		local Prompt = OpenItem:FindFirstChildWhichIsA("ProximityPrompt", true)
-		if Prompt == nil then
-			print("ERROR | "..OpenItemType.." has not ProximityPrompt in "..LockedRoom.Name)
-		else
-			Prompt.RequiresLineOfSight = false
-
-			local UncollisionBox = Instance.new("Part", game.Workspace)
-			UncollisionBox.Transparency = 0.5
-			UncollisionBox.Anchored = true
-			UncollisionBox.CanCollide = false
-			UncollisionBox.CastShadow = false
-			UncollisionBox.Size = Vector3.new(8, 8, 8)
-			UncollisionBox.Position = OpenItem.Parent.Position
-
-			local PartsWithCollision = {}
-			for _, Part in game.Workspace:GetPartsInPart(UncollisionBox) do
-				if Part.CanCollide == true and Part.Parent ~= Main.Character then
-					table.insert(PartsWithCollision, Part)
-					Part.CanCollide = false
-				end
-			end
-
-			local TemporaryFloor = Instance.new("Part", LockedRoom)
-			TemporaryFloor.Name = "TemporaryFloor"
-			TemporaryFloor.Transparency = 0.5
-			TemporaryFloor.Anchored = true
-			TemporaryFloor.CanCollide = true
-			TemporaryFloor.CastShadow = false
-			TemporaryFloor.Size = Vector3.new(8, 1, 8)
-			TemporaryFloor.Position = Main.Character.HumanoidRootPart.Position + Vector3.new(0, -4, 0)
-
-			task.wait(15)
-
-			for _, Part in PartsWithCollision do
-				Part.CanCollide = true
-			end
-		end
-	end
-end
-
-function TeleportToDoor()
+function RoomStats()
 	if RoomSkip.NextUngeneratedRoom ~= nil then
 		if RoomSkip.NextUngeneratedRoom.Parent == Main.RoomsFolder then
 			if RoomSkip.NextUngeneratedRoom:FindFirstChild("Entrances") then
-				if RoomSkip.NextUngeneratedRoom.Entrances:FindFirstChild("NormalDoor") then
-					if RoomSkip.NextUngeneratedRoom.Entrances.NormalDoor:FindFirstChild("Root") then
-						if RoomSkip.NextUngeneratedRoom.Entrances.NormalDoor:FindFirstChild("CollisionPart") then
-							RoomSkip.NextUngeneratedRoom.Entrances.NormalDoor.CollisionPart.CanCollide = false
-						end
-
-						RoomSkip.DoorRoot = RoomSkip.NextUngeneratedRoom.Entrances.NormalDoor:FindFirstChild("Root")
-						RoomSkip.DoorCollisionPart = RoomSkip.NextUngeneratedRoom.Entrances.NormalDoor:FindFirstChild("CollisionPart")
-
-						RoomSkip.Keycard = nil
-						RoomSkip.Password = nil
-						for _, LockedRoom in Main.RoomsFolder:GetChildren() do
-							RoomSkip.Keycard = LockedRoom:FindFirstChild("NormalKeyCard", true)
-							if RoomSkip.Keycard == nil then
-								RoomSkip.Keycard = LockedRoom:FindFirstChild("RidgeKeyCard", true)
-							end
-							RoomSkip.Password = LockedRoom:FindFirstChild("PasswordPaper", true)
-							if RoomSkip.Keycard ~= nil then
-								--OpenLockedRoom(LockedRoom, Keycard, "Keycard")
-								Main.Character.HumanoidRootPart.CFrame = RoomSkip.Keycard.NumberPart.CFrame + Vector3.new(0, 1, 0)
-								break
-							elseif RoomSkip.Password ~= nil then
-								break
-							end
-						end
-						if RoomSkip.Keycard == nil then
-							Main.Character.HumanoidRootPart.CFrame = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
-							game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
-
-							if RoomSkip.Password == nil then
-								RoomSkip.DoorRootPrompt = RoomSkip.DoorRoot:FindFirstChildWhichIsA("ProximityPrompt", true)
-								if RoomSkip.DoorRootPrompt == nil then
-									print("ERROR | DoorRoot has not ProximityPrompt in Entrances Door in"..RoomSkip.NextUngeneratedRoom.Name)
+				for PressureDoorName, PressureDoor in RoomSkip.Doors do
+					local Door = RoomSkip.NextUngeneratedRoom.Entrances:FindFirstChild(PressureDoorName)
+					local OriginalDoor = Door
+					if Door ~= nil then
+						if PressureDoor.DoubleDoor then
+							if not Door:FindFirstChild(PressureDoor.DoorOfDoubleDoor) then
+								print("ERROR | Double Door '"..PressureDoorName.."' has not single door '"..PressureDoor.DoorOfDoubleDoor.."' in room '"..RoomSkip.NextUngeneratedRoom.."'")
+							else
+								local MinY = nil
+								for _, NormalDoor in Door:GetChildren() do
+									if NormalDoor.Name == PressureDoor.DoorOfDoubleDoor then
+										if MinY == nil then
+											Door = NormalDoor
+										else
+											if MinY < NormalDoor.WorldPivot.Position.Y then
+												Door = NormalDoor
+											end
+										end
+										MinY = NormalDoor.WorldPivot.Position.Y
+									end
 								end
 							end
+
+							local DoorRoot = Door
+							local DoorCollisionPart = Door
+							local DoorTouchPart = Door
+							local DoorPrompt = nil
+							local Enter = OriginalDoor:FindFirstChild("Enter")
+							local Exit = OriginalDoor:FindFirstChild("Exit")
+
+							for _, RootPath in PressureDoor.Root do
+								DoorRoot = DoorRoot:FindFirstChild(RootPath)
+							end
+
+							for _, CollisionPartPath in PressureDoor.CollisionPart do
+								DoorCollisionPart = DoorCollisionPart:FindFirstChild(CollisionPartPath)
+							end
+
+							for _, TouchPartPath in PressureDoor.TouchPart do
+								DoorTouchPart = DoorTouchPart:FindFirstChild(TouchPartPath)
+							end
+
+							DoorPrompt = DoorRoot:FindFirstChildWhichIsA("ProximityPrompt")
+
+							if not Enter:IsA("ObjectValue") then
+								Enter = nil
+							end
+
+							if not Exit:IsA("ObjectValue") then
+								Exit = nil
+							end
+
+							for _, LockedRoom in Main.RoomsFolder:GetChildren() do
+								RoomSkip.Keycard = LockedRoom:FindFirstChild("NormalKeyCard", true)
+								if RoomSkip.Keycard == nil then
+									RoomSkip.Keycard = LockedRoom:FindFirstChild("RidgeKeyCard", true)
+								end
+								RoomSkip.Password = LockedRoom:FindFirstChild("PasswordPaper", true)
+								if RoomSkip.Keycard ~= nil then
+									break
+								elseif RoomSkip.Password ~= nil then
+									if RoomSkip.Password:FindFirstChild("Code") then
+										if RoomSkip.Password:FindFirstChildOfClass("SurfaceGui") then
+											if RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel") then
+												RoomSkip.PasswordCode = RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel").Text
+											end
+										end
+									end
+									break
+								end
+							end
+
+							if RoomSkip.Keycard ~= nil or RoomSkip.Password ~= nil then
+								local LockPrompt = nil
+								local LockRemoteFunction = nil
+
+								for _, LockPromptPath in PressureDoor.LockPrompt do
+									LockPrompt = LockPrompt:FindFirstChild(LockPromptPath)
+								end
+								if LockPrompt ~= nil then
+									LockPrompt:FindFirstChildWhichIsA("ProximityPrompt")
+								end
+
+								for _, LockRemoteFunctionPath in PressureDoor.LockRemote do
+									LockRemoteFunction = LockRemoteFunction:FindFirstChild(LockRemoteFunctionPath)
+								end
+								if LockRemoteFunction ~= nil then
+									LockRemoteFunction:FindFirstChildWhichIsA("RemoteFunction")
+								end
+
+								RoomSkip.LockPrompt = LockPrompt
+								RoomSkip.LockRemoteFunction = LockRemoteFunction
+							end
+
+							RoomSkip.DoorRoot = DoorRoot
+							RoomSkip.DoorCollisionPart = DoorCollisionPart
+							RoomSkip.TouchPart = DoorTouchPart
+							RoomSkip.DoorPrompt = DoorPrompt
+							RoomSkip.Enter = Enter
+							RoomSkip.Exit = Exit
 						end
 					end
 				end
@@ -131,28 +236,44 @@ function TeleportToDoor()
 	end
 end
 
+function TeleportToDoor()
+	Script.Action = "RoomSkip Start"
+	GetNextUngeneratedRoom()
+	RoomStats()
+end
+
 game:GetService("RunService").RenderStepped:Connect(function()
-	if RoomSkip.DoorRoot ~= nil and RoomSkip.DoorRootPrompt ~= nil then
-		RoomSkip.DoorRoot.CFrame = CFrame.new(
-			Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * 7
-		) * CFrame.fromOrientation(0, 0, 0)
-		RoomSkip.DoorRootPrompt.MaxActivationDistance = 100
-		RoomSkip.DoorRootPrompt:InputHoldBegin()
-		RoomSkip.DoorRootPrompt:InputHoldEnd()
-	end
-	if RoomSkip.NextUngeneratedRoom ~= nil and RoomSkip.Password ~= nil then
-		if RoomSkip.Password.Parent ~= nil then
-			if RoomSkip.Password:FindFirstChild("Code") then
-				RoomSkip.NextUngeneratedRoom.Entrances.NormalDoor.Lock.Main.RemoteFunction:InvokeServer(RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel").Text)
+	if Script.Mode == "RoomSkip" then
+		if (RoomSkip.DoorRoot ~= nil or RoomSkip.DoorTouchPart ~= nil) and RoomSkip.DoorCollisionPart ~= nil then
+			if RoomSkip.DoorRootPrompt ~= nil then
+				Script.Action = "Open ProgressDoor"
+				RoomSkip.DoorRoot.CFrame = CFrame.new(
+					Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * 7
+				) * CFrame.fromOrientation(0, 0, 0)
+				RoomSkip.DoorRootPrompt.MaxActivationDistance = 100
+				RoomSkip.DoorRootPrompt:InputHoldBegin()
+				RoomSkip.DoorRootPrompt:InputHoldEnd()
+			else
+				if RoomSkip.Keycard ~= nil then
+					--Script.Action = "Open Keycard ProgressDoor"
+				else
+					if RoomSkip.LockRemoteFunction ~= nil and RoomSkip.PasswordCode ~= nil then
+						Script.Action = "Open Password ProgressDoor"
+						RoomSkip.RemoteFunction:InvokeServer(RoomSkip.PasswordCode)
+					end
+				end
 			end
+		end
+		if string.find(Script.Action, "ProgressDoor") and Main.Character ~= nil and RoomSkip.DoorCollisionPart ~= nil then
+			Main.Character.HumanoidRootPart.CFrame = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
 		end
 	end
 end)
 
 game.UserInputService.InputBegan:Connect(function(Input)
-	if Input.KeyCode == Enum.KeyCode.P then
-		RoomSkip.DoorRoot = nil RoomSkip.DoorRootPrompt = nil GetNextUngeneratedRoom() TeleportToDoor()
+	if Script.Mode == "RoomSkip" and Script.Action == "Idle" then
+		if Input.KeyCode == Enum.KeyCode.P then
+			TeleportToDoor()
+		end
 	end
 end)
-
---GetNextUngeneratedRoom() TeleportToDoor()
