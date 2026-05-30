@@ -191,16 +191,22 @@ function RoomStats()
 						local Enter = OriginalDoor:FindFirstChild("Enter")
 						local Exit = OriginalDoor:FindFirstChild("Exit")
 
-						for _, RootPath in PressureDoor.Root do
-							DoorRoot = DoorRoot:FindFirstChild(RootPath)
+						if PressureDoor.Root ~= nil then
+							for _, RootPath in PressureDoor.Root do
+								DoorRoot = DoorRoot:FindFirstChild(RootPath)
+							end
 						end
 
-						for _, CollisionPartPath in PressureDoor.CollisionPart do
-							DoorCollisionPart = DoorCollisionPart:FindFirstChild(CollisionPartPath)
+						if PressureDoor.CollisionPart ~= nil then
+							for _, CollisionPartPath in PressureDoor.CollisionPart do
+								DoorCollisionPart = DoorCollisionPart:FindFirstChild(CollisionPartPath)
+							end
 						end
 
-						for _, TouchPartPath in PressureDoor.TouchPart do
-							DoorTouchPart = DoorTouchPart:FindFirstChild(TouchPartPath)
+						if PressureDoor.TouchPart ~= nil then
+							for _, TouchPartPath in PressureDoor.TouchPart do
+								DoorTouchPart = DoorTouchPart:FindFirstChild(TouchPartPath)
+							end
 						end
 
 						DoorRootPrompt = DoorRoot:FindFirstChildWhichIsA("ProximityPrompt")
@@ -237,18 +243,22 @@ function RoomStats()
 							local LockPrompt = nil
 							local LockRemoteFunction = nil
 
-							for _, LockPromptPath in PressureDoor.LockPrompt do
-								LockPrompt = LockPrompt:FindFirstChild(LockPromptPath)
-							end
-							if LockPrompt ~= nil then
-								LockPrompt:FindFirstChildWhichIsA("ProximityPrompt")
+							if PressureDoor.LockPrompt ~= nil then
+								for _, LockPromptPath in PressureDoor.LockPrompt do
+									LockPrompt = LockPrompt:FindFirstChild(LockPromptPath)
+								end
+								if LockPrompt ~= nil then
+									LockPrompt:FindFirstChildWhichIsA("ProximityPrompt")
+								end
 							end
 
-							for _, LockRemoteFunctionPath in PressureDoor.LockRemote do
-								LockRemoteFunction = LockRemoteFunction:FindFirstChild(LockRemoteFunctionPath)
-							end
-							if LockRemoteFunction ~= nil then
-								LockRemoteFunction:FindFirstChildWhichIsA("RemoteFunction")
+							if PressureDoor.LockRemote ~= nil then
+								for _, LockRemoteFunctionPath in PressureDoor.LockRemote do
+									LockRemoteFunction = LockRemoteFunction:FindFirstChild(LockRemoteFunctionPath)
+								end
+								if LockRemoteFunction ~= nil then
+									LockRemoteFunction:FindFirstChildWhichIsA("RemoteFunction")
+								end
 							end
 
 							RoomSkip.LockPrompt = LockPrompt
