@@ -163,25 +163,30 @@ function RoomStats()
 								end
 							end
 						end
-							
-						if not Door:FindFirstChild("OpenValue") then
+
+						local OpenValue = Door:WaitForChild("OpenValue")
+						if OpenValue == nil then
 							print("ERROR | Door '"..PressureDoorName.."'' has not 'OpenValue' in room '"..RoomSkip.NextUngeneratedRoom.Name.."'")
 						else
-							Door.OpenValue:GetPropertyChangedSignal("Value"):Connect(function()
-								if Door.OpenValue.Value == true then
-									RoomSkip.DoorRoot = nil
-									RoomSkip.DoorCollisionPart = nil
-									RoomSkip.DoorTouchPart = nil
-									RoomSkip.DoorRootPrompt = nil
-									RoomSkip.LockPrompt = nil
-									RoomSkip.LockRemoteFunction = nil
-									RoomSkip.Enter = nil
-									RoomSkip.Exit = nil
-									RoomSkip.Keycard = nil
-									RoomSkip.Password = nil
-									RoomSkip.PasswordCode = nil
-								end
-							end)
+							if not OpenValue:IsA("BoolValue") then
+								print("ERROR | Door '"..PressureDoorName.."'' has 'OpenValue' but it is not BoolValue in room '"..RoomSkip.NextUngeneratedRoom.Name.."'")
+							else
+								OpenValue:GetPropertyChangedSignal("Value"):Connect(function()
+									if OpenValue.Value == true then
+										RoomSkip.DoorRoot = nil
+										RoomSkip.DoorCollisionPart = nil
+										RoomSkip.DoorTouchPart = nil
+										RoomSkip.DoorRootPrompt = nil
+										RoomSkip.LockPrompt = nil
+										RoomSkip.LockRemoteFunction = nil
+										RoomSkip.Enter = nil
+										RoomSkip.Exit = nil
+										RoomSkip.Keycard = nil
+										RoomSkip.Password = nil
+										RoomSkip.PasswordCode = nil
+									end
+								end)
+							end
 						end
 
 						local DoorRoot = Door
@@ -323,7 +328,11 @@ game:GetService("RunService").RenderStepped:Connect(function()
 				print("Touch part. Still in progress")
 			end
 			if string.find(ScriptActionNow, "ProgressDoor") and Main.CharacterRoot ~= nil then
-				RoomSkip.DoorCollisionPart.CanCollide = false
+				if RoomSkip.DoorCollisionPart == nil then
+					print("WARNING | No CollisionPart in "..RoomSkip.NextUngeneratedRoom.Name)
+				else
+					RoomSkip.DoorCollisionPart.CanCollide = false
+				end
 				Main.CharacterRoot.CFrame = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
 				game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
 			end
@@ -341,7 +350,7 @@ game.UserInputService.InputBegan:Connect(function(Input)
 	end
 	if Input.KeyCode == Enum.KeyCode.Z then
 		if RoomSkip.NextUngeneratedRoom == nil then
-			print("SLIGHT ERROR | No NextUngeneratedRoom")
+			print("WARNING | No NextUngeneratedRoom")
 		else
 			print(RoomSkip.NextUngeneratedRoom.Name)
 		end
