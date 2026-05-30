@@ -137,13 +137,13 @@ function GetNextUngeneratedRoom()
 end
 
 function RoomStats()
-	if RoomSkip.NextUngeneratedRoom ~= nil then print("RoomStats 1")
-		if RoomSkip.NextUngeneratedRoom.Parent == Main.RoomsFolder then print("RoomStats 2")
-			if RoomSkip.NextUngeneratedRoom:FindFirstChild("Entrances") then print("RoomStats 3")
+	if RoomSkip.NextUngeneratedRoom ~= nil then
+		if RoomSkip.NextUngeneratedRoom.Parent == Main.RoomsFolder then
+			if RoomSkip.NextUngeneratedRoom:FindFirstChild("Entrances") then
 				for PressureDoorName, PressureDoor in RoomSkip.PressureDoors do
 					local Door = RoomSkip.NextUngeneratedRoom.Entrances:FindFirstChild(PressureDoorName)
 					local OriginalDoor = Door
-					if Door ~= nil then print("RoomStats 4")
+					if Door ~= nil then
 						if PressureDoor.DoubleDoor then
 							if not Door:FindFirstChild(PressureDoor.DoorOfDoubleDoor) then
 								print("ERROR | Double Door '"..PressureDoorName.."' has not single door '"..PressureDoor.DoorOfDoubleDoor.."' in room '"..RoomSkip.NextUngeneratedRoom.Name.."'")
@@ -162,105 +162,105 @@ function RoomStats()
 									end
 								end
 							end
+						end
 							
-							if not Door:FindFirstChild("OpenValue") then
-								print("ERROR | Door '"..PressureDoorName.."'' has not 'OpenValue' in room '"..RoomSkip.NextUngeneratedRoom.Name.."'")
-							else
-								Door.OpenValue:GetPropertyChangedSignal("Value"):Connect(function()
-									if Door.OpenValue.Value == true then
-										RoomSkip.DoorRoot = nil
-										RoomSkip.DoorCollisionPart = nil
-										RoomSkip.DoorTouchPart = nil
-										RoomSkip.DoorRootPrompt = nil
-										RoomSkip.LockPrompt = nil
-										RoomSkip.LockRemoteFunction = nil
-										RoomSkip.Enter = nil
-										RoomSkip.Exit = nil
-										RoomSkip.Keycard = nil
-										RoomSkip.Password = nil
-										RoomSkip.PasswordCode = nil
-									end
-								end)
-							end
-
-							local DoorRoot = Door
-							local DoorCollisionPart = Door
-							local DoorTouchPart = Door
-							local DoorRootPrompt = nil
-							local Enter = OriginalDoor:FindFirstChild("Enter")
-							local Exit = OriginalDoor:FindFirstChild("Exit")
-
-							for _, RootPath in PressureDoor.Root do
-								DoorRoot = DoorRoot:FindFirstChild(RootPath)
-							end
-
-							for _, CollisionPartPath in PressureDoor.CollisionPart do
-								DoorCollisionPart = DoorCollisionPart:FindFirstChild(CollisionPartPath)
-							end
-
-							for _, TouchPartPath in PressureDoor.TouchPart do
-								DoorTouchPart = DoorTouchPart:FindFirstChild(TouchPartPath)
-							end
-
-							DoorRootPrompt = DoorRoot:FindFirstChildWhichIsA("ProximityPrompt")
-
-							if not Enter:IsA("ObjectValue") then
-								Enter = nil
-							end
-
-							if not Exit:IsA("ObjectValue") then
-								Exit = nil
-							end
-
-							for _, LockedRoom in Main.RoomsFolder:GetChildren() do
-								RoomSkip.Keycard = LockedRoom:FindFirstChild("NormalKeyCard", true)
-								if RoomSkip.Keycard == nil then
-									RoomSkip.Keycard = LockedRoom:FindFirstChild("RidgeKeyCard", true)
+						if not Door:FindFirstChild("OpenValue") then
+							print("ERROR | Door '"..PressureDoorName.."'' has not 'OpenValue' in room '"..RoomSkip.NextUngeneratedRoom.Name.."'")
+						else
+							Door.OpenValue:GetPropertyChangedSignal("Value"):Connect(function()
+								if Door.OpenValue.Value == true then
+									RoomSkip.DoorRoot = nil
+									RoomSkip.DoorCollisionPart = nil
+									RoomSkip.DoorTouchPart = nil
+									RoomSkip.DoorRootPrompt = nil
+									RoomSkip.LockPrompt = nil
+									RoomSkip.LockRemoteFunction = nil
+									RoomSkip.Enter = nil
+									RoomSkip.Exit = nil
+									RoomSkip.Keycard = nil
+									RoomSkip.Password = nil
+									RoomSkip.PasswordCode = nil
 								end
-								RoomSkip.Password = LockedRoom:FindFirstChild("PasswordPaper", true)
-								if RoomSkip.Keycard ~= nil then
-									break
-								elseif RoomSkip.Password ~= nil then
-									if RoomSkip.Password:FindFirstChild("Code") then
-										if RoomSkip.Password:FindFirstChildOfClass("SurfaceGui") then
-											if RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel") then
-												RoomSkip.PasswordCode = RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel").Text
-											end
+							end)
+						end
+
+						local DoorRoot = Door
+						local DoorCollisionPart = Door
+						local DoorTouchPart = Door
+						local DoorRootPrompt = nil
+						local Enter = OriginalDoor:FindFirstChild("Enter")
+						local Exit = OriginalDoor:FindFirstChild("Exit")
+
+						for _, RootPath in PressureDoor.Root do
+							DoorRoot = DoorRoot:FindFirstChild(RootPath)
+						end
+
+						for _, CollisionPartPath in PressureDoor.CollisionPart do
+							DoorCollisionPart = DoorCollisionPart:FindFirstChild(CollisionPartPath)
+						end
+
+						for _, TouchPartPath in PressureDoor.TouchPart do
+							DoorTouchPart = DoorTouchPart:FindFirstChild(TouchPartPath)
+						end
+
+						DoorRootPrompt = DoorRoot:FindFirstChildWhichIsA("ProximityPrompt")
+
+						if not Enter:IsA("ObjectValue") then
+							Enter = nil
+						end
+
+						if not Exit:IsA("ObjectValue") then
+							Exit = nil
+						end
+
+						for _, LockedRoom in Main.RoomsFolder:GetChildren() do
+							RoomSkip.Keycard = LockedRoom:FindFirstChild("NormalKeyCard", true)
+							if RoomSkip.Keycard == nil then
+								RoomSkip.Keycard = LockedRoom:FindFirstChild("RidgeKeyCard", true)
+							end
+							RoomSkip.Password = LockedRoom:FindFirstChild("PasswordPaper", true)
+							if RoomSkip.Keycard ~= nil then
+								break
+							elseif RoomSkip.Password ~= nil then
+								if RoomSkip.Password:FindFirstChild("Code") then
+									if RoomSkip.Password:FindFirstChildOfClass("SurfaceGui") then
+										if RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel") then
+											RoomSkip.PasswordCode = RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel").Text
 										end
 									end
-									break
 								end
+								break
 							end
-
-							if RoomSkip.Keycard ~= nil or RoomSkip.Password ~= nil then
-								local LockPrompt = nil
-								local LockRemoteFunction = nil
-
-								for _, LockPromptPath in PressureDoor.LockPrompt do
-									LockPrompt = LockPrompt:FindFirstChild(LockPromptPath)
-								end
-								if LockPrompt ~= nil then
-									LockPrompt:FindFirstChildWhichIsA("ProximityPrompt")
-								end
-
-								for _, LockRemoteFunctionPath in PressureDoor.LockRemote do
-									LockRemoteFunction = LockRemoteFunction:FindFirstChild(LockRemoteFunctionPath)
-								end
-								if LockRemoteFunction ~= nil then
-									LockRemoteFunction:FindFirstChildWhichIsA("RemoteFunction")
-								end
-
-								RoomSkip.LockPrompt = LockPrompt
-								RoomSkip.LockRemoteFunction = LockRemoteFunction
-							end
-
-							RoomSkip.DoorRoot = DoorRoot
-							RoomSkip.DoorCollisionPart = DoorCollisionPart
-							RoomSkip.DoorTouchPart = DoorTouchPart
-							RoomSkip.DoorRootPrompt = DoorRootPrompt
-							RoomSkip.Enter = Enter
-							RoomSkip.Exit = Exit
 						end
+
+						if RoomSkip.Keycard ~= nil or RoomSkip.Password ~= nil then
+							local LockPrompt = nil
+							local LockRemoteFunction = nil
+
+							for _, LockPromptPath in PressureDoor.LockPrompt do
+								LockPrompt = LockPrompt:FindFirstChild(LockPromptPath)
+							end
+							if LockPrompt ~= nil then
+								LockPrompt:FindFirstChildWhichIsA("ProximityPrompt")
+							end
+
+							for _, LockRemoteFunctionPath in PressureDoor.LockRemote do
+								LockRemoteFunction = LockRemoteFunction:FindFirstChild(LockRemoteFunctionPath)
+							end
+							if LockRemoteFunction ~= nil then
+								LockRemoteFunction:FindFirstChildWhichIsA("RemoteFunction")
+							end
+
+							RoomSkip.LockPrompt = LockPrompt
+							RoomSkip.LockRemoteFunction = LockRemoteFunction
+						end
+
+						RoomSkip.DoorRoot = DoorRoot
+						RoomSkip.DoorCollisionPart = DoorCollisionPart
+						RoomSkip.DoorTouchPart = DoorTouchPart
+						RoomSkip.DoorRootPrompt = DoorRootPrompt
+						RoomSkip.Enter = Enter
+						RoomSkip.Exit = Exit
 					end
 				end
 			end
