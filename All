@@ -300,9 +300,10 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			if RoomSkip.DoorTouchPart ~= nil then
 				print("Touch part. Still in progress")
 			end
-		end
-		if string.find(Script.Action, "ProgressDoor") and Main.CharacterRoot ~= nil and RoomSkip.DoorCollisionPart ~= nil then
-			CharacterRoot.CFrame = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
+			if string.find(Script.Action, "ProgressDoor") and Main.CharacterRoot ~= nil then
+				RoomSkip.DoorCollisionPart.CanCollide = false
+				CharacterRoot.CFrame = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
+			end
 		end
 	end
 	
