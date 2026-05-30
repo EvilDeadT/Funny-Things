@@ -116,12 +116,17 @@ function GetNextUngeneratedRoom()
 	local RoomsInExitValue = {}
 	for _, Room in Main.RoomsFolder:GetChildren() do
 		if Room:FindFirstChild("Entrances") then
-			if Room.Entrances:FindFirstChild("NormalDoor") then
-				if Room.Entrances.NormalDoor:FindFirstChild("Exit") then
-					local ExitRoom = Room.Entrances.NormalDoor.Exit.Value
-					if ExitRoom ~= nil then
-						if ExitRoom.Parent ~= nil then
-							table.insert(RoomsInExitValue, ExitRoom)
+			for PressureDoorName, PressureDoor in RoomSkip.PressureDoors do
+				local Door = Room.Entrances:FindFirstChild(PressureDoorName)
+				if Door ~= nil then
+					if Door:FindFirstChild("Exit") then
+						if Door.Exit:IsA("ObjectValue") then
+							local ExitRoom = Door.Exit.Value
+							if ExitRoom ~= nil then
+								if ExitRoom.Parent ~= nil then
+									table.insert(RoomsInExitValue, ExitRoom)
+								end
+							end
 						end
 					end
 				end
@@ -327,15 +332,11 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			if RoomSkip.DoorTouchPart ~= nil then
 				print("Touch part. Still in progress")
 			end
-			if string.find(ScriptActionNow, "ProgressDoor") and Main.CharacterRoot ~= nil then
-				if RoomSkip.DoorCollisionPart == nil then
-					print("ERROR | No CollisionPart in "..RoomSkip.NextUngeneratedRoom.Name)
-				else
-					RoomSkip.DoorCollisionPart.CanCollide = false
-					Main.CharacterRoot.CFrame = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
-					game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
-				end
-			end
+		end
+		if string.find(ScriptActionNow, "ProgressDoor") and Main.CharacterRoot ~= nil and RoomSkip.DoorCollisionPart ~= nil then
+			RoomSkip.DoorCollisionPart.CanCollide = false
+			Main.CharacterRoot.CFrame = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
+			game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
 		end
 	end
 	
