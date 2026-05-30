@@ -235,7 +235,7 @@ function RoomStats()
 								break
 							elseif RoomSkip.Password ~= nil then
 								if RoomSkip.Password:FindFirstChild("Code") then print("PasswordCode 1")
-									if RoomSkip.Password:FindFirstChildOfClass("SurfaceGui") then print("PasswordCode 2")
+									if RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui") then print("PasswordCode 2")
 										if RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel") then print("PasswordCode 3")
 											RoomSkip.PasswordCode = RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel").Text
 										end
