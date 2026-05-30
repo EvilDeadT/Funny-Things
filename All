@@ -289,17 +289,9 @@ function RoomStats()
 end
 
 function TeleportToDoor()
-	print("Start Tp Door")
 	Script.Action = "RoomSkip Start"
 	GetNextUngeneratedRoom()
 	RoomStats()
-
-	print("All Info Got")
-	for StatName, Stat in RoomSkip do
-		if Stat ~= nil then
-			print("Have stats: "..StatName)
-		end
-	end
 end
 
 game:GetService("RunService").RenderStepped:Connect(function()
@@ -346,5 +338,36 @@ game.UserInputService.InputBegan:Connect(function(Input)
 		if Input.KeyCode == Enum.KeyCode.P then
 			TeleportToDoor()
 		end
+	end
+	if Input.KeyCode == Enum.KeyCode.Z then
+		if RoomSkip.NextUngeneratedRoom == nil then
+			print("SLIGHT ERROR | No NextUngeneratedRoom")
+		else
+			print(RoomSkip.NextUngeneratedRoom.Name)
+		end
+		print("DoorRoot: "..RoomSkip.DoorRoot)
+		print("DoorCollisionPart: "..RoomSkip.DoorCollisionPart)
+		print("DoorTouchPart: "..RoomSkip.DoorTouchPart)
+		print("DoorRootPrompt: "..RoomSkip.DoorRootPrompt)
+		print("Lock: "..RoomSkip.Lock)
+		print("LockPrompt: "..RoomSkip.LockPrompt)
+		print("LockRemoteFunction: "..RoomSkip.LockRemoteFunction)
+		print("Enter: "..RoomSkip.Enter)
+		print("Exit: "..RoomSkip.Exit)
+		print("Keycard: "..RoomSkip.Keycard)
+		print("Password: "..RoomSkip.Password)
+		print("PasswordCode: "..RoomSkip.PasswordCode)
+
+		RoomSkip.DoorRoot = nil
+		RoomSkip.DoorCollisionPart = nil
+		RoomSkip.DoorTouchPart = nil
+		RoomSkip.DoorRootPrompt = nil
+		RoomSkip.LockPrompt = nil
+		RoomSkip.LockRemoteFunction = nil
+		RoomSkip.Enter = nil
+		RoomSkip.Exit = nil
+		RoomSkip.Keycard = nil
+		RoomSkip.Password = nil
+		RoomSkip.PasswordCode = nil
 	end
 end)
