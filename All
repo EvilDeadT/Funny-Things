@@ -318,6 +318,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			end
 			
 			if RoomSkip.Keycard ~= nil then
+				print("Found Keycard. No acting right now")
 				--ScriptActionNow = "Open Keycard ProgressDoor"
 			else
 				if RoomSkip.LockRemoteFunction ~= nil and RoomSkip.PasswordCode ~= nil then
@@ -329,7 +330,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			if RoomSkip.DoorTouchPart ~= nil then
 				print("Touch part. Still in progress")
 			end
-			if string.find(Script.Action, "ProgressDoor") and Main.CharacterRoot ~= nil then
+			if string.find(ScriptActionNow, "ProgressDoor") and Main.CharacterRoot ~= nil then
 				RoomSkip.DoorCollisionPart.CanCollide = false
 				Main.CharacterRoot.CFrame = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
 				game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
