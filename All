@@ -171,7 +171,7 @@ function RoomStats()
 							if not OpenValue:IsA("BoolValue") then
 								print("ERROR | Door '"..PressureDoorName.."'' has 'OpenValue' but it is not BoolValue in room '"..RoomSkip.NextUngeneratedRoom.Name.."'")
 							else
-								OpenValue:GetPropertyChangedSignal("Value"):Connect(function()
+								OpenValue:GetPropertyChangedSignal("Value"):Once(function()
 									if OpenValue.Value == true then
 										RoomSkip.DoorRoot = nil
 										RoomSkip.DoorCollisionPart = nil
