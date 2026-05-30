@@ -329,12 +329,12 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			end
 			if string.find(ScriptActionNow, "ProgressDoor") and Main.CharacterRoot ~= nil then
 				if RoomSkip.DoorCollisionPart == nil then
-					print("WARNING | No CollisionPart in "..RoomSkip.NextUngeneratedRoom.Name)
+					print("ERROR | No CollisionPart in "..RoomSkip.NextUngeneratedRoom.Name)
 				else
 					RoomSkip.DoorCollisionPart.CanCollide = false
+					Main.CharacterRoot.CFrame = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
+					game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
 				end
-				Main.CharacterRoot.CFrame = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
-				game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
 			end
 		end
 	end
