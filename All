@@ -240,8 +240,8 @@ function RoomStats()
 						end
 
 						if RoomSkip.Keycard ~= nil or RoomSkip.Password ~= nil then
-							local LockPrompt = nil
-							local LockRemoteFunction = nil
+							local LockPrompt = Door
+							local LockRemoteFunction = Door
 
 							if PressureDoor.LockPrompt ~= nil then
 								for _, LockPromptPath in PressureDoor.LockPrompt do
