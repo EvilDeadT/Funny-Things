@@ -345,29 +345,13 @@ game.UserInputService.InputBegan:Connect(function(Input)
 		else
 			print(RoomSkip.NextUngeneratedRoom.Name)
 		end
-		print("DoorRoot: "..RoomSkip.DoorRoot)
-		print("DoorCollisionPart: "..RoomSkip.DoorCollisionPart)
-		print("DoorTouchPart: "..RoomSkip.DoorTouchPart)
-		print("DoorRootPrompt: "..RoomSkip.DoorRootPrompt)
-		print("Lock: "..RoomSkip.Lock)
-		print("LockPrompt: "..RoomSkip.LockPrompt)
-		print("LockRemoteFunction: "..RoomSkip.LockRemoteFunction)
-		print("Enter: "..RoomSkip.Enter)
-		print("Exit: "..RoomSkip.Exit)
-		print("Keycard: "..RoomSkip.Keycard)
-		print("Password: "..RoomSkip.Password)
-		print("PasswordCode: "..RoomSkip.PasswordCode)
-
-		RoomSkip.DoorRoot = nil
-		RoomSkip.DoorCollisionPart = nil
-		RoomSkip.DoorTouchPart = nil
-		RoomSkip.DoorRootPrompt = nil
-		RoomSkip.LockPrompt = nil
-		RoomSkip.LockRemoteFunction = nil
-		RoomSkip.Enter = nil
-		RoomSkip.Exit = nil
-		RoomSkip.Keycard = nil
-		RoomSkip.Password = nil
-		RoomSkip.PasswordCode = nil
+		for _, Element in {"DoorRoot", "DoorCollisionPart", "DoorTouchPart", "Lock", "LockPrompt", "LockRemoteFunction", "Enter", "Exit", "Keycard", "Password", "PasswordCode"} do
+			if RoomSkip[Element] ~= nil then
+				print(Element)
+			else
+				print("NO "..Element)
+			end
+			RoomSkip[Element] = nil
+		end
 	end
 end)
