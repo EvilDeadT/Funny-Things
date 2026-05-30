@@ -191,19 +191,25 @@ function RoomStats()
 						local Enter = OriginalDoor:FindFirstChild("Enter")
 						local Exit = OriginalDoor:FindFirstChild("Exit")
 
-						if PressureDoor.Root ~= nil then
+						if PressureDoor.Root == nil then
+							DoorRoot = nil
+						else
 							for _, RootPath in PressureDoor.Root do
 								DoorRoot = DoorRoot:FindFirstChild(RootPath)
 							end
 						end
 
-						if PressureDoor.CollisionPart ~= nil then
+						if PressureDoor.CollisionPart == nil then
+							DoorCollisionPart = nil
+						else
 							for _, CollisionPartPath in PressureDoor.CollisionPart do
 								DoorCollisionPart = DoorCollisionPart:FindFirstChild(CollisionPartPath)
 							end
 						end
 
-						if PressureDoor.TouchPart ~= nil then
+						if PressureDoor.TouchPart == nil then
+							DoorTouchPart = nil
+						else
 							for _, TouchPartPath in PressureDoor.TouchPart do
 								DoorTouchPart = DoorTouchPart:FindFirstChild(TouchPartPath)
 							end
@@ -243,7 +249,9 @@ function RoomStats()
 							local LockPrompt = Door
 							local LockRemoteFunction = Door
 
-							if PressureDoor.LockPrompt ~= nil then
+							if PressureDoor.LockPrompt == nil then
+								LockPrompt = nil
+							else
 								for _, LockPromptPath in PressureDoor.LockPrompt do
 									LockPrompt = LockPrompt:FindFirstChild(LockPromptPath)
 								end
@@ -252,7 +260,9 @@ function RoomStats()
 								end
 							end
 
-							if PressureDoor.LockRemote ~= nil then
+							if PressureDoor.LockRemote == nil then
+								LockRemoteFunction = nil
+							else
 								for _, LockRemoteFunctionPath in PressureDoor.LockRemote do
 									LockRemoteFunction = LockRemoteFunction:FindFirstChild(LockRemoteFunctionPath)
 								end
