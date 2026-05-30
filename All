@@ -16,23 +16,23 @@ local Main = {
 local RoomSkip = {
 	OpenedRooms = {},
 	NextUngeneratedRoom = nil,
-	
+
 	DoorCollisionPart = nil,
 	DoorRoot = nil,
 	DoorTouchPart = nil,
-	
+
 	DoorRootPrompt = nil,
-	
+
 	LockPrompt = nil,
 	LockRemoteFunction = nil,
-	
+
 	Enter = nil,
 	Exit = nil,
 
 	Keycard = nil,
 	Password = nil,
 	PasswordCode = nil,
-	
+
 	PressureDoors = {
 		["NormalDoor"] = {
 			Root = {
@@ -304,12 +304,57 @@ function TeleportToDoor()
 	RoomStats()
 end
 
+local PartsWithCollision = {}
+function UnCollisionAll(TeleportPos)
+	for _, Part in PartsWithCollision do
+		if Part ~= nil then
+			if Part.Parent ~= nil then
+				if Part:IsA("BasePart") then
+					Part.CanCollide = true
+				end
+			end
+		end
+	end
+	
+	local TemporaryFloor = game.Workspace:FindFirstChild("TemporaryFloor")
+	if TemporaryFloor == nil then
+		TemporaryFloor = Instance.new("Part", game.Workspace)
+		TemporaryFloor.Name = "TemporaryFloor"
+		TemporaryFloor.Transparency = 0.5
+		TemporaryFloor.Anchored = true
+		TemporaryFloor.CanCollide = true
+		TemporaryFloor.CastShadow = false
+		TemporaryFloor.Size = Vector3.new(8, 1, 8)
+		TemporaryFloor.Position = TeleportPos + Vector3.new(0, -4, 0)
+	end
+
+	local UncollisionBox = game.Workspace:FindFirstChild("UncollisionBox")
+	if UncollisionBox == nil then
+		UncollisionBox = Instance.new("Part", game.Workspace)
+		UncollisionBox.Name = "UncollisionBox"
+		UncollisionBox.Transparency = 0.5
+		UncollisionBox.Anchored = true
+		UncollisionBox.CanCollide = false
+		UncollisionBox.CastShadow = false
+		UncollisionBox.Size = TeleportPos
+	end
+	
+	for _, Part in game.Workspace:GetPartsInPart(UncollisionBox) do
+		if Part.Parent ~= game.Players.LocalPlayer.Character and Part:IsA("BasePart") then
+			if Part.CanCollide == true then
+				Part.CanCollide = false
+				table.insert(PartsWithCollision, Part)
+			end
+		end
+	end
+end
+
 game:GetService("RunService").RenderStepped:Connect(function()
 	local ScriptActionNow = "Idle"
 	if Script.Mode == "RoomSkip" then
 		if RoomSkip.DoorCollisionPart ~= nil then
 			if RoomSkip.DoorRoot ~= nil and RoomSkip.DoorRootPrompt ~= nil then
-				ScriptActionNow = "Open ProgressDoor"
+				ScriptActionNow = "Open ProgressDoor Root"
 				RoomSkip.DoorRoot.CFrame = CFrame.new(
 					Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * 7
 				) * CFrame.fromOrientation(0, 0, 0)
@@ -318,28 +363,32 @@ game:GetService("RunService").RenderStepped:Connect(function()
 				RoomSkip.DoorRootPrompt:InputHoldBegin()
 				RoomSkip.DoorRootPrompt:InputHoldEnd()
 			end
-			
+
 			if RoomSkip.Keycard ~= nil then
-				print("Found Keycard. No acting right now")
-				--ScriptActionNow = "Open Keycard ProgressDoor"
+				ScriptActionNow = "Pick Keycard"
+				local TeleportPos = RoomSkip.Keycard.WorldPivot
+				UnCollisionAll(TeleportPos)
+				Main.CharacterRoot.CFrame = TeleportPos
 			else
 				if RoomSkip.LockRemoteFunction ~= nil and RoomSkip.PasswordCode ~= nil then
-					ScriptActionNow = "Open Password ProgressDoor"
+					ScriptActionNow = "Open ProgressDoor Password"
 					RoomSkip.LockRemoteFunction:InvokeServer(RoomSkip.PasswordCode)
 				end
 			end
-			
+
 			if RoomSkip.DoorTouchPart ~= nil then
 				print("Touch part. Still in progress")
 			end
 		end
 		if string.find(ScriptActionNow, "ProgressDoor") and Main.CharacterRoot ~= nil and RoomSkip.DoorCollisionPart ~= nil then
 			RoomSkip.DoorCollisionPart.CanCollide = false
-			Main.CharacterRoot.CFrame = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
+			local TeleportPos = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
+			UnCollisionAll(TeleportPos)
+			Main.CharacterRoot.CFrame = TeleportPos
 			game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
 		end
 	end
-	
+
 	Script.Action = ScriptActionNow
 end)
 
@@ -358,8 +407,6 @@ game.UserInputService.InputBegan:Connect(function(Input)
 		for _, Element in {"DoorRoot", "DoorCollisionPart", "DoorTouchPart", "LockPrompt", "LockRemoteFunction", "Enter", "Exit", "Keycard", "Password", "PasswordCode"} do
 			if RoomSkip[Element] ~= nil then
 				print(Element)
-			else
-				print("NO "..Element)
 			end
 			RoomSkip[Element] = nil
 		end
