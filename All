@@ -137,13 +137,13 @@ function GetNextUngeneratedRoom()
 end
 
 function RoomStats()
-	if RoomSkip.NextUngeneratedRoom ~= nil then
-		if RoomSkip.NextUngeneratedRoom.Parent == Main.RoomsFolder then
-			if RoomSkip.NextUngeneratedRoom:FindFirstChild("Entrances") then
+	if RoomSkip.NextUngeneratedRoom ~= nil then print("RoomStats 1")
+		if RoomSkip.NextUngeneratedRoom.Parent == Main.RoomsFolder then print("RoomStats 2")
+			if RoomSkip.NextUngeneratedRoom:FindFirstChild("Entrances") then print("RoomStats 3")
 				for PressureDoorName, PressureDoor in RoomSkip.PressureDoors do
 					local Door = RoomSkip.NextUngeneratedRoom.Entrances:FindFirstChild(PressureDoorName)
 					local OriginalDoor = Door
-					if Door ~= nil then
+					if Door ~= nil then print("RoomStats 4")
 						if PressureDoor.DoubleDoor then
 							if not Door:FindFirstChild(PressureDoor.DoorOfDoubleDoor) then
 								print("ERROR | Double Door '"..PressureDoorName.."' has not single door '"..PressureDoor.DoorOfDoubleDoor.."' in room '"..RoomSkip.NextUngeneratedRoom.Name.."'")
@@ -273,8 +273,8 @@ function TeleportToDoor()
 	Script.Action = "RoomSkip Start"
 	GetNextUngeneratedRoom()
 	RoomStats()
-	print("All Info Got")
 
+	print("All Info Got")
 	for StatName, Stat in RoomSkip do
 		if Stat ~= nil then
 			print("Have stats: "..StatName)
@@ -320,11 +320,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 end)
 
 game.UserInputService.InputBegan:Connect(function(Input)
-	if Input.KeyCode == Enum.KeyCode.P then
-		print("click")
-	end
 	if Script.Mode == "RoomSkip" and Script.Action == "Idle" then
-		print("Clicked")
 		if Input.KeyCode == Enum.KeyCode.P then
 			TeleportToDoor()
 		end
