@@ -312,6 +312,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 					Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * 7
 				) * CFrame.fromOrientation(0, 0, 0)
 				RoomSkip.DoorRootPrompt.MaxActivationDistance = 100
+				RoomSkip.DoorRootPrompt.Enabled = true
 				RoomSkip.DoorRootPrompt:InputHoldBegin()
 				RoomSkip.DoorRootPrompt:InputHoldEnd()
 			end
