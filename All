@@ -320,7 +320,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 end)
 
 game.UserInputService.InputBegan:Connect(function(Input)
-	if Input.Keycode == Enum.KeyCode.P then
+	if Input.KeyCode == Enum.KeyCode.P then
 		print("click")
 	end
 	if Script.Mode == "RoomSkip" and Script.Action == "Idle" then
