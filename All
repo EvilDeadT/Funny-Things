@@ -234,9 +234,9 @@ function RoomStats()
 							if RoomSkip.Keycard ~= nil then
 								break
 							elseif RoomSkip.Password ~= nil then
-								if RoomSkip.Password:FindFirstChild("Code") then print("PasswordCode 1")
-									if RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui") then print("PasswordCode 2")
-										if RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel") then print("PasswordCode 3")
+								if RoomSkip.Password:FindFirstChild("Code") then
+									if RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui") then
+										if RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel") then
 											RoomSkip.PasswordCode = RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel").Text
 										end
 									end
@@ -263,7 +263,7 @@ function RoomStats()
 							if PressureDoor.LockRemote == nil then
 								LockRemoteFunction = nil
 							else
-								for _, LockRemoteFunctionPath in PressureDoor.LockRemote do
+								for _, LockRemoteFunctionPath in PressureDoor.LockRemoteFunction do
 									LockRemoteFunction = LockRemoteFunction:FindFirstChild(LockRemoteFunctionPath)
 								end
 								if LockRemoteFunction ~= nil then
@@ -315,7 +315,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			else
 				if RoomSkip.LockRemoteFunction ~= nil and RoomSkip.PasswordCode ~= nil then
 					ScriptActionNow = "Open Password ProgressDoor"
-					RoomSkip.RemoteFunction:InvokeServer(RoomSkip.PasswordCode)
+					RoomSkip.LockRemoteFunction:InvokeServer(RoomSkip.PasswordCode)
 				end
 			end
 			
