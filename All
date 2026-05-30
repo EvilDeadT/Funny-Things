@@ -256,7 +256,7 @@ function RoomStats()
 									LockPrompt = LockPrompt:FindFirstChild(LockPromptPath)
 								end
 								if LockPrompt ~= nil then
-									LockPrompt:FindFirstChildWhichIsA("ProximityPrompt")
+									LockPrompt = LockPrompt:FindFirstChildWhichIsA("ProximityPrompt")
 								end
 							end
 
@@ -267,7 +267,7 @@ function RoomStats()
 									LockRemoteFunction = LockRemoteFunction:FindFirstChild(LockRemoteFunctionPath)
 								end
 								if LockRemoteFunction ~= nil then
-									LockRemoteFunction:FindFirstChildWhichIsA("RemoteFunction")
+									LockRemoteFunction = LockRemoteFunction:FindFirstChildWhichIsA("RemoteFunction")
 								end
 							end
 
