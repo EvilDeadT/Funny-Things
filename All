@@ -345,7 +345,7 @@ game.UserInputService.InputBegan:Connect(function(Input)
 		else
 			print(RoomSkip.NextUngeneratedRoom.Name)
 		end
-		for _, Element in {"DoorRoot", "DoorCollisionPart", "DoorTouchPart", "Lock", "LockPrompt", "LockRemoteFunction", "Enter", "Exit", "Keycard", "Password", "PasswordCode"} do
+		for _, Element in {"DoorRoot", "DoorCollisionPart", "DoorTouchPart", "LockPrompt", "LockRemoteFunction", "Enter", "Exit", "Keycard", "Password", "PasswordCode"} do
 			if RoomSkip[Element] ~= nil then
 				print(Element)
 			else
