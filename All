@@ -269,9 +269,17 @@ function RoomStats()
 end
 
 function TeleportToDoor()
+	print("Start Tp Door")
 	Script.Action = "RoomSkip Start"
 	GetNextUngeneratedRoom()
 	RoomStats()
+	print("All Info Got")
+
+	for StatName, Stat in RoomSkip do
+		if Stat ~= nil then
+			print("Have stats: "..StatName)
+		end
+	end
 end
 
 game:GetService("RunService").RenderStepped:Connect(function()
@@ -312,7 +320,11 @@ game:GetService("RunService").RenderStepped:Connect(function()
 end)
 
 game.UserInputService.InputBegan:Connect(function(Input)
+	if Input.Keycode == Enum.KeyCode.P then
+		print("click")
+	end
 	if Script.Mode == "RoomSkip" and Script.Action == "Idle" then
+		print("Clicked")
 		if Input.KeyCode == Enum.KeyCode.P then
 			TeleportToDoor()
 		end
