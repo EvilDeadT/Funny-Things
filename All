@@ -331,7 +331,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			if string.find(Script.Action, "ProgressDoor") and Main.CharacterRoot ~= nil then
 				RoomSkip.DoorCollisionPart.CanCollide = false
 				Main.CharacterRoot.CFrame = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
-				game.ReplicatedStorage.Events.ZoneChange:FireServer(NextUngeneratedRoom)
+				game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
 			end
 		end
 	end
