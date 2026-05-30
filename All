@@ -260,7 +260,7 @@ function RoomStats()
 								end
 							end
 
-							if PressureDoor.LockRemote == nil then
+							if PressureDoor.LockRemoteFunction == nil then
 								LockRemoteFunction = nil
 							else
 								for _, LockRemoteFunctionPath in PressureDoor.LockRemoteFunction do
