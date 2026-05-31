@@ -365,7 +365,7 @@ function TeleportToDoor()
 end
 
 local PartsWithCollision = {}
-function UnCollisionAll(TeleportPos)
+function UnCollisionAll(TeleportCFrame)
 	for _, Part in PartsWithCollision do
 		if Part ~= nil then
 			if Part.Parent ~= nil then
@@ -385,7 +385,7 @@ function UnCollisionAll(TeleportPos)
 		TemporaryFloor.CanCollide = true
 		TemporaryFloor.CastShadow = false
 		TemporaryFloor.Size = Vector3.new(8, 1, 8)
-		TemporaryFloor.Position = TeleportPos + Vector3.new(0, -4, 0)
+		TemporaryFloor.CFrame = TeleportCFrame + Vector3.new(0, -4, 0)
 	end
 
 	local UncollisionBox = game.Workspace:FindFirstChild("UncollisionBox")
@@ -396,12 +396,13 @@ function UnCollisionAll(TeleportPos)
 		UncollisionBox.Anchored = true
 		UncollisionBox.CanCollide = false
 		UncollisionBox.CastShadow = false
-		UncollisionBox.Size = TeleportPos
+		UncollisionBox.Size = Vector3.new(4, 4, 4)
+		UncollisionBox.CFrame = TeleportCFrame
 	end
 
 	for _, Part in game.Workspace:GetPartsInPart(UncollisionBox) do
 		if Part.Parent ~= game.Players.LocalPlayer.Character and Part:IsA("BasePart") then
-			if Part.CanCollide == true then
+			if Part.CanCollide == true and Part ~= TemporaryFloor then
 				Part.CanCollide = false
 				table.insert(PartsWithCollision, Part)
 			end
@@ -427,9 +428,9 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			if RoomSkip.Keycard ~= nil then
 				if game.Players.LocalPlayer.PlayerGui.Main.Health.AuxItems.NormalKeyCard.Visible == false then
 					ScriptActionNow = "Pick Keycard"
-					local TeleportPos = RoomSkip.Keycard.WorldPivot.Position
-					UnCollisionAll(TeleportPos)
-					Main.CharacterRoot.CFrame = TeleportPos
+					local TeleportCFrame = RoomSkip.Keycard.WorldPivot
+					UnCollisionAll(TeleportCFrame)
+					Main.CharacterRoot.CFrame = TeleportCFrame
 				end
 			else
 				if RoomSkip.LockRemoteFunction ~= nil and RoomSkip.PasswordCode ~= nil then
@@ -446,8 +447,8 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		if string.find(ScriptActionNow, "ProgressDoor") and Main.CharacterRoot ~= nil and RoomSkip.DoorCollisionPart ~= nil then
 			RoomSkip.DoorCollisionPart.CanCollide = false
 			local TeleportPos = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
-			UnCollisionAll(TeleportPos)
-			Main.CharacterRoot.CFrame = TeleportPos
+			UnCollisionAll(TeleportCFrame)
+			Main.CharacterRoot.CFrame = TeleportCFrame
 			game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
 		end
 	end
