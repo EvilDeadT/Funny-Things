@@ -17,12 +17,11 @@ local RoomSkip = {
 	OpenedRooms = {},
 	NextUngeneratedRoom = nil,
 
-	DoorCollisionPart = nil,
 	DoorRoot = nil,
+	DoorRootPrompt = nil,
+	DoorCollisionPart = nil,
 	DoorTouchPart = nil,
 
-	DoorRootPrompt = nil,
-	
 	LockPrompt = nil,
 	LockRemoteFunction = nil,
 
@@ -30,6 +29,7 @@ local RoomSkip = {
 	Exit = nil,
 
 	Keycard = nil,
+	KeyCardParentPart = nil,
 	KeycardProxyPart = nil,
 	KeycardProxyPartPrompt = nil,
 	Password = nil,
@@ -122,6 +122,9 @@ function ClearAllStats(DoPrint)
 		if RoomSkip.DoorRoot ~= nil then
 			print("DoorRoot")
 		end
+		if RoomSkip.DoorRootPrompt ~= nil then
+			print("DoorRootPrompt")
+		end
 		if RoomSkip.DoorCollisionPart ~= nil then
 			print("DoorCollisionPart")
 		end
@@ -146,6 +149,9 @@ function ClearAllStats(DoPrint)
 		if RoomSkip.Keycard ~= nil then
 			print("Keycard")
 		end
+		if RoomSkip.KeyCardParentPart ~= nil then
+			print("KeyCardParentPart")
+		end
 		if RoomSkip.KeycardProxyPart ~= nil then
 			print("KeycardProxyPart")
 		end
@@ -160,6 +166,7 @@ function ClearAllStats(DoPrint)
 		end
 	end
 	RoomSkip.DoorRoot = nil
+	RoomSkip.DoorRootPrompt = nil
 	RoomSkip.DoorCollisionPart = nil
 	RoomSkip.DoorTouchPart = nil
 	RoomSkip.DoorRootPrompt = nil
@@ -168,6 +175,7 @@ function ClearAllStats(DoPrint)
 	RoomSkip.Enter = nil
 	RoomSkip.Exit = nil
 	RoomSkip.Keycard = nil
+	RoomSkip.KeyCardParentPart = nil
 	RoomSkip.KeycardProxyPart = nil
 	RoomSkip.KeycardProxyPartPrompt = nil
 	RoomSkip.Password = nil
@@ -247,9 +255,9 @@ function RoomStats()
 						end
 
 						local DoorRoot = Door
+						local DoorRootPrompt = nil
 						local DoorCollisionPart = Door
 						local DoorTouchPart = Door
-						local DoorRootPrompt = nil
 						local Enter = OriginalDoor:FindFirstChild("Enter")
 						local Exit = OriginalDoor:FindFirstChild("Exit")
 
@@ -259,6 +267,10 @@ function RoomStats()
 							for _, RootPath in PressureDoor.Root do
 								DoorRoot = DoorRoot:FindFirstChild(RootPath)
 							end
+						end
+						
+						if DoorRoot ~= nil then
+							DoorRootPrompt = DoorRoot:FindFirstChildWhichIsA("ProximityPrompt")
 						end
 
 						if PressureDoor.CollisionPart == nil then
@@ -277,8 +289,6 @@ function RoomStats()
 							end
 						end
 
-						DoorRootPrompt = DoorRoot:FindFirstChildWhichIsA("ProximityPrompt")
-
 						if not Enter:IsA("ObjectValue") then
 							Enter = nil
 						end
@@ -294,6 +304,11 @@ function RoomStats()
 							end
 							RoomSkip.Password = LockedRoom:FindFirstChild("PasswordPaper", true)
 							if RoomSkip.Keycard ~= nil then
+								if RoomSkip.Keycard.Parent ~= nil then
+									if RoomSkip.Keycard.Parent:IsA("BasePart") then
+										RoomSkip.KeycardParentPart = RoomSkip.Keycard.Parent
+									end
+								end
 								if RoomSkip.Keycard:FindFirstChild("ProxyPart") then
 									if RoomSkip.Keycard.ProxyPart:IsA("BasePart") then
 										RoomSkip.KeycardProxyPart = RoomSkip.Keycard.ProxyPart
@@ -346,9 +361,9 @@ function RoomStats()
 						end
 
 						RoomSkip.DoorRoot = DoorRoot
+						RoomSkip.DoorRootPrompt = DoorRootPrompt
 						RoomSkip.DoorCollisionPart = DoorCollisionPart
 						RoomSkip.DoorTouchPart = DoorTouchPart
-						RoomSkip.DoorRootPrompt = DoorRootPrompt
 						RoomSkip.Enter = Enter
 						RoomSkip.Exit = Exit
 					end
@@ -446,13 +461,13 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		end
 		if string.find(ScriptActionNow, "ProgressDoor") and Main.CharacterRoot ~= nil and RoomSkip.DoorCollisionPart ~= nil then
 			RoomSkip.DoorCollisionPart.CanCollide = false
-			local TeleportPos = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
+			local TeleportCFrame = RoomSkip.DoorCollisionPart.CFrame + Vector3.new(0, 1, 0)
 			UnCollisionAll(TeleportCFrame)
 			Main.CharacterRoot.CFrame = TeleportCFrame
 			game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
 		end
 	end
-	
+
 	Script.Action = ScriptActionNow
 end)
 
