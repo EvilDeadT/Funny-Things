@@ -175,7 +175,7 @@ function ClearAllStats(DoPrint)
 	RoomSkip.Enter = nil
 	RoomSkip.Exit = nil
 	RoomSkip.Keycard = nil
-	RoomSkip.KeyCardParentPart = nil
+	RoomSkip.KeyCardParentPartPos = nil
 	RoomSkip.KeycardProxyPart = nil
 	RoomSkip.KeycardProxyPartPrompt = nil
 	RoomSkip.Password = nil
