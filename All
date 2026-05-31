@@ -396,7 +396,7 @@ function UnCollisionAll(TeleportCFrame)
 		UncollisionBox.Anchored = true
 		UncollisionBox.CanCollide = false
 		UncollisionBox.CastShadow = false
-		UncollisionBox.Size = Vector3.new(4, 4, 4)
+		UncollisionBox.Size = Vector3.new(8, 8, 8)
 		UncollisionBox.CFrame = TeleportCFrame
 	end
 
