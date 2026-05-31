@@ -22,7 +22,7 @@ local RoomSkip = {
 	DoorTouchPart = nil,
 
 	DoorRootPrompt = nil,
-
+	
 	LockPrompt = nil,
 	LockRemoteFunction = nil,
 
@@ -30,6 +30,8 @@ local RoomSkip = {
 	Exit = nil,
 
 	Keycard = nil,
+	KeycardProxyPart = nil,
+	KeycardProxyPartPrompt = nil,
 	Password = nil,
 	PasswordCode = nil,
 
@@ -112,6 +114,66 @@ local RoomSkip = {
 	}
 }
 
+function ClearAllStats(DoPrint)
+	if DoPrint == true then
+		if RoomSkip.NextUngeneratedRoom ~= nil then
+			print("Clear stats of Room: "..RoomSkip.NextUngeneratedRoom.Name)
+		end
+		if RoomSkip.DoorRoot ~= nil then
+			print("DoorRoot")
+		end
+		if RoomSkip.DoorCollisionPart ~= nil then
+			print("DoorCollisionPart")
+		end
+		if RoomSkip.DoorTouchPart ~= nil then
+			print("DoorTouchPart")
+		end
+		if RoomSkip.DoorRootPrompt ~= nil then
+			print("DoorRootPrompt")
+		end
+		if RoomSkip.LockPrompt ~= nil then
+			print("LockPrompt")
+		end
+		if RoomSkip.LockRemoteFunction ~= nil then
+			print("LockRemoteFunction")
+		end
+		if RoomSkip.Enter ~= nil then
+			print("Enter")
+		end
+		if RoomSkip.Exit ~= nil then
+			print("Exit")
+		end
+		if RoomSkip.Keycard ~= nil then
+			print("Keycard")
+		end
+		if RoomSkip.KeycardProxyPart ~= nil then
+			print("KeycardProxyPart")
+		end
+		if RoomSkip.KeycardProxyPartPrompt ~= nil then
+			print("KeycardProxyPartPrompt")
+		end
+		if RoomSkip.Password ~= nil then
+			print("Password")
+		end
+		if RoomSkip.PasswordCode ~= nil then
+			print("PasswordCode: "..RoomSkip.PasswordCode)
+		end
+	end
+	RoomSkip.DoorRoot = nil
+	RoomSkip.DoorCollisionPart = nil
+	RoomSkip.DoorTouchPart = nil
+	RoomSkip.DoorRootPrompt = nil
+	RoomSkip.LockPrompt = nil
+	RoomSkip.LockRemoteFunction = nil
+	RoomSkip.Enter = nil
+	RoomSkip.Exit = nil
+	RoomSkip.Keycard = nil
+	RoomSkip.KeycardProxyPart = nil
+	RoomSkip.KeycardProxyPartPrompt = nil
+	RoomSkip.Password = nil
+	RoomSkip.PasswordCode = nil
+end
+
 function GetNextUngeneratedRoom()
 	local RoomsInExitValue = {}
 	for _, Room in Main.RoomsFolder:GetChildren() do
@@ -178,17 +240,7 @@ function RoomStats()
 							else
 								OpenValue:GetPropertyChangedSignal("Value"):Once(function()
 									if OpenValue.Value == true and Script.Action ~= "RoomSkip Start" then
-										RoomSkip.DoorRoot = nil
-										RoomSkip.DoorCollisionPart = nil
-										RoomSkip.DoorTouchPart = nil
-										RoomSkip.DoorRootPrompt = nil
-										RoomSkip.LockPrompt = nil
-										RoomSkip.LockRemoteFunction = nil
-										RoomSkip.Enter = nil
-										RoomSkip.Exit = nil
-										RoomSkip.Keycard = nil
-										RoomSkip.Password = nil
-										RoomSkip.PasswordCode = nil
+										ClearAllStats()
 									end
 								end)
 							end
@@ -242,12 +294,20 @@ function RoomStats()
 							end
 							RoomSkip.Password = LockedRoom:FindFirstChild("PasswordPaper", true)
 							if RoomSkip.Keycard ~= nil then
+								if RoomSkip.Keycard:FindFirstChild("ProxyPart") then
+									if RoomSkip.Keycard.ProxyPart:IsA("BasePart") then
+										RoomSkip.KeycardProxyPart = RoomSkip.Keycard.ProxyPart
+									end
+									if RoomSkip.Keycard.ProxyPart:FindFirstChildWhichIsA("ProximityPrompt") then
+										RoomSkip.KeycardProxyPartPrompt = RoomSkip.Keycard.ProxyPart:FindFirstChildWhichIsA("ProximityPrompt")
+									end
+								end
 								break
 							elseif RoomSkip.Password ~= nil then
 								if RoomSkip.Password:FindFirstChild("Code") then
-									if RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui") then
-										if RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel") then
-											RoomSkip.PasswordCode = RoomSkip.Password.Code:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel").Text
+									if RoomSkip.Password.Code:FindFirstChildWhichIsA("SurfaceGui") then
+										if RoomSkip.Password.Code:FindFirstChildWhichIsA("SurfaceGui"):FindFirstChildWhichIsA("TextLabel") then
+											RoomSkip.PasswordCode = RoomSkip.Password.Code:FindFirstChildWhichIsA("SurfaceGui"):FindFirstChildWhichIsA("TextLabel").Text
 										end
 									end
 								end
@@ -315,7 +375,7 @@ function UnCollisionAll(TeleportPos)
 			end
 		end
 	end
-	
+
 	local TemporaryFloor = game.Workspace:FindFirstChild("TemporaryFloor")
 	if TemporaryFloor == nil then
 		TemporaryFloor = Instance.new("Part", game.Workspace)
@@ -338,7 +398,7 @@ function UnCollisionAll(TeleportPos)
 		UncollisionBox.CastShadow = false
 		UncollisionBox.Size = TeleportPos
 	end
-	
+
 	for _, Part in game.Workspace:GetPartsInPart(UncollisionBox) do
 		if Part.Parent ~= game.Players.LocalPlayer.Character and Part:IsA("BasePart") then
 			if Part.CanCollide == true then
@@ -366,7 +426,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 
 			if RoomSkip.Keycard ~= nil then
 				ScriptActionNow = "Pick Keycard"
-				local TeleportPos = RoomSkip.Keycard.WorldPivot
+				local TeleportPos = RoomSkip.KeycardProxyPart.Position
 				UnCollisionAll(TeleportPos)
 				Main.CharacterRoot.CFrame = TeleportPos
 			else
@@ -378,6 +438,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 
 			if RoomSkip.DoorTouchPart ~= nil then
 				print("Touch part. Still in progress")
+				ClearAllStats(true)
 			end
 		end
 		if string.find(ScriptActionNow, "ProgressDoor") and Main.CharacterRoot ~= nil and RoomSkip.DoorCollisionPart ~= nil then
@@ -388,7 +449,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
 		end
 	end
-
+	
 	Script.Action = ScriptActionNow
 end)
 
@@ -401,14 +462,7 @@ game.UserInputService.InputBegan:Connect(function(Input)
 	if Input.KeyCode == Enum.KeyCode.Z then
 		if RoomSkip.NextUngeneratedRoom == nil then
 			print("WARNING | No NextUngeneratedRoom")
-		else
-			print(RoomSkip.NextUngeneratedRoom.Name)
 		end
-		for _, Element in {"DoorRoot", "DoorCollisionPart", "DoorTouchPart", "LockPrompt", "LockRemoteFunction", "Enter", "Exit", "Keycard", "Password", "PasswordCode"} do
-			if RoomSkip[Element] ~= nil then
-				print(Element)
-			end
-			RoomSkip[Element] = nil
-		end
+		ClearAllStats(true)
 	end
 end)
