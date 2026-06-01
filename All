@@ -2,8 +2,12 @@ game.Lighting.Ambient = Color3.new(1,1,1)
 loadstring(game:HttpGet("https://github.com/AZYsGithub/DexPlusPlus/releases/latest/download/out.lua"))()
 
 local TESTOffsetDown = Instance.new("NumberValue", game.Workspace)
-TESTOffsetDown.Name = "OffsetDown"
+TESTOffsetDown.Name = "OffsetDownKeycard"
 TESTOffsetDown.Value = 0
+
+local TESTOffsetDownPassword = Instance.new("NumberValue", game.Workspace)
+TESTOffsetDownPassword.Name = "OffsetDownPassword"
+TESTOffsetDownPassword.Value = 0
 
 local Script = {
 	Mode = "RoomSkip",
@@ -595,7 +599,11 @@ game:GetService("RunService").RenderStepped:Connect(function()
 				ClearAllStats(true)
 			end
 			if string.find(ScriptActionNow, "Open ProgressDoor") and Main.CharacterRoot ~= nil and RoomSkip.DoorCollisionPartCFrame ~= nil then
-				local TeleportCFrame = RoomSkip.DoorCollisionPartCFrame + Vector3.new(0, -14, 0)
+				local Offset = -14
+				if RoomSkip.Password ~= nil then
+					Offset = TESTOffsetDownPassword.Value
+				end
+				local TeleportCFrame = RoomSkip.DoorCollisionPartCFrame + Vector3.new(0, Offset, 0)
 				UnCollisionAll(TeleportCFrame)
 				Main.CharacterRoot.CFrame = TeleportCFrame
 				game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
