@@ -46,6 +46,7 @@ local RoomSkip = {
 	PasswordCode = nil,
 
 	EndRunButtonHighlight = nil,
+	EndRunButtonHighlightCFrame = nil,
 	EndRunButtonHighlightPrompt = nil,
 
 
@@ -415,6 +416,7 @@ function RoomStats()
 									if Exit.Value.Interactables:FindFirstChild("EndRun") then
 										if Exit.Value.Interactables.EndRun:FindFirstChild("Highlight") then
 											RoomSkip.EndRunButtonHighlight = Exit.Value.Interactables.EndRun.Highlight
+											RoomSkip.EndRunButtonHighlightCFrame = Exit.Value.Interactables.EndRun.Highlight.CFrame
 											if Exit.Value.Interactables.EndRun.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then
 												RoomSkip.EndRunButtonHighlightPrompt = Exit.Value.Interactables.EndRun.Highlight:FindFirstChildWhichIsA("ProximityPrompt")
 											end
@@ -510,6 +512,10 @@ game:GetService("RunService").RenderStepped:Connect(function()
 					RoomSkip.EndRunButtonHighlightPrompt.MaxActivationDistance = 100
 					RoomSkip.EndRunButtonHighlightPrompt:InputHoldBegin()
 					RoomSkip.EndRunButtonHighlightPrompt:InputHoldEnd()
+
+					local TeleportCFrame = RoomSkip.EndRunButtonHighlightCFrame
+					UnCollisionAll(TeleportCFrame)
+					Main.CharacterRoot.CFrame = TeleportCFrame
 				end
 			end
 		end
