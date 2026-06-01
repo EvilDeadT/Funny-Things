@@ -10,7 +10,7 @@ local Main = {
 	CurrentCamera = game.Workspace.CurrentCamera,
 
 	GameplayFolder = game.Workspace.GameplayFolder,
-	RoomsFolder = game.Workspace.GameplayFolder.Rooms
+	RoomsFolder = game.Workspace.GameplayFolder.Rooms,
 
 	UnCollisionBoxCollisionParts = {}
 }
