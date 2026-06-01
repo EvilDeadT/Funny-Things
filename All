@@ -1,6 +1,12 @@
+game.Lighting.Ambient = Color3.new(1,1,1)
+
 local Script = {
 	Mode = "RoomSkip",
-	Action = "Idle"
+	Action = "Idle",
+	
+	DeleteLocalEntities = {
+		"WitchingHour"
+	}
 }
 
 local Main = {
@@ -23,7 +29,7 @@ local RoomSkip = {
 	DoorRootPrompt = nil,
 	DoorCollisionPartCFrame = nil,
 	DoorTouchPart = nil,
-	
+
 	LockMain = nil,
 	LockPrompt = nil,
 	LockRemoteFunction = nil,
@@ -37,6 +43,9 @@ local RoomSkip = {
 	KeycardProxyPartPrompt = nil,
 	Password = nil,
 	PasswordCode = nil,
+
+	EndRunButton = nil,
+	
 
 	PressureDoors = {
 		["NormalDoor"] = {
@@ -363,7 +372,7 @@ function RoomStats()
 							local LockMain = Door
 							local LockPrompt = Door
 							local LockRemoteFunction = Door
-							
+
 							if PressureDoor.LockMain == nil then
 								LockMain = nil
 							else
@@ -393,7 +402,7 @@ function RoomStats()
 									LockRemoteFunction = LockRemoteFunction:FindFirstChildWhichIsA("RemoteFunction")
 								end
 							end
-							
+
 							RoomSkip.LockMain = LockMain
 							RoomSkip.LockPrompt = LockPrompt
 							RoomSkip.LockRemoteFunction = LockRemoteFunction
@@ -428,7 +437,7 @@ function UnCollisionAll(TeleportCFrame)
 			end
 		end
 	end
-	
+
 	local TemporaryFloor = game.Workspace:FindFirstChild("TemporaryFloor")
 	if TemporaryFloor == nil then
 		TemporaryFloor = Instance.new("Part", game.Workspace)
@@ -466,6 +475,14 @@ end
 
 game:GetService("RunService").RenderStepped:Connect(function()
 	local ScriptActionNow = "Idle"
+	
+	for _, LocalEntity in Script.DeleteLocalEntities do
+		if LocalEntity == "WitchingHour" and game.Workspace:FindFirstChild("WitchingHour") then
+			game.Workspace.WitchingHour:Destroy()
+		end
+		print(LocalEntity.." killed :)")
+	end
+	
 	if Script.Mode == "RoomSkip" then
 		if RoomSkip.DoorRoot ~= nil and RoomSkip.DoorRootPrompt ~= nil then
 			ScriptActionNow = "Open ProgressDoor Root"
