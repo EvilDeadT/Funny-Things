@@ -503,7 +503,22 @@ game:GetService("RunService").RenderStepped:Connect(function()
 
 	if Script.Mode == "RoomSkip" then
 		if RoomSkip.Exit ~= nil then
-			if RoomSkip.Exit.Value.Name == "ModifierEnding" then
+			if string.find(RoomSkip.Exit.Value.Name, "PipeBoardPuzzle") then
+				print("IT'S!! PUZZLE!! TIME!!!")
+				if RoomSkip.Exit.Value:FindFirstChild("Entrances")
+					for PressureDoorName, PressureDoor in RoomSkip.PressureDoors do
+						local Door = RoomSkip.Exit.Value.Entrances:FindFirstChild(PressureDoorName)
+						if Door ~= nil then
+							if Door:FindFirstChild("CollisionPart") then
+								if Door.CollisionPart:IsA("BasePart") then
+									Main.CharacterRoot.CFrame = Door.CollisionPart.CFrame + Vector3.new(0, 1, 0)
+								end
+							end
+						end
+					end
+				end
+				ClearAllStats(true)
+			elseif RoomSkip.Exit.Value.Name == "ModifierEnding" then
 				if RoomSkip.EndRunButtonHighlight ~= nil and RoomSkip.EndRunButtonHighlightPrompt ~= nil then
 					ScriptActionNow = "Run Finish"
 					RoomSkip.EndRunButtonHighlight.CFrame = CFrame.new(
