@@ -505,7 +505,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		if RoomSkip.Exit ~= nil then
 			if string.find(RoomSkip.Exit.Value.Name, "PipeBoardPuzzle") then
 				print("IT'S!! PUZZLE!! TIME!!!")
-				if RoomSkip.Exit.Value:FindFirstChild("Entrances")
+				if RoomSkip.Exit.Value:FindFirstChild("Entrances") then
 					for PressureDoorName, PressureDoor in RoomSkip.PressureDoors do
 						local Door = RoomSkip.Exit.Value.Entrances:FindFirstChild(PressureDoorName)
 						if Door ~= nil then
