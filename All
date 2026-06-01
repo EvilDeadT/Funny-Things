@@ -145,6 +145,12 @@ local RoomSkip = {
 	}
 }
 
+local Money = {
+	Current = nil,
+	CurrentProxyPart = nil,
+	CurrentProxyPartPrompt = nil
+}
+
 function ClearAllStats(Debug)
 	if Debug == true then
 		for _, Part in Main.UnCollisionBoxCollisionParts do
@@ -266,15 +272,15 @@ function RoomStats()
 							else
 								local MinY = nil
 								for _, NormalDoor in Door:GetChildren() do
-									if NormalDoor.Name == PressureDoor.DoorOfDoubleDoor then
+									if NormalDoor.Name == PressureDoor.DoorOfDoubleDoor and NormalDoor:FindFirstChild("CollisionPart") then
 										if MinY == nil then
 											Door = NormalDoor
 										else
-											if MinY < NormalDoor.WorldPivot.Position.Y then
+											if MinY < NormalDoor.CollisionPart.Position.Y then
 												Door = NormalDoor
 											end
 										end
-										MinY = NormalDoor.WorldPivot.Position.Y
+										MinY = NormalDoor.CollisionPart.Position.Y
 									end
 								end
 							end
@@ -503,7 +509,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 
 	if Script.Mode == "RoomSkip" then
 		if RoomSkip.Exit ~= nil then
-			if RoomSkip.Exit:GetAttribute("SpecialTag") == "BoardPuzzle" then
+			if RoomSkip.Exit.Value:GetAttribute("SpecialTag") == "BoardPuzzle" then
 				print("IT'S!! PUZZLE!! TIME!!!")
 				if RoomSkip.Exit.Value:FindFirstChild("Entrances") then
 					for PressureDoorName, PressureDoor in RoomSkip.PressureDoors do
@@ -592,7 +598,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			end
 			if string.find(ScriptActionNow, "Open ProgressDoor") and Main.CharacterRoot ~= nil and RoomSkip.DoorCollisionPartCFrame ~= nil then
 				local Offset = -10
-				if RoomSkip.Password ~= nil then
+				if RoomSkip.Keycard ~= nil or RoomSkip.Password ~= nil then
 					Offset = -8
 				end
 				local TeleportCFrame = RoomSkip.DoorCollisionPartCFrame + Vector3.new(0, Offset, 0)
