@@ -145,11 +145,56 @@ local RoomSkip = {
 	}
 }
 
-local Money = {
-	Current = nil,
+local Currency = {
+	MinCurrency = 0,
+	MaxCurrency = 0,
+	
 	CurrentProxyPart = nil,
+	CurrentProxyPartCFrame = nil,
 	CurrentProxyPartPrompt = nil
 }
+
+function PartInFrontOfCamera(Part, LookVectorOffset)
+	Part.CFrame = CFrame.new(
+		Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * LookVectorOffset
+	) * CFrame.fromOrientation(0, 0, 0)
+end
+
+function GetMoneyFrom(Folder)
+	for _, Drawer in Folder:GetChildren() do
+		if Drawer:FindFirstChild("SpawnLocations") then
+			for _, SpawnLocation in Drawer.SpawnLocations:GetChildren() do
+				for _, Money in SpawnLocation:GetChildren() do
+					if Money:FindFirstChild("ProxyPart") and Money:GetAttribute("InteractionType") and Money:GetAttribute("Amount") then
+						Currency.CurrentProxyPart = Money.ProxyPart
+						Currency.CurrentProxyPartCFrame = Money.ProxyPart.CFrame
+						for _, Prompt in Money.ProxyPart:GetChildren() do
+							if Prompt:IsA("ProximityPrompt") then
+								if Prompt.Exclusivity == Enum.ProximityPromptExclusivity.OnePerButton then
+									Currency.CurrentProxyPartPrompt = Prompt
+								end
+							end
+						end
+						return
+					end
+				end
+			end
+		end
+	end
+	
+	Currency.CurrentProxyPart = nil
+	Currency.CurrentProxyPartCFrame = nil
+	Currency.CurrentProxyPartPrompt = nil
+end
+
+function FindMoney()
+	for _, Room in Main.RoomsFolder:GetChildren() do
+		GetMoneyFrom(Room)
+		if Room:FindFirstChild("Interactables") then
+			GetMoneyFrom(Room.Interactables)
+		end
+	end
+end
 
 function ClearAllStats(Debug)
 	if Debug == true then
@@ -542,69 +587,73 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		end
 
 		if ScriptActionNow ~= "Run Finish" then
-			if RoomSkip.DoorRoot ~= nil and RoomSkip.DoorRootPrompt ~= nil then
+			FindMoney()
+			if Currency.CurrentProxyPart ~= nil and Currency.CurrentProxyPartCFrame ~= nil and Currency.CurrentProxyPartPrompt ~= nil then
 				ScriptActionNow = "Open ProgressDoor Root"
-				RoomSkip.DoorRoot.CFrame = CFrame.new(
-					Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * 7
-				) * CFrame.fromOrientation(0, 0, 0)
-				RoomSkip.DoorRootPrompt.MaxActivationDistance = 100
-				RoomSkip.DoorRootPrompt.Enabled = true
-				RoomSkip.DoorRootPrompt:InputHoldBegin()
-				RoomSkip.DoorRootPrompt:InputHoldEnd()
-			end
+				PartInFrontOfCamera(Currency.CurrentProxyPart, 7)
+				Currency.CurrentProxyPartPrompt.MaxActivationDistance = 100
+				Currency.CurrentProxyPartPrompt.RequiresLineOfSight = false
+				Currency.CurrentProxyPartPrompt:InputHoldBegin()
+				Currency.CurrentProxyPartPrompt:InputHoldEnd()
+			else
+				if RoomSkip.DoorRoot ~= nil and RoomSkip.DoorRootPrompt ~= nil then
+					ScriptActionNow = "Open ProgressDoor Root"
+					PartInFrontOfCamera(RoomSkip.DoorRoot, 7)
+					RoomSkip.DoorRootPrompt.MaxActivationDistance = 100
+					RoomSkip.DoorRootPrompt.Enabled = true
+					RoomSkip.DoorRootPrompt:InputHoldBegin()
+					RoomSkip.DoorRootPrompt:InputHoldEnd()
+				end
 
-			if RoomSkip.Keycard ~= nil then
-				if game.Players.LocalPlayer.PlayerGui.Main.Health.AuxItems.NormalKeyCard.Visible == false then
-					if RoomSkip.KeycardParentPartCFrame ~= nil and RoomSkip.KeycardProxyPart ~= nil and RoomSkip.KeycardProxyPartPrompt ~= nil then
-						ScriptActionNow = "Pick Keycard"
-						RoomSkip.KeycardProxyPart.CFrame = CFrame.new(
-							Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * 7
-						) * CFrame.fromOrientation(0, 0, 0)
-						RoomSkip.KeycardProxyPartPrompt.MaxActivationDistance = 100
-						RoomSkip.KeycardProxyPartPrompt.RequiresLineOfSight = false
-						RoomSkip.KeycardProxyPartPrompt:InputHoldBegin()
-						RoomSkip.KeycardProxyPartPrompt:InputHoldEnd()
+				if RoomSkip.Keycard ~= nil then
+					if game.Players.LocalPlayer.PlayerGui.Main.Health.AuxItems.NormalKeyCard.Visible == false then
+						if RoomSkip.KeycardParentPartCFrame ~= nil and RoomSkip.KeycardProxyPart ~= nil and RoomSkip.KeycardProxyPartPrompt ~= nil then
+							ScriptActionNow = "Pick Keycard"
+							PartInFrontOfCamera(RoomSkip.KeycardProxyPart, 7)
+							RoomSkip.KeycardProxyPartPrompt.MaxActivationDistance = 100
+							RoomSkip.KeycardProxyPartPrompt.RequiresLineOfSight = false
+							RoomSkip.KeycardProxyPartPrompt:InputHoldBegin()
+							RoomSkip.KeycardProxyPartPrompt:InputHoldEnd()
 
-						local TeleportCFrame = RoomSkip.KeycardParentPartCFrame + Vector3.new(0, -10, 0)
-						UnCollisionAll(TeleportCFrame)
-						Main.CharacterRoot.CFrame = TeleportCFrame	
+							local TeleportCFrame = RoomSkip.KeycardParentPartCFrame + Vector3.new(0, -10, 0)
+							UnCollisionAll(TeleportCFrame)
+							Main.CharacterRoot.CFrame = TeleportCFrame	
+						end
+					else
+						if RoomSkip.LockMain ~= nil and RoomSkip.LockPrompt ~= nil then
+							ScriptActionNow = "Open ProgressDoor Keycard"
+							RoomSkip.KeycardParentPartCFrame = nil
+							RoomSkip.KeycardProxyPart = nil
+							RoomSkip.KeycardProxyPartPrompt = nil
+
+							PartInFrontOfCamera(RoomSkip.LockMain, 7)
+							RoomSkip.LockPrompt.MaxActivationDistance = 100
+							RoomSkip.LockPrompt.HoldDuration = 0
+							RoomSkip.LockPrompt:InputHoldBegin()
+							RoomSkip.LockPrompt:InputHoldEnd()
+						end
 					end
 				else
-					if RoomSkip.LockMain ~= nil and RoomSkip.LockPrompt ~= nil then
-						ScriptActionNow = "Open ProgressDoor Keycard"
-						RoomSkip.KeycardParentPartCFrame = nil
-						RoomSkip.KeycardProxyPart = nil
-						RoomSkip.KeycardProxyPartPrompt = nil
-
-						RoomSkip.LockMain.CFrame = CFrame.new(
-							Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * 7
-						) * CFrame.fromOrientation(0, 0, 0)
-						RoomSkip.LockPrompt.MaxActivationDistance = 100
-						RoomSkip.LockPrompt.HoldDuration = 0
-						RoomSkip.LockPrompt:InputHoldBegin()
-						RoomSkip.LockPrompt:InputHoldEnd()
+					if RoomSkip.LockRemoteFunction ~= nil and RoomSkip.PasswordCode ~= nil then
+						ScriptActionNow = "Open ProgressDoor Password"
+						RoomSkip.LockRemoteFunction:InvokeServer(RoomSkip.PasswordCode)
 					end
 				end
-			else
-				if RoomSkip.LockRemoteFunction ~= nil and RoomSkip.PasswordCode ~= nil then
-					ScriptActionNow = "Open ProgressDoor Password"
-					RoomSkip.LockRemoteFunction:InvokeServer(RoomSkip.PasswordCode)
-				end
-			end
 
-			if RoomSkip.DoorTouchPart ~= nil then
-				print("Touch part. Still in progress")
-				ClearAllStats(true)
-			end
-			if string.find(ScriptActionNow, "Open ProgressDoor") and Main.CharacterRoot ~= nil and RoomSkip.DoorCollisionPartCFrame ~= nil then
-				local Offset = -10
-				if RoomSkip.Keycard ~= nil or RoomSkip.Password ~= nil then
-					Offset = -8
+				if RoomSkip.DoorTouchPart ~= nil then
+					print("Touch part. Still in progress")
+					ClearAllStats(true)
 				end
-				local TeleportCFrame = RoomSkip.DoorCollisionPartCFrame + Vector3.new(0, Offset, 0)
-				UnCollisionAll(TeleportCFrame)
-				Main.CharacterRoot.CFrame = TeleportCFrame
-				game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
+				if string.find(ScriptActionNow, "Open ProgressDoor") and Main.CharacterRoot ~= nil and RoomSkip.DoorCollisionPartCFrame ~= nil then
+					local Offset = -10
+					if RoomSkip.Keycard ~= nil or RoomSkip.Password ~= nil then
+						Offset = -8
+					end
+					local TeleportCFrame = RoomSkip.DoorCollisionPartCFrame + Vector3.new(0, Offset, 0)
+					UnCollisionAll(TeleportCFrame)
+					Main.CharacterRoot.CFrame = TeleportCFrame
+					game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
+				end
 			end
 		end
 	end
