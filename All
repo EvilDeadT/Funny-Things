@@ -321,7 +321,7 @@ function RoomStats()
 										if MinY == nil then
 											Door = NormalDoor
 										else
-											if MinY < NormalDoor.CollisionPart.Position.Y then
+											if MinY > NormalDoor.CollisionPart.Position.Y then
 												Door = NormalDoor
 											end
 										end
