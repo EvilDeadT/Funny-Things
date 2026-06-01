@@ -3,7 +3,7 @@ loadstring(game:HttpGet("https://github.com/AZYsGithub/DexPlusPlus/releases/late
 
 local TESTOffsetDown = Instance.new("NumberValue", game.Workspace)
 TESTOffsetDown.Name = "OffsetDown"
-TESTOffsetDown.Value = 4
+TESTOffsetDown.Value = 0
 
 local Script = {
 	Mode = "RoomSkip",
@@ -563,7 +563,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 						RoomSkip.KeycardProxyPartPrompt:InputHoldBegin()
 						RoomSkip.KeycardProxyPartPrompt:InputHoldEnd()
 
-						local TeleportCFrame = RoomSkip.KeycardParentPartCFrame
+						local TeleportCFrame = RoomSkip.KeycardParentPartCFrame + Vector3.new(0, -TESTOffsetDown.Value, 0)
 						UnCollisionAll(TeleportCFrame)
 						Main.CharacterRoot.CFrame = TeleportCFrame	
 					end
@@ -595,7 +595,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 				ClearAllStats(true)
 			end
 			if string.find(ScriptActionNow, "Open ProgressDoor") and Main.CharacterRoot ~= nil and RoomSkip.DoorCollisionPartCFrame ~= nil then
-				local TeleportCFrame = RoomSkip.DoorCollisionPartCFrame + Vector3.new(0, -TESTOffsetDown.Value, 0)
+				local TeleportCFrame = RoomSkip.DoorCollisionPartCFrame + Vector3.new(0, -14, 0)
 				UnCollisionAll(TeleportCFrame)
 				Main.CharacterRoot.CFrame = TeleportCFrame
 				game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
