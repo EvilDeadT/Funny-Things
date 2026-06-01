@@ -480,7 +480,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 
 		if RoomSkip.Keycard ~= nil then
 			if game.Players.LocalPlayer.PlayerGui.Main.Health.AuxItems.NormalKeyCard.Visible == false then
-				if RoomSkip.KeycardParentPartCFrame ~= nil and RoomSkip.KeycardProxyPart ~= nil and RoomSkip.KeycardProxyPartPrompt ~= nil then
+				if Script.Action ~= "Open ProgressDoor Keycard" and RoomSkip.KeycardParentPartCFrame ~= nil and RoomSkip.KeycardProxyPart ~= nil and RoomSkip.KeycardProxyPartPrompt ~= nil then
 					ScriptActionNow = "Pick Keycard"
 					RoomSkip.KeycardProxyPart.CFrame = CFrame.new(
 						Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * 7
