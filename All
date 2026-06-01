@@ -1,9 +1,10 @@
 game.Lighting.Ambient = Color3.new(1,1,1)
+loadstring(game:HttpGet("https://github.com/AZYsGithub/DexPlusPlus/releases/latest/download/out.lua"))()
 
 local Script = {
 	Mode = "RoomSkip",
 	Action = "Idle",
-	
+
 	DeleteLocalEntities = {
 		"WitchingHour"
 	}
@@ -44,8 +45,9 @@ local RoomSkip = {
 	Password = nil,
 	PasswordCode = nil,
 
-	EndRunButton = nil,
-	
+	EndRunButtonHighlight = nil,
+	EndRunButtonHighlightPrompt = nil,
+
 
 	PressureDoors = {
 		["NormalDoor"] = {
@@ -407,6 +409,20 @@ function RoomStats()
 							RoomSkip.LockPrompt = LockPrompt
 							RoomSkip.LockRemoteFunction = LockRemoteFunction
 						end
+						if Exit ~= nil then
+							if Exit.Value.Name == "ModifierEnding" then
+								if Exit.Value:FindFirstChild("Interactables") then
+									if Exit.Value.Interactables:FindFirstChild("EndRun") then
+										if Exit.Value.Interactables.EndRun:FindFirstChild("Highlight") then
+											RoomSkip.EndRunButtonHighlight = Exit.Value.Interactables.EndRun.Highlight
+											if Exit.Value.Interactables.EndRun.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then
+												RoomSkip.EndRunButtonHighlightPrompt = Exit.Value.Interactables.EndRun.Highlight:FindFirstChildWhichIsA("ProximityPrompt")
+											end
+										end
+									end
+								end
+							end
+						end
 
 						RoomSkip.DoorRoot = DoorRoot
 						RoomSkip.DoorRootPrompt = DoorRootPrompt
@@ -475,15 +491,29 @@ end
 
 game:GetService("RunService").RenderStepped:Connect(function()
 	local ScriptActionNow = "Idle"
-	
+
 	for _, LocalEntity in Script.DeleteLocalEntities do
 		if LocalEntity == "WitchingHour" and game.Workspace:FindFirstChild("WitchingHour") then
 			game.Workspace.WitchingHour:Destroy()
+			print(LocalEntity.." killed :)")
 		end
-		print(LocalEntity.." killed :)")
 	end
-	
+
 	if Script.Mode == "RoomSkip" then
+		if RoomSkip.Exit ~= nil then
+			if RoomSkip.Exit.Value.Name == "ModifierEnding" then
+				if RoomSkip.EndRunButtonHighlight ~= nil and RoomSkip.EndRunButtonHighlightPrompt ~= nil then
+					ScriptActionNow = "Run Finish"
+					RoomSkip.EndRunButtonHighlight.CFrame = CFrame.new(
+						Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * 7
+					) * CFrame.fromOrientation(0, 0, 0)
+					RoomSkip.EndRunButtonHighlightPrompt.MaxActivationDistance = 100
+					RoomSkip.EndRunButtonHighlightPrompt:InputHoldBegin()
+					RoomSkip.EndRunButtonHighlightPrompt:InputHoldEnd()
+				end
+			end
+		end
+		
 		if RoomSkip.DoorRoot ~= nil and RoomSkip.DoorRootPrompt ~= nil then
 			ScriptActionNow = "Open ProgressDoor Root"
 			RoomSkip.DoorRoot.CFrame = CFrame.new(
