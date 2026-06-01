@@ -321,7 +321,7 @@ function RoomStats()
 										if MinY == nil then
 											Door = NormalDoor
 										else
-											if MinY > NormalDoor.CollisionPart.Position.Y then
+											if MinY < NormalDoor.CollisionPart.Position.Y then
 												Door = NormalDoor
 											end
 										end
@@ -490,7 +490,7 @@ function RoomStats()
 	end
 end
 
-function TeleportToDoor()
+function TeleportToDoor(LastOpened)
 	Script.Action = "RoomSkip Start"
 	GetNextUngeneratedRoom()
 	RoomStats()
@@ -586,7 +586,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			end
 		end
 
-		if ScriptActionNow ~= "Run Finish" then
+		if ScriptActionNow ~= "Run Finish" and Script.Action ~= "Teleport LastOpened ProgressDoor" then
 			FindMoney()
 			if Currency.CurrentProxyPart ~= nil and Currency.CurrentProxyPartCFrame ~= nil and Currency.CurrentProxyPartPrompt ~= nil then
 				ScriptActionNow = "Open ProgressDoor Root"
@@ -672,5 +672,25 @@ game.UserInputService.InputBegan:Connect(function(Input)
 			print("WARNING | No NextUngeneratedRoom")
 		end
 		ClearAllStats(true)
+	end
+	if Input.KeyCode == Enum.KeyCode.O then
+		Script.Action = "Teleport LastOpened ProgressDoor"
+		GetNextUngeneratedRoom()
+		RoomStats()
+		if Main.CharacterRoot ~= nil and RoomSkip.Exit ~= nil then
+			if RoomSkip.Exit.Value:FindFirstChild("Entrances") then
+				for PressureDoorName, PressureDoor in RoomSkip.PressureDoors do
+					local Door = RoomSkip.Exit.Value.Entrances:FindFirstChild(PressureDoorName)
+					if Door ~= nil then
+						if Door:FindFirstChild("CollisionPart") then
+							if Door.CollisionPart:IsA("BasePart") then
+								Main.CharacterRoot.CFrame = Door.CollisionPart.CFrame + Vector3.new(0, 1, 0)
+							end
+						end
+					end
+				end
+			end
+			ClearAllStats(true)
+		end
 	end
 end)
