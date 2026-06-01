@@ -589,12 +589,16 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		if ScriptActionNow ~= "Run Finish" and Script.Action ~= "Teleport LastOpened ProgressDoor" then
 			FindMoney()
 			if Currency.CurrentProxyPart ~= nil and Currency.CurrentProxyPartCFrame ~= nil and Currency.CurrentProxyPartPrompt ~= nil then
-				ScriptActionNow = "Open ProgressDoor Root"
+				ScriptActionNow = "Pick Currency"
 				PartInFrontOfCamera(Currency.CurrentProxyPart, 7)
 				Currency.CurrentProxyPartPrompt.MaxActivationDistance = 100
 				Currency.CurrentProxyPartPrompt.RequiresLineOfSight = false
 				Currency.CurrentProxyPartPrompt:InputHoldBegin()
 				Currency.CurrentProxyPartPrompt:InputHoldEnd()
+				
+				local TeleportCFrame = Currency.CurrentProxyPartCFrame
+				UnCollisionAll(TeleportCFrame)
+				Main.CharacterRoot.CFrame = TeleportCFrame
 			else
 				if RoomSkip.DoorRoot ~= nil and RoomSkip.DoorRootPrompt ~= nil then
 					ScriptActionNow = "Open ProgressDoor Root"
