@@ -11,6 +11,8 @@ local Main = {
 
 	GameplayFolder = game.Workspace.GameplayFolder,
 	RoomsFolder = game.Workspace.GameplayFolder.Rooms
+
+	UnCollisionBoxCollisionParts = {}
 }
 
 local RoomSkip = {
@@ -131,8 +133,18 @@ local RoomSkip = {
 	}
 }
 
-function ClearAllStats(DoPrint)
-	if DoPrint == true then
+function ClearAllStats(Debug)
+	if Debug == true then
+		for _, Part in Main.UnCollisionBoxCollisionParts do
+			if Part ~= nil then
+				if Part.Parent ~= nil then
+					if Part:IsA("BasePart") then
+						Part.CanCollide = true
+					end
+				end
+			end
+		end
+
 		if RoomSkip.NextUngeneratedRoom ~= nil then
 			print("Clear stats of Room: "..RoomSkip.NextUngeneratedRoom.Name)
 		end
@@ -406,9 +418,8 @@ function TeleportToDoor()
 	RoomStats()
 end
 
-local PartsWithCollision = {}
 function UnCollisionAll(TeleportCFrame)
-	for _, Part in PartsWithCollision do
+	for _, Part in Main.UnCollisionBoxCollisionParts do
 		if Part ~= nil then
 			if Part.Parent ~= nil then
 				if Part:IsA("BasePart") then
@@ -417,8 +428,6 @@ function UnCollisionAll(TeleportCFrame)
 			end
 		end
 	end
-	
-	print("UnCollisionAll Work")
 	
 	local TemporaryFloor = game.Workspace:FindFirstChild("TemporaryFloor")
 	if TemporaryFloor == nil then
@@ -449,7 +458,7 @@ function UnCollisionAll(TeleportCFrame)
 		if Part.Parent ~= game.Players.LocalPlayer.Character and Part:IsA("BasePart") then
 			if Part.CanCollide == true and Part ~= TemporaryFloor then
 				Part.CanCollide = false
-				table.insert(PartsWithCollision, Part)
+				table.insert(Main.UnCollisionBoxCollisionParts, Part)
 			end
 		end
 	end
