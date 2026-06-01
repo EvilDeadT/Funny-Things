@@ -429,7 +429,6 @@ function UnCollisionAll(TeleportCFrame)
 		TemporaryFloor.CanCollide = true
 		TemporaryFloor.CastShadow = false
 		TemporaryFloor.Size = Vector3.new(8, 1, 8)
-		TemporaryFloor.CFrame = TeleportCFrame + Vector3.new(0, -4, 0)
 	end
 
 	local UncollisionBox = game.Workspace:FindFirstChild("UncollisionBox")
@@ -441,8 +440,10 @@ function UnCollisionAll(TeleportCFrame)
 		UncollisionBox.CanCollide = false
 		UncollisionBox.CastShadow = false
 		UncollisionBox.Size = Vector3.new(8, 8, 8)
-		UncollisionBox.CFrame = TeleportCFrame
 	end
+
+	UncollisionBox.CFrame = TeleportCFrame
+	TemporaryFloor.CFrame = TeleportCFrame + Vector3.new(0, -4, 0)
 
 	for _, Part in game.Workspace:GetPartsInPart(UncollisionBox) do
 		if Part.Parent ~= game.Players.LocalPlayer.Character and Part:IsA("BasePart") then
@@ -486,6 +487,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 				end
 			else
 				if RoomSkip.LockMain ~= nil and RoomSkip.LockPrompt ~= nil then
+					ScriptActionNow = "Open ProgressDoor Keycard"
 					RoomSkip.LockMain.CFrame = CFrame.new(
 						Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * 7
 					) * CFrame.fromOrientation(0, 0, 0)
@@ -506,7 +508,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			print("Touch part. Still in progress")
 			ClearAllStats(true)
 		end
-		if string.find(ScriptActionNow, "ProgressDoor") and Main.CharacterRoot ~= nil and RoomSkip.DoorCollisionPartCFrame ~= nil then
+		if string.find(ScriptActionNow, "Open ProgressDoor") and Main.CharacterRoot ~= nil and RoomSkip.DoorCollisionPartCFrame ~= nil then
 			local TeleportCFrame = RoomSkip.DoorCollisionPartCFrame + Vector3.new(0, 1, 0)
 			UnCollisionAll(TeleportCFrame)
 			Main.CharacterRoot.CFrame = TeleportCFrame
