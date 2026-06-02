@@ -589,8 +589,10 @@ game:GetService("RunService").RenderStepped:Connect(function()
 
 	for _, LocalEntity in Script.Settings.DeleteLocalEntities do
 		if Script.LocalEntitiesFolder[LocalEntity] ~= nil then
-			Script.LocalEntitiesFolder[LocalEntity][LocalEntity]:Destroy()
-			print(LocalEntity.." killed :)")
+			if Script.LocalEntitiesFolder[LocalEntity]:FindFirstChild(LocalEntity) then
+				Script.LocalEntitiesFolder[LocalEntity][LocalEntity]:Destroy()
+				print(LocalEntity.." killed :)")
+			end
 		end
 	end
 
