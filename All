@@ -6,12 +6,15 @@ local Script = {
 	Action = "Idle",
 	
 	Settings = {
+		AutoRoomSkipCooldown = 0.5,
 		AutoPickCurrency = false,
 		
 		DeleteLocalEntities = {
 			"WitchingHour"
 		}
 	},
+	
+	AutoRoomSkip = false,
 	
 	LocalEntitiesFolder = {
 		["WitchingHour"] = game.Workspace
@@ -154,11 +157,26 @@ local RoomSkip = {
 	
 	BoardPuzzles = {
 		["Board1"] = {
-			[1] = {
-				[1] = {
-					180
-				}
-			}
+			["1-1"] = {180},
+			["2-1"] = {0},
+			["2-2"] = {0, 180},
+			["2-3"] = {0, 180},
+			["2-4"] = {0, 180},
+			["2-5"] = {0, 180},
+			["2-6"] = {180},
+			["3-6"] = {90, -90},
+			["4-6"] = {0, 90},
+			["4-7"] = {-90},
+			["3-7"] = {90, -90},
+			["2-7"] = {90},
+			["2-8"] = {180, -90},
+			["3-8"] = {0}
+		},
+		["Board2"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {180},
+			["2-2"] = {90, -90},
+			["3-2"] = {},
 		}
 	}
 }
@@ -361,6 +379,10 @@ function RoomStats()
 								OpenValue:GetPropertyChangedSignal("Value"):Once(function()
 									if OpenValue.Value == true and Script.Action ~= "RoomSkip Start" then
 										ClearAllStats()
+										if Script.AutoRoomSkip == true then
+											task.wait(Script.Settings.AutoRoomSkipCooldown)
+											TeleportToDoor()
+										end
 									end
 								end)
 							end
@@ -567,10 +589,8 @@ game:GetService("RunService").RenderStepped:Connect(function()
 
 	for _, LocalEntity in Script.Settings.DeleteLocalEntities do
 		if Script.LocalEntitiesFolder[LocalEntity] ~= nil then
-			if Script.LocalEntitiesFolder[LocalEntity]:FindFirstChild(LocalEntity) then
-				Script.LocalEntitiesFolder[LocalEntity][LocalEntity]:Destroy()
-				print(LocalEntity.." killed :)")
-			end
+			Script.LocalEntitiesFolder[LocalEntity][LocalEntity]:Destroy()
+			print(LocalEntity.." killed :)")
 		end
 	end
 
@@ -688,35 +708,41 @@ game:GetService("RunService").RenderStepped:Connect(function()
 end)
 
 game.UserInputService.InputBegan:Connect(function(Input)
-	if Script.Mode == "RoomSkip" and Script.Action == "Idle" then
-		if Input.KeyCode == Enum.KeyCode.P then
+	if Script.Mode == "RoomSkip" then
+		if Input.KeyCode == Enum.KeyCode.P and Script.Action == "Idle" then
 			TeleportToDoor()
 		end
-	end
-	if Input.KeyCode == Enum.KeyCode.Z then
-		if RoomSkip.NextUngeneratedRoom == nil then
-			print("WARNING | No NextUngeneratedRoom")
+		if Input.KeyCode == Enum.KeyCode.Z then
+			if RoomSkip.NextUngeneratedRoom == nil then
+				print("WARNING | No NextUngeneratedRoom")
+			end
+			ClearAllStats(true)
 		end
-		ClearAllStats(true)
-	end
-	if Input.KeyCode == Enum.KeyCode.O then
-		Script.Action = "Teleport LastOpened ProgressDoor"
-		GetNextUngeneratedRoom()
-		RoomStats()
-		if Main.CharacterRoot ~= nil and RoomSkip.Exit ~= nil then
-			if RoomSkip.Exit.Value:FindFirstChild("Entrances") then
-				for PressureDoorName, PressureDoor in RoomSkip.PressureDoors do
-					local Door = RoomSkip.Exit.Value.Entrances:FindFirstChild(PressureDoorName)
-					if Door ~= nil then
-						if Door:FindFirstChild("CollisionPart") then
-							if Door.CollisionPart:IsA("BasePart") then
-								Main.CharacterRoot.CFrame = Door.CollisionPart.CFrame + Vector3.new(0, 1, 0)
+		if Input.KeyCode == Enum.KeyCode.K then
+			Script.Action = "Teleport LastOpened ProgressDoor"
+			GetNextUngeneratedRoom()
+			RoomStats()
+			if Main.CharacterRoot ~= nil and RoomSkip.Exit ~= nil then
+				if RoomSkip.Exit.Value:FindFirstChild("Entrances") then
+					for PressureDoorName, PressureDoor in RoomSkip.PressureDoors do
+						local Door = RoomSkip.Exit.Value.Entrances:FindFirstChild(PressureDoorName)
+						if Door ~= nil then
+							if Door:FindFirstChild("CollisionPart") then
+								if Door.CollisionPart:IsA("BasePart") then
+									Main.CharacterRoot.CFrame = Door.CollisionPart.CFrame + Vector3.new(0, 1, 0)
+								end
 							end
 						end
 					end
 				end
+				ClearAllStats(true)
 			end
-			ClearAllStats(true)
+		end
+		if Input.KeyCode == Enum.KeyCode.O then
+			Script.AutoRoomSkip = not Script.AutoRoomSkip
+			if Script.AutoRoomSkip == true then
+				TeleportToDoor()
+			end
 		end
 	end
 end)
