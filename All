@@ -155,6 +155,8 @@ local RoomSkip = {
 		}
 	},
 	
+	PipeRoomStatus = "Idle",
+	
 	BoardPuzzles = {
 		["Board1"] = {
 			["1-1"] = {180},
@@ -176,7 +178,280 @@ local RoomSkip = {
 			["1-1"] = {0, 180},
 			["1-2"] = {180},
 			["2-2"] = {90, -90},
-			["3-2"] = {},
+			["3-2"] = {90, -90},
+			["4-2"] = {0},
+			["4-3"] = {0, 180},
+			["4-4"] = {0, 180},
+			["4-5"] = {-90},
+			["3-5"] = {90, -90},
+			["2-5"] = {180},
+			["2-4"] = {0, 180},
+			["2-3"] = {0},
+			["1-3"] = {90},
+			["1-4"] = {0, 180},
+			["1-5"] = {0, 180},
+			["1-6"] = {180},
+			["1-7"] = {180, -90},
+			["2-7"] = {0},
+			["2-8"] = {180},
+			["3-8"] = {0}
+		},
+		["Board3"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {180},
+			["2-2"] = {90, -90},
+			["3-2"] = {0, 90},
+			["3-3"] = {0, 180},
+			["3-4"] = {180},
+			["4-4"] = {0},
+			["4-5"] = {0, 180},
+			["4-6"] = {0, 180},
+			["4-7"] = {-90},
+			["3-7"] = {90, -90},
+			["2-7"] = {90},
+			["2-8"] = {180},
+			["3-8"] = {0}
+		},
+		["Board4"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {180},
+			["2-2"] = {90, -90},
+			["3-2"] = {90, -90},
+			["4-2"] = {0},
+			["4-3"] = {0, 180},
+			["4-4"] = {-90},
+			["3-4"] = {180},
+			["3-3"] = {0, 90},
+			["2-3"] = {90, -90},
+			["1-3"] = {90},
+			["1-4"] = {0, 180},
+			["1-5"] = {0, 180},
+			["1-6"] = {0, 180},
+			["1-7"] = {180, -90},
+			["2-7"] = {0, -90},
+			["2-6"] = {0, 180},
+			["2-5"] = {90},
+			["3-5"] = {0},
+			["3-6"] = {0, 180},
+			["3-7"] = {0, 180},
+			["3-8"] = {0, 180}
+		},
+		["Board5"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {180},
+			["2-2"] = {-90},
+			["2-1"] = {90},
+			["3-1"] = {0},
+			["3-2"] = {0, 180},
+			["3-3"] = {-90},
+			["2-3"] = {90, -90},
+			["1-3"] = {90},
+			["1-4"] = {0, 180},
+			["1-5"] = {0, 180},
+			["1-6"] = {180},
+			["2-6"] = {0, -90},
+			["2-5"] = {90},
+			["3-5"] = {-90},
+			["3-4"] = {90},
+			["4-4"] = {0},
+			["4-5"] = {0, 180},
+			["4-6"] = {0, 180},
+			["4-7"] = {-90},
+			["3-7"] = {90},
+			["3-8"] = {0, 180},
+
+			["1-7"] = {0, 180}
+		},
+		["Board6"] = {
+			["1-1"] = {180},
+			["2-1"] = {0},
+			["2-2"] = {0, 180},
+			["2-3"] = {180},
+			["3-3"] = {-90},
+			["3-2"] = {0, 180},
+			["3-1"] = {90},
+			["4-1"] = {0},
+			["4-2"] = {0, 180},
+			["4-3"] = {0, 180},
+			["4-4"] = {-90},
+			["3-4"] = {90},
+			["3-5"] = {180},
+			["4-5"] = {0},
+			["4-6"] = {0, 180},
+			["4-7"] = {0, 180},
+			["4-8"] = {-90},
+			["3-8"] = {90}
+		},
+		["Board7"] = {
+			["1-1"] = {180, -90},
+			["2-1"] = {0},
+			["2-2"] = {180},
+			["3-2"] = {-90},
+			["3-1"] = {90},
+			["4-1"] = {0},
+			["4-2"] = {0, 180},
+			["4-3"] = {-90},
+			["3-3"] = {90, -90},
+			["2-3"] = {90, -90},
+			["1-3"] = {90},
+			["1-4"] = {180, -90},
+			["2-4"] = {90, -90},
+			["3-4"] = {0},
+			["3-5"] = {0, 180},
+			["3-6"] = {180},
+			["4-6"] = {0},
+			["4-7"] = {-90},
+			["3-7"] = {90, -90},
+			["2-7"] = {90},
+			["2-8"] = {180},
+			["3-8"] = {0}
+		},
+		["Board8"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {0, 180},
+			["1-3"] = {0, 180},
+			["1-4"] = {180},
+			["2-4"] = {-90},
+			["2-3"] = {0, 180},
+			["2-2"] = {90},
+			["3-2"] = {90, -90},
+			["4-2"] = {0},
+			["4-3"] = {0, 180},
+			["4-4"] = {-90},
+			["3-4"] = {90},
+			["3-5"] = {-90},
+			["2-5"] = {90, -90},
+			["1-5"] = {90},
+			["1-6"] = {0, 180},
+			["1-7"] = {0, 180},
+			["1-8"] = {180},
+			["2-8"] = {90, -90},
+			["3-8"] = {0}
+		},
+		["Board9"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {0, 180},
+			["1-3"] = {0, 180},
+			["1-4"] = {0, 180},
+			["1-5"] = {0, 180},
+			["1-6"] = {0, 180},
+			["1-7"] = {180},
+			["2-7"] = {-90},
+			["3-7"] = {-90},
+			["3-6"] = {0, 180},
+			["3-5"] = {90},
+			["4-5"] = {0},
+			["4-6"] = {0, 180},
+			["4-7"] = {0, 180},
+			["4-8"] = {-90},
+			["3-8"] = {90},
+
+			["2-6"] = {0, 180},
+			["2-5"] = {0, 180},
+			["2-4"] = {0, 180},
+			["2-3"] = {90},
+			["3-3"] = {90, -90}
+		},
+		["Board11"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {0, 180},
+			["1-3"] = {0, 180},
+			["1-4"] = {180},
+			["2-4"] = {90, -90},
+			["3-4"] = {-90},
+			["3-3"] = {90},
+			["4-3"] = {0},
+			["4-4"] = {0, 180},
+			["4-5"] = {0, 180},
+			["4-6"] = {-90},
+			["3-6"] = {90, -90},
+			["2-6"] = {90},
+			["2-7"] = {0, 180},
+			["2-8"] = {180},
+			["3-8"] = {0}
+		},
+		["Board12"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {0, 180},
+			["1-3"] = {0, 180},
+			["1-4"] = {0, 180},
+			["1-5"] = {0, 180},
+			["1-6"] = {180, -90},
+			["2-6"] = {-90},
+			["2-5"] = {0, 180},
+			["2-4"] = {0, 180},
+			["2-3"] = {0, 180},
+			["2-2"] = {90},
+			["3-2"] = {0},
+			["3-3"] = {0, 180},
+			["3-4"] = {0, 180},
+			["3-5"] = {0, 180},
+			["3-6"] = {0, 180},
+			["3-7"] = {0, 180},
+			["3-8"] = {0, 180}
+		},
+		["Board13"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {180, -90},
+			["2-2"] = {0},
+			["2-3"] = {180},
+			["3-3"] = {90, -90},
+			["4-3"] = {0},
+			["4-4"] = {0, 180},
+			["4-5"] = {0, 180},
+			["4-6"] = {-90},
+			["3-6"] = {90},
+			["3-7"] = {0, 180},
+			["3-8"] = {0, 180}
+		},
+		["Board14"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {180, -90},
+			["2-2"] = {-90},
+			["2-1"] = {90},
+			["3-1"] = {90, -90},
+			["4-1"] = {0},
+			["4-2"] = {0, 180},
+			["4-3"] = {-90},
+			["3-3"] = {90, -90},
+			["2-3"] = {90},
+			["2-4"] = {0, 180},
+			["2-5"] = {0, 180},
+			["2-6"] = {0, 180},
+			["2-7"] = {180},
+			["3-7"] = {90, -90},
+			["4-7"] = {0},
+			["4-8"] = {-90},
+			["3-8"] = {90},
+		},
+		["Board15"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {180, -90},
+			["2-2"] = {0},
+			["2-3"] = {0, 180},
+			["2-4"] = {-90},
+			["3-4"] = {90, -90},
+			["4-4"] = {0},
+			["4-5"] = {-90},
+			["3-5"] = {90},
+			["2-5"] = {90, -90},
+			["1-5"] = {90},
+			["1-6"] = {180},
+			["2-6"] = {0, 90},
+			["2-7"] = {-90},
+			["3-7"] = {90, -90},
+			["4-7"] = {0},
+			["4-8"] = {-90},
+			["3-8"] = {90},
+
+			["2-1"] = {90},
+			["3-1"] = {90},
+			["3-2"] = {0, 180},
+			["3-3"] = {180},
+
+			["3-6"] = {180},
+
+			["1-7"] = {90}
 		}
 	}
 }
@@ -584,6 +859,104 @@ function UnCollisionAll(TeleportCFrame)
 	end
 end
 
+function ChangePipes(Room)
+	RoomSkip.PipeRoomStatus = "Rotate"
+	local Finished = true
+	
+	if Room ~= nil then
+		for Board, Pipes in RoomSkip.BoardPuzzles do
+			if Room:FindFirstChild(Board) then
+				if Room[Board]:FindFirstChild("puzzle") and Room[Board]:FindFirstChild("Main") and Room[Board]:FindFirstChild("Power") then
+					local BoardPuzzleMain = Room[Board].Main
+					local PowerPipe = Room[Board].Power
+
+					for PipePosition, PipeRotation in Pipes do
+						if Main.CharacterRoot ~= nil then
+							local TeleportCFrame = BoardPuzzleMain.CFrame
+							UnCollisionAll(TeleportCFrame)
+							Main.CharacterRoot.CFrame = TeleportCFrame
+							
+							local Column = tonumber(string.split(PipePosition, "-")[1])
+							local Row = tonumber(string.split(PipePosition, "-")[2])
+
+							local PipeFindPart = game.Workspace:FindFirstChild("BoardPuzzlePipeFindPart")
+							if PipeFindPart == nil then
+								PipeFindPart = Instance.new("Part", game.Workspace)
+								PipeFindPart.Name = "BoardPuzzlePipeFindPart"
+								PipeFindPart.Transparency = 0.5
+								PipeFindPart.Anchored = true
+								PipeFindPart.CanCollide = true
+								PipeFindPart.CastShadow = false
+								PipeFindPart.Size = Vector3.new(0.5, 0.5, 0.5)
+							end
+
+							PipeFindPart.Position = PowerPipe.Position - (BoardPuzzleMain.CFrame.UpVector * (1.5 * (Column - 1)) + BoardPuzzleMain.CFrame.RightVector * (1.5 * Row))
+
+							for _, PipePart in game.Workspace:GetPartsInPart(PipeFindPart) do
+								if PipePart.Name == "Part" and PipePart.Parent ~= nil then
+									if PipePart.Parent.Parent ~= nil then
+										if PipePart.Parent.Parent == Room[Board].puzzle then
+											local NeedRotate = true
+											for _, Degree in PipeRotation do
+												if math.round(PipePart.Orientation.Z) ~= -180 then
+													if math.round(PipePart.Orientation.Z) == Degree then
+														NeedRotate = false
+													end
+												else
+													if math.round(math.abs(PipePart.Orientation.Z)) == Degree then
+														NeedRotate = false
+													end
+												end
+											end
+
+											if NeedRotate == true then
+												if PipePart:FindFirstChild("Highlight") then
+													if PipePart.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then
+														for _, OtherPipes in Room[Board].puzzle:GetChilren() do
+															if OtherPipes:FindFirstChild("Highlight") then
+																if OtherPipes.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then
+																	OtherPipes.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Enabled = false
+																end
+															end
+														end
+														
+														local PromptPressed = false
+														PipePart.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Triggered:Connect(function()
+															PromptPressed = true
+														end)
+														
+														while PromptPressed == false do
+															PipePart.Highlight.Anchored = true
+															PartInFrontOfCamera(PipePart.Highlight, 7)
+															PipePart.Highlight:FindFirstChildWhichIsA("ProximityPrompt").MaxActivationDistance = 100
+															PipePart.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Enabled = true
+															PipePart.Highlight:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldBegin()
+															PipePart.Highlight:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldEnd()
+															task.wait()
+														end
+													end
+												end
+												Finished = false	
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+	
+	if Finished == true then
+		RoomSkip.PipeRoomStatus = "Finished"
+	else
+		task.wait(0.5)
+		RoomSkip.PipeRoomStatus = "Idle"
+	end
+end
+
 game:GetService("RunService").RenderStepped:Connect(function()
 	local ScriptActionNow = "Idle"
 
@@ -596,23 +969,10 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		end
 	end
 
-	if Script.Mode == "RoomSkip" then
+	if Script.Mode == "RoomSkip" and (RoomSkip.PipeRoomStatus == "Idle" or RoomSkip.PipeRoomStatus == "Finished") then
 		if RoomSkip.Exit ~= nil then
-			if RoomSkip.Exit.Value:GetAttribute("SpecialTag") == "BoardPuzzle" then
-				print("IT'S!! PUZZLE!! TIME!!!")
-				if RoomSkip.Exit.Value:FindFirstChild("Entrances") then
-					for PressureDoorName, PressureDoor in RoomSkip.PressureDoors do
-						local Door = RoomSkip.Exit.Value.Entrances:FindFirstChild(PressureDoorName)
-						if Door ~= nil then
-							if Door:FindFirstChild("CollisionPart") then
-								if Door.CollisionPart:IsA("BasePart") then
-									Main.CharacterRoot.CFrame = Door.CollisionPart.CFrame + Vector3.new(0, 1, 0)
-								end
-							end
-						end
-					end
-				end
-				ClearAllStats(true)
+			if RoomSkip.Exit.Value:GetAttribute("SpecialTag") == "BoardPuzzle" and RoomSkip.PipeRoomStatus == "Idle" then
+				ChangePipes()
 			elseif RoomSkip.Exit.Value.Name == "ModifierEnding" then
 				if RoomSkip.EndRunButtonHighlight ~= nil and RoomSkip.EndRunButtonHighlightPrompt ~= nil then
 					ScriptActionNow = "Run Finish"
