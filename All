@@ -911,9 +911,9 @@ function ChangePipes(Room)
 											end
 
 											if NeedRotate == true then
-												if PipePart:FindFirstChild("Highlight") then
-													if PipePart.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then
-														for _, OtherPipes in Room[Board].puzzle:GetChilren() do
+												if PipePart.Parent:FindFirstChild("Highlight") then
+													if PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then
+														for _, OtherPipes in Room[Board].puzzle:GetChildren() do 
 															if OtherPipes:FindFirstChild("Highlight") then
 																if OtherPipes.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then
 																	OtherPipes.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Enabled = false
@@ -922,19 +922,20 @@ function ChangePipes(Room)
 														end
 														
 														local PromptPressed = false
-														PipePart.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Triggered:Connect(function()
+														PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Triggered:Connect(function()
 															PromptPressed = true
 														end)
 														
 														while PromptPressed == false do
-															PipePart.Highlight.Anchored = true
-															PartInFrontOfCamera(PipePart.Highlight, 7)
-															PipePart.Highlight:FindFirstChildWhichIsA("ProximityPrompt").MaxActivationDistance = 100
-															PipePart.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Enabled = true
-															PipePart.Highlight:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldBegin()
-															PipePart.Highlight:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldEnd()
+															PipePart.Parent.Highlight.Anchored = true
+															PartInFrontOfCamera(PipePart.Parent.Highlight, 7)
+															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").MaxActivationDistance = 100
+															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Enabled = true
+															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldBegin()
+															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldEnd()
 															task.wait()
 														end
+									
 													end
 												end
 												Finished = false	
@@ -973,7 +974,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 	if Script.Mode == "RoomSkip" and (RoomSkip.PipeRoomStatus == "Idle" or RoomSkip.PipeRoomStatus == "Finished") then
 		if RoomSkip.Exit ~= nil then
 			if RoomSkip.Exit.Value:GetAttribute("SpecialTag") == "BoardPuzzle" and RoomSkip.PipeRoomStatus == "Idle" then
-				ChangePipes()
+				ChangePipes(RoomSkip.Exit.Value)
 			elseif RoomSkip.Exit.Value.Name == "ModifierEnding" then
 				if RoomSkip.EndRunButtonHighlight ~= nil and RoomSkip.EndRunButtonHighlightPrompt ~= nil then
 					ScriptActionNow = "Run Finish"
