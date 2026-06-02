@@ -4,9 +4,17 @@ loadstring(game:HttpGet("https://github.com/AZYsGithub/DexPlusPlus/releases/late
 local Script = {
 	Mode = "RoomSkip",
 	Action = "Idle",
-
-	DeleteLocalEntities = {
-		"WitchingHour"
+	
+	Settings = {
+		AutoPickCurrency = false,
+		
+		DeleteLocalEntities = {
+			"WitchingHour"
+		}
+	},
+	
+	LocalEntitiesFolder = {
+		["WitchingHour"] = game.Workspace
 	}
 }
 
@@ -142,6 +150,16 @@ local RoomSkip = {
 				[1] = "TouchPart"
 			}
 		}
+	},
+	
+	BoardPuzzles = {
+		["Board1"] = {
+			[1] = {
+				[1] = {
+					180
+				}
+			}
+		}
 	}
 }
 
@@ -161,21 +179,23 @@ function PartInFrontOfCamera(Part, LookVectorOffset)
 end
 
 function GetMoneyFrom(Folder)
-	for _, Drawer in Folder:GetChildren() do
-		if Drawer:FindFirstChild("SpawnLocations") then
-			for _, SpawnLocation in Drawer.SpawnLocations:GetChildren() do
-				for _, Money in SpawnLocation:GetChildren() do
-					if Money:FindFirstChild("ProxyPart") and Money:GetAttribute("InteractionType") and Money:GetAttribute("Amount") then
-						Currency.CurrentProxyPart = Money.ProxyPart
-						Currency.CurrentProxyPartCFrame = Money.ProxyPart.CFrame
-						for _, Prompt in Money.ProxyPart:GetChildren() do
-							if Prompt:IsA("ProximityPrompt") then
-								if Prompt.Exclusivity == Enum.ProximityPromptExclusivity.OnePerButton then
-									Currency.CurrentProxyPartPrompt = Prompt
+	if Script.Settings.AutoPickCurrency == true then
+		for _, Drawer in Folder:GetChildren() do
+			if Drawer:FindFirstChild("SpawnLocations") then
+				for _, SpawnLocation in Drawer.SpawnLocations:GetChildren() do
+					for _, Money in SpawnLocation:GetChildren() do
+						if Money:FindFirstChild("ProxyPart") and Money:GetAttribute("InteractionType") and Money:GetAttribute("Amount") then
+							Currency.CurrentProxyPart = Money.ProxyPart
+							Currency.CurrentProxyPartCFrame = Money.ProxyPart.CFrame
+							for _, Prompt in Money.ProxyPart:GetChildren() do
+								if Prompt:IsA("ProximityPrompt") then
+									if Prompt.Exclusivity == Enum.ProximityPromptExclusivity.OnePerButton then
+										Currency.CurrentProxyPartPrompt = Prompt
+									end
 								end
 							end
+							return
 						end
-						return
 					end
 				end
 			end
@@ -321,7 +341,7 @@ function RoomStats()
 										if MinY == nil then
 											Door = NormalDoor
 										else
-											if MinY > NormalDoor.CollisionPart.Position.Y then
+											if MinY < NormalDoor.CollisionPart.Position.Y then
 												Door = NormalDoor
 											end
 										end
@@ -545,9 +565,9 @@ end
 game:GetService("RunService").RenderStepped:Connect(function()
 	local ScriptActionNow = "Idle"
 
-	for _, LocalEntity in Script.DeleteLocalEntities do
-		if LocalEntity == "WitchingHour" and game.Workspace:FindFirstChild("WitchingHour") then
-			game.Workspace.WitchingHour:Destroy()
+	for _, LocalEntity in Script.Settings.DeleteLocalEntities do
+		if Script.LocalEntitiesFolder[LocalEntity] ~= nil then
+			Script.LocalEntitiesFolder[LocalEntity][LocalEntity]:Destroy()
 			print(LocalEntity.." killed :)")
 		end
 	end
