@@ -715,6 +715,7 @@ game.UserInputService.InputBegan:Connect(function(Input)
 			TeleportToDoor()
 		end
 		if Input.KeyCode == Enum.KeyCode.Z then
+			Script.AutoRoomSkip = false
 			if RoomSkip.NextUngeneratedRoom == nil then
 				print("WARNING | No NextUngeneratedRoom")
 			end
@@ -722,6 +723,7 @@ game.UserInputService.InputBegan:Connect(function(Input)
 		end
 		if Input.KeyCode == Enum.KeyCode.K then
 			Script.Action = "Teleport LastOpened ProgressDoor"
+			Script.AutoRoomSkip = false
 			GetNextUngeneratedRoom()
 			RoomStats()
 			if Main.CharacterRoot ~= nil and RoomSkip.Exit ~= nil then
