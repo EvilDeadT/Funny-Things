@@ -585,6 +585,7 @@ function ClearAllStats(Debug)
 	RoomSkip.KeycardProxyPartPrompt = nil
 	RoomSkip.Password = nil
 	RoomSkip.PasswordCode = nil
+	RoomSkip.PipeRoomStatus = "Idle"
 end
 
 function GetNextUngeneratedRoom()
