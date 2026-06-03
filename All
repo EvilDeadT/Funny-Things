@@ -1090,7 +1090,10 @@ game:GetService("RunService").RenderStepped:Connect(function()
 						else
 							if RoomSkip.LockMain ~= nil and RoomSkip.LockPrompt ~= nil then
 								ScriptActionNow = "Open ProgressDoor Keycard"
-								RoomSkip.KeycardProxyPartPrompt.Enabled = false
+								
+								if RoomSkip.KeycardProxyPartPrompt ~= nil then
+									RoomSkip.KeycardProxyPartPrompt.Enabled = false
+								end
 								
 								RoomSkip.KeycardParentPartCFrame = nil
 								RoomSkip.KeycardProxyPart = nil
