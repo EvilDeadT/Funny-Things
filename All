@@ -941,7 +941,7 @@ function ChangePipes(Room)
 														
 														while PromptPressed == false do
 															PipePart.Parent.Highlight.Anchored = true
-															PartInFrontOfCamera(PipePart.Parent.Highlight, 7)
+															PartInFrontOfCamera(PipePart.Parent.Highlight, 3)
 															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").MaxActivationDistance = 100
 															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Enabled = true
 															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldBegin()
