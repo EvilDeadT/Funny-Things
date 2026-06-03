@@ -861,6 +861,10 @@ function UnCollisionAll(TeleportCFrame)
 
 	for _, Part in game.Workspace:GetPartsInPart(UncollisionBox) do
 		if Part.Parent ~= game.Players.LocalPlayer.Character and Part:IsA("BasePart") then
+			if Part:GetAttribute("Active") and Part:GetAttribute("Damage") then
+				Part:Destroy()
+				print("Deleted Dangerous Part")
+			end
 			if Part.CanCollide == true and Part ~= TemporaryFloor then
 				Part.CanCollide = false
 				table.insert(Main.UnCollisionBoxCollisionParts, Part)
