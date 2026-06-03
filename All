@@ -1,5 +1,5 @@
 game.Lighting.Ambient = Color3.new(1,1,1)
-loadstring(game:HttpGet("https://github.com/AZYsGithub/DexPlusPlus/releases/latest/download/out.lua"))()
+--loadstring(game:HttpGet("https://github.com/AZYsGithub/DexPlusPlus/releases/latest/download/out.lua"))()
 
 local Script = {
 	Mode = "RoomSkip",
