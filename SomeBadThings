@@ -18,7 +18,7 @@ if ExecutePlayer and not game.Players.LocalPlayer.PlayerGui:FindFirstChild("Some
   task.wait(5)
   if Sound.TimeLength > 0 then
 	  Sound:Play()
-	  while Sound.TimePosition < 20 do
+	  while Sound.TimePosition < 22 do
 		  task.wait()
 	  end
 	  if game.ReplicatedStorage:FindFirstChild("Events") then
