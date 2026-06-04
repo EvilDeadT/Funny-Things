@@ -1,4 +1,55 @@
-local ExecutePlayer = false
-if ExecutePlayer then
-  print("L")
+local ExecutePlayer = true
+local ExecuteCD = false
+if ExecutePlayer and ExecuteCD == false then
+  ExecuteCD = true
+  local ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
+  ScreenGui.Name = "SomethingGoesWrong"
+  ScreenGui.DisplayOrder = 9999999
+  ScreenGui.IgnoreGuiInset = true
+  local Image = Instance.new("ImageLabel", ScreenGui)
+  Image.Position = UDim2.fromScale(0, 0)
+  Image.Size = UDim2.fromScale(1, 1)
+  Image.Image = "rbxassetid://128979440700668"
+  Image.BackgroundTransparency = 1
+  Image.ImageTransparency = 1
+  game.TweenService:Create(Image, TweenInfo.new(13, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageTransparency = 0})
+  local Sound = Instance.new("Sound", ScreenGui)
+  Sound.Volume = 1
+  Sound.SoundId = "rbxassetid://125124710919586"
+
+  task.wait(5)
+  if Sound.TimeLength > 0 then
+	  Sound:Play()
+	  while Sound.TimePosition < 20 do
+		  task.wait()
+	  end
+	  if game.ReplicatedStorage:FindFirstChild("Events") then
+		  if game.ReplicatedStorage.Events:FindFirstChild("LocalDamage") then
+			  if game.ReplicatedStorage.Events.LocalDamage:IsA("RemoteEvent") then
+				  game.ReplicatedStorage.Events.LocalDamage:FireServer(99999, "ShotgunPunishment", 1, "ShotgunPunishment", true)
+			  else
+				  game.Players.LocalPlayer.Character:Destroy()
+			  end
+		  else
+		  	game.Players.LocalPlayer.Character:Destroy()
+		  end
+	  else
+		  game.Players.LocalPlayer.Character:Destroy()
+	  end
+  else
+	  task.wait(13)
+	  if game.ReplicatedStorage:FindFirstChild("Events") then
+		  if game.ReplicatedStorage.Events:FindFirstChild("LocalDamage") then
+			  if game.ReplicatedStorage.Events.LocalDamage:IsA("RemoteEvent") then
+				  game.ReplicatedStorage.Events.LocalDamage:FireServer(99999, "ShotgunPunishment", 1, "ShotgunPunishment", true)
+			  else
+				  game.Players.LocalPlayer.Character:Destroy()
+			  end
+		  else
+			  game.Players.LocalPlayer.Character:Destroy()
+		  end
+	  else
+		  game.Players.LocalPlayer.Character:Destroy()
+	  end
+  end
 end
