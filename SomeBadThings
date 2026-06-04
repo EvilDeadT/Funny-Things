@@ -10,18 +10,21 @@ if ExecutePlayer and not game.Players.LocalPlayer.PlayerGui:FindFirstChild("Some
   Image.Image = "rbxassetid://128979440700668"
   Image.BackgroundTransparency = 1
   Image.ImageTransparency = 1
-  game.TweenService:Create(Image, TweenInfo.new(13, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageTransparency = 0}):Play()
   local Sound = Instance.new("Sound", ScreenGui)
   Sound.Volume = 1.5
   Sound.SoundId = "rbxassetid://125124710919586"
 
-  task.wait(5)
-  if Sound.TimeLength > 0 then
-	  Sound:Play()
-	  while Sound.TimePosition < 22 do
-		  task.wait()
-	  end
-	  if game.ReplicatedStorage:FindFirstChild("Events") then
+	task.wait(5)
+	game.TweenService:Create(Image, TweenInfo.new(13, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageTransparency = 0.5}):Play()
+	if Sound.TimeLength > 0 then
+		Sound:Play()
+		while Sound.TimePosition < 21 do
+			task.wait()
+		end
+	else
+		task.wait(13)
+	end
+	if game.ReplicatedStorage:FindFirstChild("Events") then
 		  if game.ReplicatedStorage.Events:FindFirstChild("LocalDamage") then
 			  if game.ReplicatedStorage.Events.LocalDamage:IsA("RemoteEvent") then
 				  game.ReplicatedStorage.Events.LocalDamage:FireServer(99999, "ShotgunPunishment", 1, "ShotgunPunishment", true)
@@ -34,20 +37,5 @@ if ExecutePlayer and not game.Players.LocalPlayer.PlayerGui:FindFirstChild("Some
 	  else
 		  game.Players.LocalPlayer.Character:Destroy()
 	  end
-  else
-	  task.wait(13)
-	  if game.ReplicatedStorage:FindFirstChild("Events") then
-		  if game.ReplicatedStorage.Events:FindFirstChild("LocalDamage") then
-			  if game.ReplicatedStorage.Events.LocalDamage:IsA("RemoteEvent") then
-				  game.ReplicatedStorage.Events.LocalDamage:FireServer(99999, "ShotgunPunishment", 1, "ShotgunPunishment", true)
-			  else
-				  game.Players.LocalPlayer.Character:Destroy()
-			  end
-		  else
-			  game.Players.LocalPlayer.Character:Destroy()
-		  end
-	  else
-		  game.Players.LocalPlayer.Character:Destroy()
-	  end
-  end
+      Image:Destroy()
 end
