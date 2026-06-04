@@ -1,7 +1,5 @@
 local ExecutePlayer = true
-local ExecuteCD = false
-if ExecutePlayer and ExecuteCD == false then
-  ExecuteCD = true
+if ExecutePlayer and not game.Players.LocalPlayer.PlayerGui:FindFirstChild("SomethingGoesWrong") then
   local ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
   ScreenGui.Name = "SomethingGoesWrong"
   ScreenGui.DisplayOrder = 9999999
