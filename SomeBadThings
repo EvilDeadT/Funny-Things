@@ -1,4 +1,4 @@
-local ExecutePlayer = false
+local ExecutePlayer = true
 if ExecutePlayer and not game.Players.LocalPlayer.PlayerGui:FindFirstChild("SomethingGoesWrong") then
   local ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
   ScreenGui.Name = "SomethingGoesWrong"
