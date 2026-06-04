@@ -1,4 +1,4 @@
-local ExecutePlayer = false
+local ExecutePlayer = true
 if ExecutePlayer then
   print("L")
 end
