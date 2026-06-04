@@ -10,9 +10,9 @@ if ExecutePlayer and not game.Players.LocalPlayer.PlayerGui:FindFirstChild("Some
   Image.Image = "rbxassetid://128979440700668"
   Image.BackgroundTransparency = 1
   Image.ImageTransparency = 1
-  game.TweenService:Create(Image, TweenInfo.new(13, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageTransparency = 0})
+  game.TweenService:Create(Image, TweenInfo.new(13, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageTransparency = 0}):Play()
   local Sound = Instance.new("Sound", ScreenGui)
-  Sound.Volume = 1
+  Sound.Volume = 1.5
   Sound.SoundId = "rbxassetid://125124710919586"
 
   task.wait(5)
