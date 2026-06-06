@@ -1160,43 +1160,45 @@ game:GetService("RunService").RenderStepped:Connect(function()
 end)
 
 game.UserInputService.InputBegan:Connect(function(Input)
-	if Script.Mode == "RoomSkip" then
-		if Input.KeyCode == Enum.KeyCode.P and Script.Action == "Idle" then
-			Script.AutoRoomSkip = false
-			TeleportToDoor()
+	if Input.KeyCode == Enum.KeyCode.P and Script.Action == "Idle" then
+		Script.AutoRoomSkip = false
+		TeleportToDoor()
+	end
+	if Input.KeyCode == Enum.KeyCode.Z then
+		Script.AutoRoomSkip = false
+		if RoomSkip.NextUngeneratedRoom == nil then
+			print("WARNING | No NextUngeneratedRoom")
 		end
-		if Input.KeyCode == Enum.KeyCode.Z then
-			Script.AutoRoomSkip = false
-			if RoomSkip.NextUngeneratedRoom == nil then
-				print("WARNING | No NextUngeneratedRoom")
-			end
-			ClearAllStats(true)
-		end
-		if Input.KeyCode == Enum.KeyCode.K then
-			Script.Action = "Teleport LastOpened ProgressDoor"
-			Script.AutoRoomSkip = false
-			GetNextUngeneratedRoom()
-			RoomStats()
-			if Main.CharacterRoot ~= nil and RoomSkip.Exit ~= nil then
-				if RoomSkip.Exit.Value:FindFirstChild("Entrances") then
-					for PressureDoorName, PressureDoor in RoomSkip.PressureDoors do
-						local Door = RoomSkip.Exit.Value.Entrances:FindFirstChild(PressureDoorName)
-						if Door ~= nil then
-							if Door:FindFirstChild("CollisionPart") then
-								if Door.CollisionPart:IsA("BasePart") then
-									Main.CharacterRoot.CFrame = Door.CollisionPart.CFrame + Vector3.new(0, 1, 0)
-								end
+		ClearAllStats(true)
+	end
+	if Input.KeyCode == Enum.KeyCode.K then
+		Script.Action = "Teleport LastOpened ProgressDoor"
+		Script.AutoRoomSkip = false
+		GetNextUngeneratedRoom()
+		RoomStats()
+		if Main.CharacterRoot ~= nil and RoomSkip.Exit ~= nil then
+			if RoomSkip.Exit.Value:FindFirstChild("Entrances") then
+				for PressureDoorName, PressureDoor in RoomSkip.PressureDoors do
+					local Door = RoomSkip.Exit.Value.Entrances:FindFirstChild(PressureDoorName)
+					if Door ~= nil then
+						if Door:FindFirstChild("CollisionPart") then
+							if Door.CollisionPart:IsA("BasePart") then
+								Main.CharacterRoot.CFrame = Door.CollisionPart.CFrame + Vector3.new(0, 1, 0)
 							end
 						end
 					end
 				end
-				ClearAllStats(true)
 			end
+			ClearAllStats(true)
 		end
-		if Input.KeyCode == Enum.KeyCode.O then
-			Script.AutoRoomSkip = not Script.AutoRoomSkip
-			if Script.AutoRoomSkip == true then
+	end
+	if Input.KeyCode == Enum.KeyCode.O then
+		Script.AutoRoomSkip = not Script.AutoRoomSkip
+		if Script.AutoRoomSkip == true then
+			if Script.Action ~= "Idle" then
 				TeleportToDoor()
+			else
+				Script.AutoRoomSkip = false
 			end
 		end
 	end
