@@ -1,8 +1,20 @@
-game.Lighting.Ambient = Color3.new(1,1,1)
+game.Lighting.Ambient = Color3.fromRGB(255, 255, 255)
 loadstring(game:HttpGet("https://github.com/AZYsGithub/DexPlusPlus/releases/latest/download/out.lua"))()
 
+local ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
+ScreenGui.Name = "TESTSCREENGUI"
+ScreenGui.DisplayOrder = 999999
+
+local TextGui = Instance.new("TextLabel", ScreenGui)
+TextGui.Name = "ScriptAction"
+TextGui.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+TextGui.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextGui.TextScaled = true
+TextGui.Position = UDim2.fromScale(0, 0)
+TextGui.Size = UDim2.fromScale(0.3, 0.3)
+
 local Script = {
-	Mode = nil,
+	Mode = "None",
 	Action = "Idle",
 	
 	Settings = {
@@ -467,10 +479,17 @@ local Currency = {
 	CurrentProxyPartPrompt = nil
 }
 
-function PartInFrontOfCamera(Part, LookVectorOffset)
+function PromptInFrontOfCamera(Part, LookVectorOffset, Prompt)
 	Part.CFrame = CFrame.new(
 		Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * LookVectorOffset
 	) * CFrame.fromOrientation(0, 0, 0)
+	
+	Prompt.MaxActivationDistance = 100
+	Prompt.RequiresLineOfSight = false
+	Prompt.HoldDuration = 0
+	Prompt.Enabled = true
+	Prompt:InputHoldBegin()
+	Prompt:InputHoldEnd()
 end
 
 function GetMoneyFrom(Folder)
@@ -512,8 +531,8 @@ function FindMoney()
 end
 
 function ClearAllStats(Debug)
+	Script.Mode = "None"
 	if Debug == true then
-		Script.Mode = nil
 		for _, Part in Main.UnCollisionBoxCollisionParts do
 			if Part ~= nil then
 				if Part.Parent ~= nil then
@@ -591,7 +610,7 @@ function ClearAllStats(Debug)
 	RoomSkip.PipeRoomStatus = "Idle"
 end
 
-function GetNextUngeneratedRoom(SpecificRoom)
+function GetNextUngeneratedRoom(SpecificRoom, Checking)
 	local RoomsInExitValue = {}
 	for _, Room in Main.RoomsFolder:GetChildren() do
 		if Room:FindFirstChild("Entrances") then
@@ -612,10 +631,40 @@ function GetNextUngeneratedRoom(SpecificRoom)
 			end
 		end
 	end
-
+	
+	local AllCorrectRooms = {}
 	for _, Room in Main.RoomsFolder:GetChildren() do
-		if table.find(RoomsInExitValue, Room) == nil and Room:GetAttribute("Room") and (Room == SpecificRoom or SpecificRoom == nil) then
-			RoomSkip.NextUngeneratedRoom = Room
+		if table.find(RoomsInExitValue, Room) == nil and Room:GetAttribute("Room") then
+			if SpecificRoom == nil then
+				if Checking == false then
+					RoomSkip.NextUngeneratedRoom = Room
+				elseif Checking == true then
+					return Room
+				end
+			else
+				table.insert(AllCorrectRooms, Room)
+			end
+		end
+	end
+	
+	if SpecificRoom ~= nil then
+		for _, Room in AllCorrectRooms do
+			print("Room Of Few Rooms: "..Room.Name)
+			if SpecificRoom == nil then
+				if Checking == false then
+					RoomSkip.NextUngeneratedRoom = Room
+				elseif Checking == true then
+					return Room
+				end
+			else
+				if Room == SpecificRoom then
+					if Checking == false then
+						RoomSkip.NextUngeneratedRoom = Room
+					elseif Checking == true then
+						return Room
+					end
+				end
+			end
 		end
 	end
 end
@@ -658,8 +707,8 @@ function RoomStats()
 								OpenValue:GetPropertyChangedSignal("Value"):Once(function()
 									if OpenValue.Value == true and Script.Action ~= "RoomSkip Start" then
 										local SkipCooldown = Script.Settings.AutoRoomSkipCooldown.Default
-										if RoomSkip.NextUngeneratedRoom:GetAttribute("RoomFamily") == "BackArea" then
-											SkipCooldown = Script.Settings.AutoRoomSkipCooldown.BackArea
+										if Script.Settings.AutoRoomSkipCooldown[RoomSkip.NextUngeneratedRoom:GetAttribute("RoomFamily")] ~= nil then
+											SkipCooldown = Script.Settings.AutoRoomSkipCooldown[RoomSkip.NextUngeneratedRoom:GetAttribute("RoomFamily")]
 										end
 										ClearAllStats()
 										if Script.AutoRoomSkip == true then
@@ -939,11 +988,7 @@ function ChangePipes(Room)
 															end
 															
 															PipePart.Parent.Highlight.Anchored = true
-															PartInFrontOfCamera(PipePart.Parent.Highlight, 3)
-															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").MaxActivationDistance = 100
-															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Enabled = true
-															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldBegin()
-															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldEnd()
+															PromptInFrontOfCamera(PipePart.Parent.Highlight, 3, PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt"))
 															task.wait()
 														end
 									
@@ -1026,13 +1071,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 					end
 					if game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then
 						ScriptActionNow = "Press ElevatorPrompt"
-						PartInFrontOfCamera(game.Workspace.Elevator.ElevatorKey.Highlight, 7)
-
-						game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt")
-						game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt").MaxActivationDistance = 100
-						game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt").RequiresLineOfSight = false
-						game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldBegin()
-						game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldEnd()
+						PromptInFrontOfCamera(game.Workspace.Elevator.ElevatorKey.Highlight, 7, game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt"))
 
 						local TeleportCFrame = RoomSkip.ElevatorHighlightCFrame
 						UnCollisionAll(TeleportCFrame)
@@ -1061,10 +1100,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 				if RoomSkip.Exit.Value.Name == "ModifierEnding" then
 					if RoomSkip.EndRunButtonHighlight ~= nil and RoomSkip.EndRunButtonHighlightPrompt ~= nil then
 						ScriptActionNow = "Run Finish"
-						PartInFrontOfCamera(RoomSkip.EndRunButtonHighlight, 7)
-						RoomSkip.EndRunButtonHighlightPrompt.MaxActivationDistance = 100
-						RoomSkip.EndRunButtonHighlightPrompt:InputHoldBegin()
-						RoomSkip.EndRunButtonHighlightPrompt:InputHoldEnd()
+						PromptInFrontOfCamera(RoomSkip.EndRunButtonHighlight, 7, RoomSkip.EndRunButtonHighlightPrompt)
 
 						local TeleportCFrame = RoomSkip.EndRunButtonHighlightCFrame
 						UnCollisionAll(TeleportCFrame)
@@ -1077,11 +1113,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 				FindMoney()
 				if Currency.CurrentProxyPart ~= nil and Currency.CurrentProxyPartCFrame ~= nil and Currency.CurrentProxyPartPrompt ~= nil then
 					ScriptActionNow = "Pick Currency"
-					PartInFrontOfCamera(Currency.CurrentProxyPart, 7)
-					Currency.CurrentProxyPartPrompt.MaxActivationDistance = 100
-					Currency.CurrentProxyPartPrompt.RequiresLineOfSight = false
-					Currency.CurrentProxyPartPrompt:InputHoldBegin()
-					Currency.CurrentProxyPartPrompt:InputHoldEnd()
+					PromptInFrontOfCamera(Currency.CurrentProxyPart, 7, Currency.CurrentProxyPartPrompt)
 
 					local TeleportCFrame = Currency.CurrentProxyPartCFrame
 					UnCollisionAll(TeleportCFrame)
@@ -1089,22 +1121,14 @@ game:GetService("RunService").RenderStepped:Connect(function()
 				end
 				if RoomSkip.DoorRoot ~= nil and RoomSkip.DoorRootPrompt ~= nil then
 					ScriptActionNow = "Open ProgressDoor Root"
-					PartInFrontOfCamera(RoomSkip.DoorRoot, 7)
-					RoomSkip.DoorRootPrompt.MaxActivationDistance = 100
-					RoomSkip.DoorRootPrompt.Enabled = true
-					RoomSkip.DoorRootPrompt:InputHoldBegin()
-					RoomSkip.DoorRootPrompt:InputHoldEnd()
+					PromptInFrontOfCamera(RoomSkip.DoorRoot, 7, RoomSkip.DoorRootPrompt)
 				end
 
 				if RoomSkip.Keycard ~= nil then
 					if game.Players.LocalPlayer.PlayerGui.Main.Health.AuxItems.NormalKeyCard.Visible == false then
 						if RoomSkip.KeycardParentPartCFrame ~= nil and RoomSkip.KeycardProxyPart ~= nil and RoomSkip.KeycardProxyPartPrompt ~= nil then
 							ScriptActionNow = "Pick Keycard"
-							PartInFrontOfCamera(RoomSkip.KeycardProxyPart, 7)
-							RoomSkip.KeycardProxyPartPrompt.MaxActivationDistance = 100
-							RoomSkip.KeycardProxyPartPrompt.RequiresLineOfSight = false
-							RoomSkip.KeycardProxyPartPrompt:InputHoldBegin()
-							RoomSkip.KeycardProxyPartPrompt:InputHoldEnd()
+							PromptInFrontOfCamera(RoomSkip.KeycardProxyPart, 7, RoomSkip.KeycardProxyPartPrompt)
 
 							local TeleportCFrame = RoomSkip.KeycardParentPartCFrame + Vector3.new(0, -10, 0)
 							UnCollisionAll(TeleportCFrame)
@@ -1122,11 +1146,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 							RoomSkip.KeycardProxyPart = nil
 							RoomSkip.KeycardProxyPartPrompt = nil
 
-							PartInFrontOfCamera(RoomSkip.LockMain, 7)
-							RoomSkip.LockPrompt.MaxActivationDistance = 100
-							RoomSkip.LockPrompt.HoldDuration = 0
-							RoomSkip.LockPrompt:InputHoldBegin()
-							RoomSkip.LockPrompt:InputHoldEnd()
+							PromptInFrontOfCamera(RoomSkip.LockMain, 7, RoomSkip.LockPrompt)
 						end
 					end
 				else
@@ -1155,6 +1175,8 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			end
 		end
 	end
+	
+	TextGui.Text = "ScriptMode: "..Script.Mode.." | ScriptAction: "..ScriptActionNow
 
 	Script.Action = ScriptActionNow
 end)
@@ -1195,7 +1217,7 @@ game.UserInputService.InputBegan:Connect(function(Input)
 	if Input.KeyCode == Enum.KeyCode.O then
 		Script.AutoRoomSkip = not Script.AutoRoomSkip
 		if Script.AutoRoomSkip == true then
-			if Script.Action ~= "Idle" then
+			if Script.Action == "Idle" then
 				TeleportToDoor()
 			else
 				Script.AutoRoomSkip = false
