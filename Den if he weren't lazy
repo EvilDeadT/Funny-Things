@@ -1,100 +1,175 @@
-local Player = game.Players.LocalPlayer
-local Character = Player.Character
-local CurrentCamera = game.Workspace.CurrentCamera
-
-local GameplayFolder = game.Workspace.GameplayFolder
-local RoomsFolder = GameplayFolder.Rooms
-
-local OpenedRooms = {"Start"}
-local NextUngeneratedRoom = nil
-local DoorRoot = nil
-local DoorRootTouched = false
-local DoorRootRightVectorValue = Instance.new("IntValue")
-DoorRootRightVectorValue.Value = -5
-
-local PressureDoors = {
-	["NormalDoor"] = {
-		Root = "Root"
-	},
-	["LargeRoundDoor"] = {
-		Root = "RootPart"
-	}
+local Harbinger = Instance.new("Part")
+Harbinger.Name = "Harbinger"
+Harbinger.Anchored = true
+Harbinger.CanCollide = false
+Harbinger.Size = Vector3.new(1, 1, 1)
+Harbinger.Transparency = 1
+Harbinger:AddTag("NodeMonster")
+Harbinger:SetAttribute("BreakLightsChance", 95)
+local DeathScreaming = Instance.new("Sound", Harbinger)
+DeathScreaming.Name = "DeathScreaming"
+DeathScreaming.RollOffMaxDistance = 400
+DeathScreaming.RollOffMinDistance = 50
+DeathScreaming.RollOffMode = Enum.RollOffMode.InverseTapered
+DeathScreaming.Looped = true
+DeathScreaming.PlaybackSpeed = 2
+DeathScreaming.Volume = 5
+DeathScreaming:Play()
+local DeathScreaming_EqualizerSoundEffect = Instance.new("EqualizerSoundEffect", DeathScreaming)
+DeathScreaming_EqualizerSoundEffect.HighGain = -15
+DeathScreaming_EqualizerSoundEffect.LowGain = 0
+DeathScreaming_EqualizerSoundEffect.MidGain = -15
+local Attachment1 = Instance.new("Attachment", Harbinger)
+Attachment1.CFrame = CFrame.new(0, 4.349, 0)
+local BlackSmoke = Instance.new("ParticleEmitter", Attachment1)
+BlackSmoke.Name = "BlackSmoke"
+BlackSmoke.Color = ColorSequence.new(Color3.fromRGB(0, 0, 0))
+BlackSmoke.Size = NumberSequence.new(8)
+BlackSmoke.Texture = "rbxassetid://12413116527"
+BlackSmoke.Transparency = NumberSequence.new({
+	NumberSequenceKeypoint.new(0, 1),
+	NumberSequenceKeypoint.new(0.104, 0.85),
+	NumberSequenceKeypoint.new(0.953, 0.837),
+	NumberSequenceKeypoint.new(1, 1)
+})
+BlackSmoke.ZOffset = -1
+BlackSmoke.Lifetime = NumberRange.new(0.28)
+BlackSmoke.Rate = 120
+BlackSmoke.Rotation = NumberRange.new(-180, 180)
+BlackSmoke.Speed = NumberRange.new(18)
+BlackSmoke.SpreadAngle = Vector2.new(180, 180)
+BlackSmoke.ShapeInOut = Enum.ParticleEmitterShapeInOut.InAndOut
+BlackSmoke.LockedToPart = true
+local BlueSmoke = Instance.new("ParticleEmitter", Attachment1)
+BlueSmoke.Name = "BlueSmoke"
+BlueSmoke.Color = ColorSequence.new(Color3.fromRGB(10, 10, 17))
+BlueSmoke.Size = NumberSequence.new(5)
+BlueSmoke.Texture = "rbxassetid://12413116527"
+BlueSmoke.Transparency = NumberSequence.new({
+	NumberSequenceKeypoint.new(0, 0.244),
+	NumberSequenceKeypoint.new(0.1, 0),
+	NumberSequenceKeypoint.new(0.974, 0.244),
+	NumberSequenceKeypoint.new(1, 1)
+})
+BlueSmoke.ZOffset = -2
+BlueSmoke.Lifetime = NumberRange.new(0.22)
+BlueSmoke.Rate = 100
+BlueSmoke.Rotation = NumberRange.new(-180, 180)
+BlueSmoke.Speed = NumberRange.new(22)
+BlueSmoke.SpreadAngle = Vector2.new(180, 180)
+BlueSmoke.ShapeInOut = Enum.ParticleEmitterShapeInOut.InAndOut
+BlueSmoke.LockedToPart = true
+local LeftBehindSmoke = Instance.new("ParticleEmitter", Attachment1)
+LeftBehindSmoke.Name = "LeftBehindSmoke"
+LeftBehindSmoke.Color = ColorSequence.new(Color3.fromRGB(10, 10, 17))
+LeftBehindSmoke.Size = NumberSequence.new({
+	NumberSequenceKeypoint.new(0, 7.56),
+	NumberSequenceKeypoint.new(1, 1.88)
+})
+LeftBehindSmoke.Texture = "rbxassetid://12413116527"
+LeftBehindSmoke.Transparency = NumberSequence.new({
+	NumberSequenceKeypoint.new(0, 0.244),
+	NumberSequenceKeypoint.new(0.1, 0),
+	NumberSequenceKeypoint.new(1, 1)
+})
+LeftBehindSmoke.ZOffset = -3
+LeftBehindSmoke.Lifetime = NumberRange.new(0.7)
+LeftBehindSmoke.Rate = 95
+LeftBehindSmoke.Rotation = NumberRange.new(-180, 180)
+LeftBehindSmoke.Speed = NumberRange.new(5)
+LeftBehindSmoke.SpreadAngle = Vector2.new(50, 50)
+LeftBehindSmoke.ShapeInOut = Enum.ParticleEmitterShapeInOut.InAndOut
+LeftBehindSmoke.LockedToPart = false
+local PointLight = Instance.new("PointLight", Attachment1)
+PointLight.Color = Color3.fromRGB(-255, -255, -255)
+PointLight.Range = 25
+PointLight.Shadows = true
+local Attachment2 = Instance.new("Attachment", Harbinger)
+Attachment2.CFrame = CFrame.new(0, 4.947, 0)
+local ScreamerShakey = Instance.new("ParticleEmitter", Attachment2)
+ScreamerShakey.Brightness = 3
+ScreamerShakey.Name = "ScreamerShakey"
+ScreamerShakey.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255))
+ScreamerShakey.Size = NumberSequence.new({
+	NumberSequenceKeypoint.new(0, 5.19),
+	NumberSequenceKeypoint.new(0.0201, 2.79),
+	NumberSequenceKeypoint.new(0.0375, 6.63),
+	NumberSequenceKeypoint.new(0.103, 1.2),
+	NumberSequenceKeypoint.new(0.182, 2.95),
+	NumberSequenceKeypoint.new(0.381, 0.71),
+	NumberSequenceKeypoint.new(0.478, 0.765),
+	NumberSequenceKeypoint.new(0.508, 10),
+	NumberSequenceKeypoint.new(0.543, 0.71),
+	NumberSequenceKeypoint.new(1, 0)
+})
+ScreamerShakey.Texture = "rbxassetid://15824120773"
+ScreamerShakey.Transparency = NumberSequence.new({
+	NumberSequenceKeypoint.new(0, 1),
+	NumberSequenceKeypoint.new(0.031, 0.894),
+	NumberSequenceKeypoint.new(0.0597, 1),
+	NumberSequenceKeypoint.new(0.0618, 1),
+	NumberSequenceKeypoint.new(0.0631, 0.876),
+	NumberSequenceKeypoint.new(0.0654, 1),
+	NumberSequenceKeypoint.new(0.115, 1),
+	NumberSequenceKeypoint.new(0.22, 1),
+	NumberSequenceKeypoint.new(0.276, 1),
+	NumberSequenceKeypoint.new(0.486, 1),
+	NumberSequenceKeypoint.new(0.8, 1),
+	NumberSequenceKeypoint.new(0.827, 1),
+	NumberSequenceKeypoint.new(1, 1),
+})
+ScreamerShakey.ZOffset = 2
+ScreamerShakey.Lifetime = NumberRange.new(0.6)
+ScreamerShakey.Rate = 11
+ScreamerShakey.Rotation = NumberRange.new(-1, 1)
+ScreamerShakey.RotSpeed = NumberRange.new(-20, 20)
+ScreamerShakey.Speed = NumberRange.new(11)
+ScreamerShakey.SpreadAngle = Vector2.new(360, 360)
+ScreamerShakey.ShapeInOut = Enum.ParticleEmitterShapeInOut.Outward
+ScreamerShakey.Drag = 5
+ScreamerShakey.LockedToPart = true
+local BangingAudio = Instance.new("Attachment", Harbinger)
+BangingAudio.Name = "BangingAudio"
+BangingAudio.CFrame = CFrame.new(0, 4.461, 0)
+local Folder = Instance.new("Folder", BangingAudio)
+local PandemoniumBangingSound = {
+	[1] = "rbxassetid://16555303314",
+	[2] = "rbxassetid://16555302984",
+	[3] = "rbxassetid://16557492556",
+	[4] = "rbxassetid://16557492094"
 }
-
-function GetNextUngeneratedRoom()
-	for _, Room in pairs(RoomsFolder:GetChildren()) do
-		if Room:FindFirstChild("Entrances") then
-			local Doors = 0
-			for _, Door in pairs(Room.Entrances:GetChildren()) do
-				Doors += 1
-				if Doors >= 2 then
-					return print("ERROR | 2 Entrances Doors")
-				end
-
-				if Door.OpenValue.Value == false then
-					NextUngeneratedRoom = Room
-				end
-			end
-		end
-	end
+for i = 1, 4 do
+	local PandemoniumBanging = Instance.new("Sound", Folder)
+	PandemoniumBanging.Name = "PandemoniumBanging"..i
+	PandemoniumBanging.SoundId = PandemoniumBangingSound[i]
+	PandemoniumBanging.RollOffMaxDistance = 100
+	PandemoniumBanging.RollOffMinDistance = 100
+	PandemoniumBanging.RollOffMode = Enum.RollOffMode.Linear
+	PandemoniumBanging.Volume = 0.07
+	PandemoniumBanging:AddTag("Muffle")
+	local PandemoniumBanging_ReverbSoundEffect = Instance.new("ReverbSoundEffect", PandemoniumBanging)
+	PandemoniumBanging_ReverbSoundEffect.DecayTime = 3
+	PandemoniumBanging_ReverbSoundEffect.DryLevel = -5
 end
+local DeathBotm = Instance.new("Attachment", Harbinger)
+DeathBotm.CFrame = CFrame.new(0, 0.017, 0)
+local DeathTop = Instance.new("Attachment", Harbinger)
+DeathTop.CFrame = CFrame.new(0, 9.169, 0)
+local HarbingerFace = Instance.new("Beam", Harbinger)
+HarbingerFace.Name = "Harbinger"
+HarbingerFace.Brightness = 0.4
+HarbingerFace.Color = ColorSequence.new(Color3.fromRGB(245, 245, 245))
+HarbingerFace.LightEmission = 0.25
+HarbingerFace.LightInfluence = 0
+HarbingerFace.Texture = "rbxassetid://15824088072"
+HarbingerFace.TextureSpeed = 0
+HarbingerFace.Transparency = NumberSequence.new(0)
+HarbingerFace.Attachment0 = DeathTop
+HarbingerFace.Attachment1 = DeathBotm
+HarbingerFace.FaceCamera = true
+HarbingerFace.Segments = 1
+HarbingerFace.Width0 = 8.8
+HarbingerFace.Width1 = 8.8
+local Humanoid = Instance.new("Humanoid", Harbinger)
 
-function TeleportToDoor()
-	if NextUngeneratedRoom ~= nil then
-		if NextUngeneratedRoom.Parent == RoomsFolder then
-			if NextUngeneratedRoom:FindFirstChild("Entrances") then
-				if NextUngeneratedRoom.Entrances:FindFirstChild("NormalDoor") then
-					if NextUngeneratedRoom.Entrances.NormalDoor:FindFirstChild("Root") then
-						if NextUngeneratedRoom.Entrances.NormalDoor:FindFirstChild("CollisionPart") then
-							NextUngeneratedRoom.Entrances.NormalDoor.CollisionPart.CanCollide = false
-						end
-						DoorRoot = NextUngeneratedRoom.Entrances.NormalDoor.Root
-
-						local Keycard = nil
-						local Password = nil
-						local RidgeKeycard = nil
-						for _, LockedRoom in RoomsFolder:GetChildren() do
-							local Keycard = LockedRoom:FindFirstChild("NormalKeyCard", true)
-						end
-						if Keycard ~= nil then
-							print("Door has locked")
-							local Prompt = Keycard:FindFirstChildOfClass("ProximityPrompt", true)
-							if Prompt == nil then
-								print("ERROR | Keycard has not ProximityPrompt in "..NextUngeneratedRoom.Name)
-							else
-								Prompt.RequiresLineOfSight = false
-
-								local UncollisionBox = Instance.new("Part", workspace)
-								UncollisionBox.Transparency = 1
-								UncollisionBox.Anchored = true
-								UncollisionBox.CanCollide = false
-								UncollisionBox.Size = Vector3.new(8, 8, 8)
-								UncollisionBox.Position = Keycard.WorldPivot.Position
-							end
-						else
-							Character.HumanoidRootPart.CFrame = DoorRoot.CFrame + Vector3.new(0, 1, 0)
-						end
-					end
-				end
-			end
-		end
-	end
-end
-
-RoomsFolder.ChildAdded:Connect(function(Room)
-	print("New Room Spawned: "..Room.Name)
-	table.insert(OpenedRooms,NextUngeneratedRoom)
-	NextUngeneratedRoom = Room
-	DoorRoot = nil
-end)
-
-
-game.UserInputService.InputBegan:Connect(function(Input)
-	if Input.KeyCode == Enum.KeyCode.P then
-		DoorRoot = nil
-		TeleportToDoor()
-	end
-end)
-
-GetNextUngeneratedRoom()
-TeleportToDoor()
+Harbinger.Parent = game.ReplicatedStorage
