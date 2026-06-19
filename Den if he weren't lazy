@@ -8,6 +8,7 @@ Harbinger:AddTag("NodeMonster")
 Harbinger:SetAttribute("BreakLightsChance", 95)
 local DeathScreaming = Instance.new("Sound", Harbinger)
 DeathScreaming.Name = "DeathScreaming"
+DeathScreaming.SoundId = "rbxassetid://16706842577"
 DeathScreaming.RollOffMaxDistance = 400
 DeathScreaming.RollOffMinDistance = 50
 DeathScreaming.RollOffMode = Enum.RollOffMode.InverseTapered
