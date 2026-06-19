@@ -170,6 +170,5 @@ HarbingerFace.FaceCamera = true
 HarbingerFace.Segments = 1
 HarbingerFace.Width0 = 8.8
 HarbingerFace.Width1 = 8.8
-local Humanoid = Instance.new("Humanoid", Harbinger)
 
 Harbinger.Parent = game.ReplicatedStorage
