@@ -405,9 +405,11 @@ LoadInstance(UIContent, game.Players.LocalPlayer.PlayerGui)
 
 
 if not game.RunService:IsStudio() then
-	
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/EvilDeadT/Funny-Things/refs/heads/main/UITabChange"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/EvilDeadT/Funny-Things/refs/heads/main/UIActionButtons"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/EvilDeadT/Funny-Things/refs/heads/main/SkipRoom"))()
 else
-	script.Parent.Parent:FindFirstChild("TabChange", true).Enabled = true
-	script.Parent.Parent:FindFirstChild("ActionButtons", true).Enabled = true
+	script.Parent.Parent:FindFirstChild("UITabChange", true).Enabled = true
+	script.Parent.Parent:FindFirstChild("UIActionButtons", true).Enabled = true
 	script.Parent.Parent:FindFirstChild("SkipRoom", true).Enabled = true
 end
