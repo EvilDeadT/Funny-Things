@@ -1,0 +1,14 @@
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+
+UI.Events.SkipRoom.Event:Connect(function(Status)
+	print("SkipRoom")
+	
+	if Status ~= nil then
+		print("Status:")
+		print(Status)
+	end
+end)
+
+UI.Events.SkipRoomAuto.Event:Connect(function()
+	print("SkipRoomAuto")
+end)
