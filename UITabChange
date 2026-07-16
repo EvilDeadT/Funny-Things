@@ -1,0 +1,45 @@
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+
+UI.UIStatus.VisibleTab:GetPropertyChangedSignal("Value"):Connect(function()
+	local TabChangeResult = {
+		AllFrames = 0,
+		Hidden = 0
+	}
+	
+	for _, Frame in UI.Main.Tabs:GetChildren() do
+		if string.find(string.lower(Frame.ClassName), "frame") then
+			Frame.Visible = Frame.Name == UI.UIStatus.VisibleTab.Value
+			
+			local TabColor = UI.Colors.TabPick.Value
+			
+			if Frame.Visible == false then
+				TabColor = UI.Colors.TabUnpick.Value
+				
+				TabChangeResult.Hidden += 1
+			end
+			
+			for _, TabFrame in {UI.Main.TabChoice, UI.Main.TabChoiceSpecial} do
+				if TabFrame:FindFirstChild(Frame.Name) then
+					TabFrame[Frame.Name].BackgroundColor3 = TabColor
+				end
+			end
+			
+			TabChangeResult.AllFrames += 1
+		end
+	end
+	
+	UI.Main.Tabs.NoFrame.Visible = TabChangeResult.Hidden >= TabChangeResult.AllFrames
+end)
+
+UI.UIStatus.VisibleTab.Value = "Actions"
+
+
+for _, TabFrame in {UI.Main.TabChoice, UI.Main.TabChoiceSpecial} do
+	for _, Button in TabFrame:GetChildren() do
+		if string.find(string.lower(Button.ClassName), "button") then
+			Button.MouseButton1Click:Connect(function()
+				UI.UIStatus.VisibleTab.Value = Button.Name
+			end)
+		end
+	end
+end
