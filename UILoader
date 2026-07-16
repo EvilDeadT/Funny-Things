@@ -1,0 +1,415 @@
+local UIContent = {
+	["FunnyMenu"] = {
+		ClassName = "ScreenGui",
+		DisplayOrder = 999999,
+		IgnoreGuiInset = true,
+		
+		Files = {
+			["Colors"] = {
+				ClassName = "Folder",
+				
+				Files = {
+					["ButtonOn"] = {
+						ClassName = "Color3Value",
+						Value = Color3.fromRGB(96, 115, 143)
+					},
+					["ButtonOff"] = {
+						ClassName = "Color3Value",
+						Value = Color3.fromRGB(0, 55, 75)
+					},
+					["TabPick"] = {
+						ClassName = "Color3Value",
+						Value = Color3.fromRGB(96, 115, 143)
+					},
+					["TabUnpick"] = {
+						ClassName = "Color3Value",
+						Value = Color3.fromRGB(0, 55, 75)
+					}
+				}
+			},
+			["Events"] = {
+				ClassName = "Folder",
+				
+				Files = {
+					["SkipRoom"] = {
+						ClassName = "BindableEvent"
+					},
+					["SkipRoomAuto"] = {
+						ClassName = "BindableEvent"
+					},
+					["CollectMoney"] = {
+						ClassName = "BindableEvent"
+					}
+				}
+			},
+			["ScriptStatuses"] = {
+				ClassName = "Folder",
+
+				Files = {
+					["SkipRoom"] = {
+						ClassName = "StringValue",
+						Value = "Idle"
+					},
+					["CollectMoney"] = {
+						ClassName = "StringValue",
+						Value = "Idle"
+					}
+				}
+			},
+			["UIStatus"] = {
+				ClassName = "Folder",
+				
+				Files = {
+					["VisibleTab"] = {
+						ClassName = "StringValue",
+						Value = ""
+					}
+				}
+			},
+			["Main"] = {
+				ClassName = "Frame",
+				BackgroundColor3 = Color3.fromRGB(0, 55, 75),
+				Position = UDim2.fromScale(0.173, 0.122),
+				Size = UDim2.fromScale(0.65, 0.75),
+				
+				Files = {
+					["UIAspectRatioConstraint"] = {
+						ClassName = "UIAspectRatioConstraint",
+						AspectRatio = 1.85
+					},
+					["UIStroke"] = {
+						ClassName = "UIStroke",
+						ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
+						Color = Color3.fromRGB(135, 161, 200),
+						Thickness = 0.01
+					},
+					["DecorBar"] = {
+						ClassName = "Frame",
+						BackgroundColor3 = Color3.fromRGB(135, 161, 200),
+						Position = UDim2.fromScale(0, 0.23),
+						Size = UDim2.fromScale(1, 0.02)
+					},
+					["TabChoice"] = {
+						ClassName = "ScrollingFrame",
+						BackgroundTransparency = 1,
+						Position = UDim2.fromScale(0, 0),
+						Size = UDim2.fromScale(1, 0.23),
+						CanvasSize = UDim2.fromScale(2, 0),
+						
+						Files = {
+							["UIListLayout"] = {
+								ClassName = "UIListLayout",
+								Padding = UDim.new(0.005, 0),
+								FillDirection = Enum.FillDirection.Horizontal
+							},
+							["Actions"] = {
+								ClassName = "TextButton",
+								AutoButtonColor = false,
+								LayoutOrder = 1,
+								Size = UDim2.fromScale(0.125, 1),
+								Text = "Actions",
+								
+								Files = {
+									["UIStroke"] = {
+										ClassName = "UIStroke",
+										Color = Color3.fromRGB(135, 161, 200),
+										Thickness = 0.05
+									}
+								}
+							},
+							["AdminPanel"] = {
+								ClassName = "TextButton",
+								AutoButtonColor = false,
+								LayoutOrder = 2,
+								Size = UDim2.fromScale(0.125, 1),
+								Text = "Admin Panel",
+								
+								Files = {
+									["UIStroke"] = {
+										ClassName = "UIStroke",
+										Color = Color3.fromRGB(135, 161, 200),
+										Thickness = 0.05
+									}
+								}
+							}
+						}
+					},
+					["TabChoiceSpecial"] = {
+						ClassName = "Frame",
+						BackgroundTransparency = 1,
+						Position = UDim2.fromScale(-0.183, 0),
+						Size = UDim2.fromScale(0.175, 1),
+						
+						Files = {
+							["KeyBinds"] = {
+								ClassName = "TextButton",
+								AutoButtonColor = false,
+								Position = UDim2.fromScale(0, 0.525),
+								Size = UDim2.fromScale(1, 0.23),
+								Text = "Key Binds",
+
+								Files = {
+									["UIStroke"] = {
+										ClassName = "UIStroke",
+										Color = Color3.fromRGB(135, 161, 200),
+										Thickness = 0.05
+									}
+								}
+							},
+							["Settings"] = {
+								ClassName = "TextButton",
+								AutoButtonColor = false,
+								Position = UDim2.fromScale(0, 0.25),
+								Size = UDim2.fromScale(1, 0.23),
+								Text = "Settings",
+
+								Files = {
+									["UIStroke"] = {
+										ClassName = "UIStroke",
+										Color = Color3.fromRGB(135, 161, 200),
+										Thickness = 0.05
+									}
+								}
+							}
+						}
+					},
+					["Tabs"] = {
+						ClassName = "Frame",
+						BackgroundTransparency = 1,
+						Position = UDim2.fromScale(0, 0),
+						Size = UDim2.fromScale(1, 1),
+						
+						Files = {
+							["Actions"] = {
+								ClassName = "ScrollingFrame",
+								BackgroundTransparency = 1,
+								Position = UDim2.fromScale(0, 0.25),
+								Size = UDim2.fromScale(1, 0.75),
+								CanvasSize = UDim2.fromScale(0, 10),
+								
+								
+								Files = {
+									["UIListLayout"] = {
+										ClassName = "UIListLayout",
+										FillDirection = Enum.FillDirection.Vertical
+									},
+									["Rooms"] = {
+										ClassName = "Frame",
+										BackgroundColor3 = Color3.fromRGB(0, 202, 108),
+										LayoutOrder = 1,
+										Size = UDim2.fromScale(1, 0.15),
+										
+										Files = {
+											["CollectMoney"] = {
+												ClassName = "TextButton",
+												Position = UDim2.fromScale(0.688, 0.2),
+												Size = UDim2.fromScale(0.25, 0.15),
+												Text = "CollectMoney",
+												
+												Files = {
+													["UIStroke"] = {
+														ClassName = "UIStroke",
+														Color = Color3.fromRGB(135, 161, 200),
+														Thickness = 0.05
+													}
+												}
+											},
+											["SkipRoom"] = {
+												ClassName = "TextButton",
+												Position = UDim2.fromScale(0.062, 0.2),
+												Size = UDim2.fromScale(0.25, 0.15),
+												Text = "Skip Room",
+
+												Files = {
+													["UIStroke"] = {
+														ClassName = "UIStroke",
+														Color = Color3.fromRGB(135, 161, 200),
+														Thickness = 0.05
+													}
+												}
+											},
+											["SkipRoomAuto"] = {
+												ClassName = "TextButton",
+												Position = UDim2.fromScale(0.382, 0.2),
+												Size = UDim2.fromScale(0.25, 0.15),
+												Text = "Skip Room AUTO",
+
+												Files = {
+													["UIStroke"] = {
+														ClassName = "UIStroke",
+														Color = Color3.fromRGB(135, 161, 200),
+														Thickness = 0.05
+													}
+												}
+											},
+											["SkipRoomIgnoreConditions"] = {
+												ClassName = "TextButton",
+												Position = UDim2.fromScale(0.062, 0.425),
+												Size = UDim2.fromScale(0.25, 0.15),
+												Text = "Skip Room Ignore Conditions",
+
+												Files = {
+													["UIStroke"] = {
+														ClassName = "UIStroke",
+														Color = Color3.fromRGB(135, 161, 200),
+														Thickness = 0.05
+													}
+												}
+											},
+											["Title"] = {
+												ClassName = "TextLabel",
+												BackgroundColor3 = Color3.fromRGB(0, 18, 24),
+												Position = UDim2.fromScale(0.25, 0.012),
+												Size = UDim2.fromScale(0.5, 0.125),
+												Text = "Rooms",
+												
+												Files = {
+													["UIStroke"] = {
+														ClassName = "UIStroke",
+														Color = Color3.fromRGB(135, 161, 200),
+														Thickness = 0.05
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							["AdminPanel"] = {
+								ClassName = "ScrollingFrame",
+								BackgroundTransparency = 1,
+								Position = UDim2.fromScale(0, 0.25),
+								Size = UDim2.fromScale(1, 0.75),
+								CanvasSize = UDim2.fromScale(0, 10),
+								
+								Files = {
+									["UIListLayout"] = {
+										ClassName = "UIListLayout",
+										FillDirection = Enum.FillDirection.Vertical
+									},
+								}
+							},
+							["KeyBinds"] = {
+								ClassName = "ScrollingFrame",
+								BackgroundTransparency = 1,
+								Position = UDim2.fromScale(0, 0.25),
+								Size = UDim2.fromScale(1, 0.75),
+								CanvasSize = UDim2.fromScale(0, 10),
+
+								Files = {
+									["UIListLayout"] = {
+										ClassName = "UIListLayout",
+										FillDirection = Enum.FillDirection.Vertical
+									},
+								}
+							},
+							["Settings"] = {
+								ClassName = "ScrollingFrame",
+								BackgroundTransparency = 1,
+								Position = UDim2.fromScale(0, 0.25),
+								Size = UDim2.fromScale(1, 0.75),
+								CanvasSize = UDim2.fromScale(0, 10),
+
+								Files = {
+									["UIListLayout"] = {
+										ClassName = "UIListLayout",
+										FillDirection = Enum.FillDirection.Vertical
+									},
+								}
+							},
+							["NoFrame"] = {
+								ClassName = "Frame",
+								BackgroundTransparency = 1,
+								Position = UDim2.fromScale(0, 0.25),
+								Size = UDim2.fromScale(1, 0.75),
+								
+								Files = {
+									["Title"] = {
+										ClassName = "TextLabel",
+										BackgroundTransparency = 1,
+										Position = UDim2.fromScale(0, 0),
+										Size = UDim2.fromScale(1, 1),
+										Text = "No Frame"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			["MouseUnlock"] = {
+				ClassName = "TextButton",
+				Interactable = false,
+				Modal = true,
+				BackgroundTransparency = 1,
+				Position = UDim2.new(0, 0, 0, 0),
+				Size = UDim2.new(0, 0, 0, 0),
+				Text = ""
+			}
+		}
+	}
+}
+
+local DefaultProperties = {
+	BorderSizePixel = 0,
+	BackgroundColor3 = Color3.fromRGB(0, 55, 75),
+	FontFace = Font.fromName("Sarpanch"),
+	TextColor3 = Color3.fromRGB(255, 255, 255),
+	TextScaled = true,
+	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+	StrokeSizingMode = Enum.StrokeSizingMode.ScaledSize,
+	ScrollBarThickness = 0,
+	ScrollBarImageTransparency = 1
+}
+
+function LoadInstance(InstanceToLoad, InstanceParent)
+	for Name, Properties in InstanceToLoad do
+		if InstanceParent:FindFirstChild(Name) then
+			InstanceParent[Name]:Destroy()
+		end
+		
+		local NewInstance = Instance.new(Properties.ClassName)
+		NewInstance.Name = Name
+		
+		if NewInstance.ClassName == "ScreenGui" then
+			--NewInstance.Enabled = false
+		end
+		
+		for DefaultProperty, Value in DefaultProperties do
+			local HasProperty, _ = pcall(function()
+				NewInstance[DefaultProperty] = NewInstance[DefaultProperty]
+			end)
+
+			if HasProperty and Properties[DefaultProperty] == nil then
+				if DefaultProperty ~= "BackgroundColor3" or (DefaultProperty == "BackgroundColor3" and NewInstance.BackgroundTransparency < 1) then
+					NewInstance[DefaultProperty] = Value
+				end
+			end
+		end
+		
+		for Property, Value in Properties do
+			if Property == "Files" then
+				LoadInstance(Value, NewInstance)
+			else
+				if Property ~= "ClassName" then
+					NewInstance[Property] = Value
+				end
+			end
+		end
+		
+		NewInstance.Parent = InstanceParent
+	end
+end
+
+task.wait(7)
+
+LoadInstance(UIContent, game.Players.LocalPlayer.PlayerGui)
+
+
+if not game.RunService:IsStudio() then
+	
+else
+	script.Parent.Parent:FindFirstChild("TabChange", true).Enabled = true
+	script.Parent.Parent:FindFirstChild("ActionButtons", true).Enabled = true
+	script.Parent.Parent:FindFirstChild("SkipRoom", true).Enabled = true
+end
