@@ -401,8 +401,6 @@ function LoadInstance(InstanceToLoad, InstanceParent)
 	end
 end
 
-task.wait(7)
-
 LoadInstance(UIContent, game.Players.LocalPlayer.PlayerGui)
 
 
