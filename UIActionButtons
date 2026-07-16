@@ -1,0 +1,17 @@
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+
+UI.Main.Tabs.Actions.Rooms.SkipRoom.MouseButton1Click:Connect(function()
+	UI.Events.SkipRoom:Fire()
+end)
+
+UI.Main.Tabs.Actions.Rooms.SkipRoomIgnoreConditions.MouseButton1Click:Connect(function()
+	UI.Events.SkipRoom:Fire("Ignore")
+end)
+
+UI.Main.Tabs.Actions.Rooms.SkipRoomAuto.MouseButton1Click:Connect(function()
+	UI.Events.SkipRoomAuto:Fire()
+end)
+
+UI.Main.Tabs.Actions.Rooms.CollectMoney.MouseButton1Click:Connect(function()
+	UI.Events.CollectMoney:Fire()
+end)
