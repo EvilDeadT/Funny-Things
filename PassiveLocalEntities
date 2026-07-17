@@ -48,7 +48,7 @@ local LocalEntities = {
 
 local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
 
-function FindByThread(PathStart, Thread)
+function FindByThreadText(PathStart, Thread)
 	if PathStart and Thread then
 		local PickedFolder = PathStart
 		
@@ -92,7 +92,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			DisabledFiles.Name = "DisabledFiles"
 		end
 		
-		local EntityFolder = FindByThread(game, Info.Folder)
+		local EntityFolder = FindByThreadText(game, Info.Folder)
 		
 		if EntityFolder then
 			if Info.Variants then
