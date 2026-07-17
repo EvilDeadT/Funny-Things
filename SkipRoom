@@ -441,10 +441,10 @@ local Main = {
 						game.Workspace.GameplayFolder
 					else warn("No GameplayFolder. Expect MUCH bugs"),
 	RoomsFolder = if game.Workspace:FindFirstChild("GameplayFolder") then
-					if game.Workspace.GameplayFolder:FindFirstChild("RoomsFolder") then
-						game.Workspace.GameplayFolder.RoomsFolder
-					else warn("No RoomFolder. Expect MUCH bugs")
-				else warn("No GameplayFolder for RoomFolder. Expect MUCH bugs"),
+					if game.Workspace.GameplayFolder:FindFirstChild("Rooms") then
+						game.Workspace.GameplayFolder.Rooms
+					else warn("No RoomsFolder. Expect MUCH bugs")
+				else warn("No GameplayFolder for RoomsFolder. Expect MUCH bugs"),
 
 	UnCollisionBoxCollisionParts = {},
 	HiddenPrompts = {}
