@@ -457,6 +457,8 @@ end)
 
 function FindByThread(PathStart, Thread)
 	if PathStart and Thread then
+		print(Thread)
+		
 		local PickedFile = PathStart
 
 		for _, Path in Thread do
