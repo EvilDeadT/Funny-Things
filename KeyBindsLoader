@@ -1,0 +1,59 @@
+local KeyBinds = {
+	Default = {
+		["PanelOpen"] = {
+			[1] = "Z"
+		},
+		["SkipRoom"] = {
+			[1] = "P"
+		},
+		["SkipRoomIgnoreConditions"] = {
+			[1] = "O"
+		},
+		["SkipRoomAuto"] = {
+			[1] = "Z and P"
+		},
+		["TeleportToRoom"] = {
+			[1] = "Z and One",
+			[2] = "Z and Two",
+			[3] = "Z and Three",
+			[4] = "Z and Four",
+			[5] = "Z and Five",
+			[6] = "Z and Six",
+		},
+		["CollectMoneyAuto"] = {
+			[1] = "Z and M"
+		},
+		["CancelAll"] = {
+			[1] = "Z and X"
+		}
+	}
+}
+
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+
+local Preset = game.Players.LocalPlayer.UserId
+
+if KeyBinds[Preset] == nil then
+	Preset = "Default"
+end
+
+for Action, Keys in KeyBinds[Preset] do
+	if not UI:FindFirstChild("KeyBinds") then
+		Instance.new("Folder", UI).Name = "KeyBinds"
+	end
+	
+	local KeyBindValue = UI.KeyBinds:FindFirstChild(Action)
+	
+	if not KeyBindValue then
+		KeyBindValue = Instance.new("StringValue", UI.KeyBinds)
+		KeyBindValue.Name = Action
+	end
+	
+	for Number, KeyBind in Keys do
+		if Number <= 1 then
+			KeyBindValue.Value = KeyBind
+		else
+			KeyBindValue:SetAttribute("Extra"..(Number - 1), KeyBind)
+		end
+	end
+end
