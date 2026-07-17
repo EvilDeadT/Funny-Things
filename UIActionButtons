@@ -1,17 +1,36 @@
 local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
 
-UI.Main.Tabs.Actions.Rooms.SkipRoom.MouseButton1Click:Connect(function()
-	UI.Events.SkipRoom:Fire()
-end)
+for _, ScriptStatus in UI.ScriptStatuses:GetChildren() do
+	if ScriptStatus:IsA("BoolValue") and UI.Main.Tabs.Actions:FindFirstChild(ScriptStatus.Name, true) then
+		ScriptStatus:GetPropertyChangedSignal("Value"):Connect(function()
+			local Color = UI.Colors.ButtonOn.Value
 
-UI.Main.Tabs.Actions.Rooms.SkipRoomIgnoreConditions.MouseButton1Click:Connect(function()
-	UI.Events.SkipRoom:Fire("Ignore")
-end)
+			if ScriptStatus.Value == false then
+				Color = UI.Colors.ButtonOff.Value
+			end
 
-UI.Main.Tabs.Actions.Rooms.SkipRoomAuto.MouseButton1Click:Connect(function()
-	UI.Events.SkipRoomAuto:Fire()
-end)
+			UI.Main.Tabs.Actions:FindFirstChild(ScriptStatus.Name, true).BackgroundColor3 = Color
+		end)
+	end
+end
 
-UI.Main.Tabs.Actions.Rooms.CollectMoney.MouseButton1Click:Connect(function()
-	UI.Events.CollectMoney:Fire()
-end)
+for _, Button in UI.Main.Tabs.Actions:GetDescendants() do
+	if string.find(string.lower(Button.ClassName), "button") then
+		Button.MouseButton1Click:Connect(function()
+			Button:HasTag("Toggle")
+			if UI.Events:FindFirstChild(Button.Name) then
+				local Status = nil
+				
+				if Button.Name == "SkipRoomIgnoreConditions" then
+					Status = "Ignore"
+				end
+				
+				UI.Events[Button.Name]:Fire(Status)
+			elseif Button:HasTag("Toggle") and UI.ScriptStatuses:FindFirstChild(Button.Name) then
+				if UI.ScriptStatuses[Button.Name]:IsA("BoolValue") then
+					UI.ScriptStatuses[Button.Name].Value = not UI.ScriptStatuses[Button.Name].Value
+				end
+			end
+		end)
+	end
+end
