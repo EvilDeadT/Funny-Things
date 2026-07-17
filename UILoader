@@ -31,14 +31,34 @@ local UIContent = {
 				ClassName = "Folder",
 				
 				Files = {
+					["PanelOpen"] = {
+						ClassName = "BindableEvent"
+					},
 					["SkipRoom"] = {
 						ClassName = "BindableEvent"
 					},
-					["SkipRoomAuto"] = {
+					["TeleportToRoom"] = {
 						ClassName = "BindableEvent"
 					},
 					["CollectMoney"] = {
 						ClassName = "BindableEvent"
+					},
+					["CancelAll"] = {
+						ClassName = "BindableEvent"
+					}
+				}
+			},
+			["Settings"] = {
+				ClassName = "Folder",
+
+				Files = {
+					["SkipRoomAutoCooldown"] = {
+						ClassName = "StringValue",
+						Value = "0.2"
+					},
+					["CollectMoneyAuto"] = {
+						ClassName = "BoolValue",
+						Value = true
 					}
 				}
 			},
@@ -49,6 +69,10 @@ local UIContent = {
 					["SkipRoom"] = {
 						ClassName = "StringValue",
 						Value = "Idle"
+					},
+					["SkipRoomAuto"] = {
+						ClassName = "BoolValue",
+						Value = false
 					},
 					["CollectMoney"] = {
 						ClassName = "StringValue",
@@ -204,7 +228,7 @@ local UIContent = {
 												ClassName = "TextButton",
 												Position = UDim2.fromScale(0.688, 0.2),
 												Size = UDim2.fromScale(0.25, 0.15),
-												Text = "CollectMoney",
+												Text = "Collect Money",
 												
 												Files = {
 													["UIStroke"] = {
@@ -233,6 +257,10 @@ local UIContent = {
 												Position = UDim2.fromScale(0.382, 0.2),
 												Size = UDim2.fromScale(0.25, 0.15),
 												Text = "Skip Room AUTO",
+												
+												Tags = {
+													"Toggle"
+												},
 
 												Files = {
 													["UIStroke"] = {
@@ -372,7 +400,7 @@ function LoadInstance(InstanceToLoad, InstanceParent)
 		NewInstance.Name = Name
 		
 		if NewInstance.ClassName == "ScreenGui" then
-			--NewInstance.Enabled = false
+			NewInstance.Enabled = false
 		end
 		
 		for DefaultProperty, Value in DefaultProperties do
@@ -390,6 +418,14 @@ function LoadInstance(InstanceToLoad, InstanceParent)
 		for Property, Value in Properties do
 			if Property == "Files" then
 				LoadInstance(Value, NewInstance)
+			elseif Property == "Tags" then
+				for _, TagName in Value do
+					NewInstance:AddTag(TagName)
+				end
+			elseif Property == "Attributes" then
+				for AttributeName, AttributeValue in Value do
+					NewInstance:SetAttribute(AttributeName, AttributeValue)
+				end
 			else
 				if Property ~= "ClassName" then
 					NewInstance[Property] = Value
@@ -403,13 +439,21 @@ end
 
 LoadInstance(UIContent, game.Players.LocalPlayer.PlayerGui)
 
+game.Players.LocalPlayer.PlayerGui.FunnyMenu.Events.PanelOpen.Event:Connect(function()
+	game.Players.LocalPlayer.PlayerGui.FunnyMenu.Enabled = not game.Players.LocalPlayer.PlayerGui.FunnyMenu.Enabled
+end)
 
-if not game.RunService:IsStudio() then
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/EvilDeadT/Funny-Things/refs/heads/main/UITabChange"))()
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/EvilDeadT/Funny-Things/refs/heads/main/UIActionButtons"))()
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/EvilDeadT/Funny-Things/refs/heads/main/SkipRoom"))()
-else
-	script.Parent.Parent:FindFirstChild("UITabChange", true).Enabled = true
-	script.Parent.Parent:FindFirstChild("UIActionButtons", true).Enabled = true
-	script.Parent.Parent:FindFirstChild("SkipRoom", true).Enabled = true
+for _, ScriptName in {
+	"UITabChange",
+	"UIActionButtons",
+	"PassiveLocalEntities",
+	"KeyBindsLoader",
+	"KeyBinds",
+	"SkipRoom"
+	} do
+	if not game.RunService:IsStudio() then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/EvilDeadT/Funny-Things/refs/heads/main/"..ScriptName))()
+	else
+		script.Parent.Parent:FindFirstChild(ScriptName, true).Enabled = true
+	end
 end
