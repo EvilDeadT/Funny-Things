@@ -1,153 +1,38 @@
-local LocalEntities = {
-	["Pandemonium"] = {
-		Folder = "Workspace",
-		Variants = {
-			"Pandemonium",
-			"Anglemonium",
-			"Pinkimonium",
-			"Frogermonium",
-			"Blitzemonium",
-			"Pandesmoker"
-		},
-		
-		DisableMethod = "Delete"
-	},
-	["Pipsqueak"] = {
-		Folder = "Workspace",
-		Variants = {
-			"Pipsqueak",
-			"RidgePipsqueak"
-		},
-
-		DisableMethod = "Delete"
-	},
-	["A200"] = {
-		Folder = "Workspace",
-		
-		DisableMethod = "Delete"
-	},
-	["WitchingHour"] = {
-		Folder = "Workspace",
-
-		DisableMethod = "Delete"
-	},
-	["Lopee"] = {
-		Folder = "Workspace",
-		
-		DisableMethod = "Delete"
-	},
-	["GOM"] = {
-		Folder = "Players.LocalPlayer.PlayerGui.Main",
-		Variants = {
-			"GOMFrame"
-		},
-		
-		DisableMethod = "MovingFiles"
-	}
-}
-
 local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
 
-function FindByThreadText(PathStart, Thread)
-	if PathStart and Thread then
-		local PickedFolder = PathStart
-		
-		for _, Path in string.split(Thread, ".") do
-			if Path == "LocalPlayer" then
-				PickedFolder = game.Players.LocalPlayer
-			else
-				if PickedFolder:FindFirstChild(Path) then
-					PickedFolder = PickedFolder:FindFirstChild(Path)
-				else
-					print(Path)
-					return
-				end
+for _, ScriptStatus in UI.ScriptStatuses:GetChildren() do
+	if ScriptStatus:IsA("BoolValue") and UI.Main.Tabs.Actions:FindFirstChild(ScriptStatus.Name, true) then
+		ScriptStatus:GetPropertyChangedSignal("Value"):Connect(function()
+			local Color = UI.Colors.ButtonOn.Value
+
+			if ScriptStatus.Value == false then
+				Color = UI.Colors.ButtonOff.Value
 			end
-		end
-		
-		return PickedFolder
+
+			UI.Main.Tabs.Actions:FindFirstChild(ScriptStatus.Name, true).BackgroundColor3 = Color
+		end)
 	end
-	
-	return
 end
 
-game:GetService("RunService").RenderStepped:Connect(function()
-	for Entity, Info in LocalEntities do
-		if not UI.Settings:FindFirstChild("LocalEntitiesDisable") then
-			Instance.new("Folder", UI.Settings).Name = "LocalEntitiesDisable"
-		end
-		
-		local EntityValue = UI.Settings.LocalEntitiesDisable:FindFirstChild(Entity)
-		
-		if not EntityValue then
-			EntityValue = Instance.new("BoolValue", UI.Settings.LocalEntitiesDisable)
-			EntityValue.Name = Entity
-			EntityValue.Value = true
-		end
-		
-		local DisabledFiles = game.ReplicatedStorage:FindFirstChild("DisabledFiles")
-		
-		if not DisabledFiles then
-			DisabledFiles = Instance.new("Folder", game.ReplicatedStorage)
-			DisabledFiles.Name = "DisabledFiles"
-		end
-		
-		local EntityFolder = FindByThreadText(game, Info.Folder)
-		
-		if EntityFolder then
-			if Info.Variants then
-				for _, Variant in Info.Variants do
-					if Info.DisableMethod == "Delete" then
-						if EntityValue.Value == true and EntityFolder:FindFirstChild(Variant) then
-							EntityFolder[Variant]:Destroy()
-						end
-					elseif Info.DisableMethod == "MovingFiles" then
-						if EntityValue.Value == true then
-							if EntityFolder:FindFirstChild(Variant) then
-								if DisabledFiles:FindFirstChild(Variant) then
-									DisabledFiles[Variant]:Destroy()
-								end
-								
-								EntityFolder[Variant].Parent = DisabledFiles
-							end
-						else
-							if DisabledFiles:FindFirstChild(Variant) then
-								if EntityFolder:FindFirstChild(Variant) then
-									EntityFolder[Variant]:Destroy()
-								end
-								
-								DisabledFiles[Variant].Parent = EntityFolder
-							end
-						end
-					end
+for _, Button in UI.Main.Tabs.Actions:GetDescendants() do
+	if string.find(string.lower(Button.ClassName), "button") then
+		Button.MouseButton1Click:Connect(function()
+			Button:HasTag("Toggle")
+			if UI.Events:FindFirstChild(Button.Name) then
+				local Status = nil
+				
+				if Button.Name == "SkipRoomIgnoreConditions" then
+					Status = "Ignore"
 				end
-			else
-				if Info.DisableMethod == "Delete" then
-					if EntityValue.Value == true and EntityFolder:FindFirstChild(Entity) then
-						EntityFolder[Entity]:Destroy()
-					end
-				elseif Info.DisableMethod == "MovingFiles" then
-					if EntityValue.Value == true then
-						if EntityFolder:FindFirstChild(Entity) then
-							if DisabledFiles:FindFirstChild(Entity) then
-								DisabledFiles[Entity]:Destroy()
-							end
-							
-							EntityFolder[Entity].Parent = DisabledFiles
-						end
-					else
-						if DisabledFiles:FindFirstChild(Entity) then
-							if EntityFolder:FindFirstChild(Entity) then
-								EntityFolder[Entity]:Destroy()
-							end
-							
-							DisabledFiles[Entity].Parent = EntityFolder
-						end
-					end
+				
+				UI.Events[Button.Name]:Fire(Status)
+			elseif Button:HasTag("Toggle") and UI.ScriptStatuses:FindFirstChild(Button.Name) then
+				if UI.ScriptStatuses[Button.Name]:IsA("BoolValue") then
+					UI.ScriptStatuses[Button.Name].Value = not UI.ScriptStatuses[Button.Name].Value
 				end
 			end
-		end
+		end)
 	end
-end)
+end
 
-print("PassiveLocalEntities loaded")
+print("UIActionButtons loaded")
