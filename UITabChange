@@ -43,3 +43,5 @@ for _, TabFrame in {UI.Main.TabChoice, UI.Main.TabChoiceSpecial} do
 		end
 	end
 end
+
+print("UITabChange loaded")
