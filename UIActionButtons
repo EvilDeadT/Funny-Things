@@ -34,3 +34,5 @@ for _, Button in UI.Main.Tabs.Actions:GetDescendants() do
 		end)
 	end
 end
+
+print("UIActionButtons loaded")
