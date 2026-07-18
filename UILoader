@@ -443,6 +443,8 @@ game.Players.LocalPlayer.PlayerGui.FunnyMenu.Events.PanelOpen.Event:Connect(func
 	game.Players.LocalPlayer.PlayerGui.FunnyMenu.Enabled = not game.Players.LocalPlayer.PlayerGui.FunnyMenu.Enabled
 end)
 
+print("UI Loaded. Start loading scripts")
+
 for _, ScriptName in {
 	"UITabChange",
 	"UIActionButtons",
