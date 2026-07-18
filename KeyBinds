@@ -1,36 +1,93 @@
 local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
 
-for _, ScriptStatus in UI.ScriptStatuses:GetChildren() do
-	if ScriptStatus:IsA("BoolValue") and UI.Main.Tabs.Actions:FindFirstChild(ScriptStatus.Name, true) then
-		ScriptStatus:GetPropertyChangedSignal("Value"):Connect(function()
-			local Color = UI.Colors.ButtonOn.Value
+local KeyPressed = {}
+local PressedCombination = {}
 
-			if ScriptStatus.Value == false then
-				Color = UI.Colors.ButtonOff.Value
+function KeyBindPressed(KeyBindName, BindNumber)
+	print(KeyBindName)
+	if UI.Events:FindFirstChild(KeyBindName) then
+		local Status = nil
+
+		if KeyBindName == "SkipRoomIgnoreConditions" then
+			Status = "Ignore"
+		end
+
+		UI.Events[KeyBindName]:Fire(BindNumber, Status)
+	else
+		for _, Folder in {UI.ScriptStatuses, UI.Settings} do
+			if Folder:FindFirstChild(KeyBindName) then
+				if Folder[KeyBindName]:IsA("BoolValue") then
+					Folder[KeyBindName].Value = not Folder[KeyBindName].Value
+				end
 			end
-
-			UI.Main.Tabs.Actions:FindFirstChild(ScriptStatus.Name, true).BackgroundColor3 = Color
-		end)
+		end
 	end
 end
 
-for _, Button in UI.Main.Tabs.Actions:GetDescendants() do
-	if string.find(string.lower(Button.ClassName), "button") then
-		Button.MouseButton1Click:Connect(function()
-			Button:HasTag("Toggle")
-			if UI.Events:FindFirstChild(Button.Name) then
-				local Status = nil
-				
-				if Button.Name == "SkipRoomIgnoreConditions" then
-					Status = "Ignore"
-				end
-				
-				UI.Events[Button.Name]:Fire(Status)
-			elseif Button:HasTag("Toggle") and UI.ScriptStatuses:FindFirstChild(Button.Name) then
-				if UI.ScriptStatuses[Button.Name]:IsA("BoolValue") then
-					UI.ScriptStatuses[Button.Name].Value = not UI.ScriptStatuses[Button.Name].Value
+game.UserInputService.InputBegan:Connect(function(Input)
+	KeyPressed[string.split(tostring(Input.KeyCode), ".")[3]] = true
+	
+	for _, KeyBind in UI.KeyBinds:GetChildren() do
+		if string.find(KeyBind.Value, " and ") then
+			local AllKeyPressed = true
+
+			for _, Key in string.split(KeyBind.Value, " and ") do
+				if not KeyPressed[Key] then
+					AllKeyPressed = false
 				end
 			end
-		end)
+
+			if AllKeyPressed then
+				for _, Key in string.split(KeyBind.Value, " and ") do
+					PressedCombination[Key] = true
+				end
+				
+				KeyBindPressed(KeyBind.Name)
+			end
+		end
+
+		for _, ExtraKeyBind in KeyBind:GetAttributes() do
+			if string.find(ExtraKeyBind, " and ") then
+				local AllKeyPressed = true
+				
+				for _, Key in string.split(ExtraKeyBind, " and ") do
+					if not KeyPressed[Key] then
+						AllKeyPressed = false
+					end
+				end
+				
+				if AllKeyPressed then
+					for _, Key in string.split(ExtraKeyBind, " and ") do
+						PressedCombination[Key] = true
+					end
+					
+					KeyBindPressed(KeyBind.Name)
+				end
+			end
+		end
 	end
-end
+end)
+
+game.UserInputService.InputEnded:Connect(function(Input)
+	for _, KeyBind in UI.KeyBinds:GetChildren() do
+		if not string.find(KeyBind.Value, " and ") and KeyBind.Value == string.split(tostring(Input.KeyCode), ".")[3] and not PressedCombination[KeyBind.Value] then
+			KeyBindPressed(KeyBind.Name)
+		end
+
+		for _, ExtraKeyBind in KeyBind:GetAttributes() do
+			if not string.find(ExtraKeyBind, " and ") and KeyBind.Value == string.split(tostring(Input.KeyCode), ".")[3] and not PressedCombination[ExtraKeyBind] then
+				KeyBindPressed(KeyBind.Name)
+			end
+		end
+	end
+	
+	if Input.KeyCode == Enum.KeyCode.Escape then
+		KeyPressed = {}
+		PressedCombination = {}
+	else
+		KeyPressed[string.split(tostring(Input.KeyCode), ".")[3]] = false
+		PressedCombination[string.split(tostring(Input.KeyCode), ".")[3]] = false
+	end
+end)
+
+print("KeyBinds loaded")
