@@ -1,0 +1,1879 @@
+print("Start EVERYTHING")
+
+local UIContent = {
+	["FunnyMenu"] = {
+		ClassName = "ScreenGui",
+		DisplayOrder = 999999,
+		IgnoreGuiInset = true,
+
+		Files = {
+			["Colors"] = {
+				ClassName = "Folder",
+
+				Files = {
+					["ButtonOn"] = {
+						ClassName = "Color3Value",
+						Value = Color3.fromRGB(96, 115, 143)
+					},
+					["ButtonOff"] = {
+						ClassName = "Color3Value",
+						Value = Color3.fromRGB(0, 55, 75)
+					},
+					["TabPick"] = {
+						ClassName = "Color3Value",
+						Value = Color3.fromRGB(96, 115, 143)
+					},
+					["TabUnpick"] = {
+						ClassName = "Color3Value",
+						Value = Color3.fromRGB(0, 55, 75)
+					}
+				}
+			},
+			["Events"] = {
+				ClassName = "Folder",
+
+				Files = {
+					["PanelOpen"] = {
+						ClassName = "BindableEvent"
+					},
+					["SkipRoom"] = {
+						ClassName = "BindableEvent"
+					},
+					["TeleportToRoom"] = {
+						ClassName = "BindableEvent"
+					},
+					["CollectMoney"] = {
+						ClassName = "BindableEvent"
+					},
+					["CancelAll"] = {
+						ClassName = "BindableEvent"
+					}
+				}
+			},
+			["Settings"] = {
+				ClassName = "Folder",
+
+				Files = {
+					["SkipRoomAutoCooldown"] = {
+						ClassName = "StringValue",
+						Value = "0.2"
+					},
+					["CollectMoneyAuto"] = {
+						ClassName = "BoolValue",
+						Value = true
+					}
+				}
+			},
+			["ScriptStatuses"] = {
+				ClassName = "Folder",
+
+				Files = {
+					["SkipRoom"] = {
+						ClassName = "StringValue",
+						Value = "Idle"
+					},
+					["SkipRoomAuto"] = {
+						ClassName = "BoolValue",
+						Value = false
+					},
+					["CollectMoney"] = {
+						ClassName = "StringValue",
+						Value = "Idle"
+					}
+				}
+			},
+			["UIStatus"] = {
+				ClassName = "Folder",
+
+				Files = {
+					["VisibleTab"] = {
+						ClassName = "StringValue",
+						Value = ""
+					}
+				}
+			},
+			["Main"] = {
+				ClassName = "Frame",
+				BackgroundColor3 = Color3.fromRGB(0, 55, 75),
+				Position = UDim2.fromScale(0.173, 0.122),
+				Size = UDim2.fromScale(0.65, 0.75),
+
+				Files = {
+					["UIAspectRatioConstraint"] = {
+						ClassName = "UIAspectRatioConstraint",
+						AspectRatio = 1.85
+					},
+					["UIStroke"] = {
+						ClassName = "UIStroke",
+						ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
+						Color = Color3.fromRGB(135, 161, 200),
+						Thickness = 0.01
+					},
+					["DecorBar"] = {
+						ClassName = "Frame",
+						BackgroundColor3 = Color3.fromRGB(135, 161, 200),
+						Position = UDim2.fromScale(0, 0.23),
+						Size = UDim2.fromScale(1, 0.02)
+					},
+					["TabChoice"] = {
+						ClassName = "ScrollingFrame",
+						BackgroundTransparency = 1,
+						Position = UDim2.fromScale(0, 0),
+						Size = UDim2.fromScale(1, 0.23),
+						CanvasSize = UDim2.fromScale(2, 0),
+
+						Files = {
+							["UIListLayout"] = {
+								ClassName = "UIListLayout",
+								Padding = UDim.new(0.005, 0),
+								FillDirection = Enum.FillDirection.Horizontal
+							},
+							["Actions"] = {
+								ClassName = "TextButton",
+								AutoButtonColor = false,
+								LayoutOrder = 1,
+								Size = UDim2.fromScale(0.125, 1),
+								Text = "Actions",
+
+								Files = {
+									["UIStroke"] = {
+										ClassName = "UIStroke",
+										Color = Color3.fromRGB(135, 161, 200),
+										Thickness = 0.05
+									}
+								}
+							},
+							["AdminPanel"] = {
+								ClassName = "TextButton",
+								AutoButtonColor = false,
+								LayoutOrder = 2,
+								Size = UDim2.fromScale(0.125, 1),
+								Text = "Admin Panel",
+
+								Files = {
+									["UIStroke"] = {
+										ClassName = "UIStroke",
+										Color = Color3.fromRGB(135, 161, 200),
+										Thickness = 0.05
+									}
+								}
+							}
+						}
+					},
+					["TabChoiceSpecial"] = {
+						ClassName = "Frame",
+						BackgroundTransparency = 1,
+						Position = UDim2.fromScale(-0.183, 0),
+						Size = UDim2.fromScale(0.175, 1),
+
+						Files = {
+							["KeyBinds"] = {
+								ClassName = "TextButton",
+								AutoButtonColor = false,
+								Position = UDim2.fromScale(0, 0.525),
+								Size = UDim2.fromScale(1, 0.23),
+								Text = "Key Binds",
+
+								Files = {
+									["UIStroke"] = {
+										ClassName = "UIStroke",
+										Color = Color3.fromRGB(135, 161, 200),
+										Thickness = 0.05
+									}
+								}
+							},
+							["Settings"] = {
+								ClassName = "TextButton",
+								AutoButtonColor = false,
+								Position = UDim2.fromScale(0, 0.25),
+								Size = UDim2.fromScale(1, 0.23),
+								Text = "Settings",
+
+								Files = {
+									["UIStroke"] = {
+										ClassName = "UIStroke",
+										Color = Color3.fromRGB(135, 161, 200),
+										Thickness = 0.05
+									}
+								}
+							}
+						}
+					},
+					["Tabs"] = {
+						ClassName = "Frame",
+						BackgroundTransparency = 1,
+						Position = UDim2.fromScale(0, 0),
+						Size = UDim2.fromScale(1, 1),
+
+						Files = {
+							["Actions"] = {
+								ClassName = "ScrollingFrame",
+								BackgroundTransparency = 1,
+								Position = UDim2.fromScale(0, 0.25),
+								Size = UDim2.fromScale(1, 0.75),
+								CanvasSize = UDim2.fromScale(0, 10),
+
+
+								Files = {
+									["UIListLayout"] = {
+										ClassName = "UIListLayout",
+										FillDirection = Enum.FillDirection.Vertical
+									},
+									["Rooms"] = {
+										ClassName = "Frame",
+										BackgroundColor3 = Color3.fromRGB(0, 202, 108),
+										LayoutOrder = 1,
+										Size = UDim2.fromScale(1, 0.15),
+
+										Files = {
+											["CollectMoney"] = {
+												ClassName = "TextButton",
+												Position = UDim2.fromScale(0.688, 0.2),
+												Size = UDim2.fromScale(0.25, 0.15),
+												Text = "Collect Money",
+
+												Files = {
+													["UIStroke"] = {
+														ClassName = "UIStroke",
+														Color = Color3.fromRGB(135, 161, 200),
+														Thickness = 0.05
+													}
+												}
+											},
+											["SkipRoom"] = {
+												ClassName = "TextButton",
+												Position = UDim2.fromScale(0.062, 0.2),
+												Size = UDim2.fromScale(0.25, 0.15),
+												Text = "Skip Room",
+
+												Files = {
+													["UIStroke"] = {
+														ClassName = "UIStroke",
+														Color = Color3.fromRGB(135, 161, 200),
+														Thickness = 0.05
+													}
+												}
+											},
+											["SkipRoomAuto"] = {
+												ClassName = "TextButton",
+												Position = UDim2.fromScale(0.382, 0.2),
+												Size = UDim2.fromScale(0.25, 0.15),
+												Text = "Skip Room AUTO",
+
+												Tags = {
+													"Toggle"
+												},
+
+												Files = {
+													["UIStroke"] = {
+														ClassName = "UIStroke",
+														Color = Color3.fromRGB(135, 161, 200),
+														Thickness = 0.05
+													}
+												}
+											},
+											["SkipRoomIgnoreConditions"] = {
+												ClassName = "TextButton",
+												Position = UDim2.fromScale(0.062, 0.425),
+												Size = UDim2.fromScale(0.25, 0.15),
+												Text = "Skip Room Ignore Conditions",
+
+												Files = {
+													["UIStroke"] = {
+														ClassName = "UIStroke",
+														Color = Color3.fromRGB(135, 161, 200),
+														Thickness = 0.05
+													}
+												}
+											},
+											["Title"] = {
+												ClassName = "TextLabel",
+												BackgroundColor3 = Color3.fromRGB(0, 18, 24),
+												Position = UDim2.fromScale(0.25, 0.012),
+												Size = UDim2.fromScale(0.5, 0.125),
+												Text = "Rooms",
+
+												Files = {
+													["UIStroke"] = {
+														ClassName = "UIStroke",
+														Color = Color3.fromRGB(135, 161, 200),
+														Thickness = 0.05
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							["AdminPanel"] = {
+								ClassName = "ScrollingFrame",
+								BackgroundTransparency = 1,
+								Position = UDim2.fromScale(0, 0.25),
+								Size = UDim2.fromScale(1, 0.75),
+								CanvasSize = UDim2.fromScale(0, 10),
+
+								Files = {
+									["UIListLayout"] = {
+										ClassName = "UIListLayout",
+										FillDirection = Enum.FillDirection.Vertical
+									},
+								}
+							},
+							["KeyBinds"] = {
+								ClassName = "ScrollingFrame",
+								BackgroundTransparency = 1,
+								Position = UDim2.fromScale(0, 0.25),
+								Size = UDim2.fromScale(1, 0.75),
+								CanvasSize = UDim2.fromScale(0, 10),
+
+								Files = {
+									["UIListLayout"] = {
+										ClassName = "UIListLayout",
+										FillDirection = Enum.FillDirection.Vertical
+									},
+								}
+							},
+							["Settings"] = {
+								ClassName = "ScrollingFrame",
+								BackgroundTransparency = 1,
+								Position = UDim2.fromScale(0, 0.25),
+								Size = UDim2.fromScale(1, 0.75),
+								CanvasSize = UDim2.fromScale(0, 10),
+
+								Files = {
+									["UIListLayout"] = {
+										ClassName = "UIListLayout",
+										FillDirection = Enum.FillDirection.Vertical
+									},
+								}
+							},
+							["NoFrame"] = {
+								ClassName = "Frame",
+								BackgroundTransparency = 1,
+								Position = UDim2.fromScale(0, 0.25),
+								Size = UDim2.fromScale(1, 0.75),
+
+								Files = {
+									["Title"] = {
+										ClassName = "TextLabel",
+										BackgroundTransparency = 1,
+										Position = UDim2.fromScale(0, 0),
+										Size = UDim2.fromScale(1, 1),
+										Text = "No Frame"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			["MouseUnlock"] = {
+				ClassName = "TextButton",
+				Interactable = false,
+				Modal = true,
+				BackgroundTransparency = 1,
+				Position = UDim2.new(0, 0, 0, 0),
+				Size = UDim2.new(0, 0, 0, 0),
+				Text = ""
+			}
+		}
+	}
+}
+
+local DefaultProperties = {
+	BorderSizePixel = 0,
+	BackgroundColor3 = Color3.fromRGB(0, 55, 75),
+	FontFace = Font.fromName("Sarpanch"),
+	TextColor3 = Color3.fromRGB(255, 255, 255),
+	TextScaled = true,
+	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+	StrokeSizingMode = Enum.StrokeSizingMode.ScaledSize,
+	ScrollBarThickness = 0,
+	ScrollBarImageTransparency = 1
+}
+
+function LoadInstance(InstanceToLoad, InstanceParent)
+	for Name, Properties in InstanceToLoad do
+		if InstanceParent:FindFirstChild(Name) then
+			InstanceParent[Name]:Destroy()
+		end
+
+		local NewInstance = Instance.new(Properties.ClassName)
+		NewInstance.Name = Name
+
+		if NewInstance.ClassName == "ScreenGui" then
+			NewInstance.Enabled = false
+		end
+
+		for DefaultProperty, Value in DefaultProperties do
+			local HasProperty, _ = pcall(function()
+				NewInstance[DefaultProperty] = NewInstance[DefaultProperty]
+			end)
+
+			if HasProperty and Properties[DefaultProperty] == nil then
+				if DefaultProperty ~= "BackgroundColor3" or (DefaultProperty == "BackgroundColor3" and NewInstance.BackgroundTransparency < 1) then
+					NewInstance[DefaultProperty] = Value
+				end
+			end
+		end
+
+		for Property, Value in Properties do
+			if Property == "Files" then
+				LoadInstance(Value, NewInstance)
+			elseif Property == "Tags" then
+				for _, TagName in Value do
+					NewInstance:AddTag(TagName)
+				end
+			elseif Property == "Attributes" then
+				for AttributeName, AttributeValue in Value do
+					NewInstance:SetAttribute(AttributeName, AttributeValue)
+				end
+			else
+				if Property ~= "ClassName" then
+					NewInstance[Property] = Value
+				end
+			end
+		end
+
+		NewInstance.Parent = InstanceParent
+	end
+end
+
+LoadInstance(UIContent, game.Players.LocalPlayer.PlayerGui)
+
+game.Players.LocalPlayer.PlayerGui.FunnyMenu.Events.PanelOpen.Event:Connect(function()
+	game.Players.LocalPlayer.PlayerGui.FunnyMenu.Enabled = not game.Players.LocalPlayer.PlayerGui.FunnyMenu.Enabled
+end)
+
+print("UILoader loaded. Start loading scripts")
+
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+
+UI.UIStatus.VisibleTab:GetPropertyChangedSignal("Value"):Connect(function()
+	local TabChangeResult = {
+		AllFrames = 0,
+		Hidden = 0
+	}
+
+	for _, Frame in UI.Main.Tabs:GetChildren() do
+		if string.find(string.lower(Frame.ClassName), "frame") then
+			Frame.Visible = Frame.Name == UI.UIStatus.VisibleTab.Value
+
+			local TabColor = UI.Colors.TabPick.Value
+
+			if Frame.Visible == false then
+				TabColor = UI.Colors.TabUnpick.Value
+
+				TabChangeResult.Hidden += 1
+			end
+
+			for _, TabFrame in {UI.Main.TabChoice, UI.Main.TabChoiceSpecial} do
+				if TabFrame:FindFirstChild(Frame.Name) then
+					TabFrame[Frame.Name].BackgroundColor3 = TabColor
+				end
+			end
+
+			TabChangeResult.AllFrames += 1
+		end
+	end
+
+	UI.Main.Tabs.NoFrame.Visible = TabChangeResult.Hidden >= TabChangeResult.AllFrames
+end)
+
+UI.UIStatus.VisibleTab.Value = "Actions"
+
+
+for _, TabFrame in {UI.Main.TabChoice, UI.Main.TabChoiceSpecial} do
+	for _, Button in TabFrame:GetChildren() do
+		if string.find(string.lower(Button.ClassName), "button") then
+			Button.MouseButton1Click:Connect(function()
+				UI.UIStatus.VisibleTab.Value = Button.Name
+			end)
+		end
+	end
+end
+
+print("UITabChange loaded")
+
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+
+for _, ScriptStatus in UI.ScriptStatuses:GetChildren() do
+	if ScriptStatus:IsA("BoolValue") and UI.Main.Tabs.Actions:FindFirstChild(ScriptStatus.Name, true) then
+		ScriptStatus:GetPropertyChangedSignal("Value"):Connect(function()
+			local Color = UI.Colors.ButtonOn.Value
+
+			if ScriptStatus.Value == false then
+				Color = UI.Colors.ButtonOff.Value
+			end
+
+			UI.Main.Tabs.Actions:FindFirstChild(ScriptStatus.Name, true).BackgroundColor3 = Color
+		end)
+	end
+end
+
+for _, Button in UI.Main.Tabs.Actions:GetDescendants() do
+	if string.find(string.lower(Button.ClassName), "button") then
+		Button.MouseButton1Click:Connect(function()
+			Button:HasTag("Toggle")
+			if UI.Events:FindFirstChild(Button.Name) then
+				local Status = nil
+
+				if Button.Name == "SkipRoomIgnoreConditions" then
+					Status = "Ignore"
+				end
+
+				UI.Events[Button.Name]:Fire(Status)
+			elseif Button:HasTag("Toggle") and UI.ScriptStatuses:FindFirstChild(Button.Name) then
+				if UI.ScriptStatuses[Button.Name]:IsA("BoolValue") then
+					UI.ScriptStatuses[Button.Name].Value = not UI.ScriptStatuses[Button.Name].Value
+				end
+			end
+		end)
+	end
+end
+
+print("UIActionButtons loaded")
+
+local LocalEntities = {
+	["Pandemonium"] = {
+		Folder = "Workspace",
+		Variants = {
+			"Pandemonium",
+			"Anglemonium",
+			"Pinkimonium",
+			"Frogermonium",
+			"Blitzemonium",
+			"Pandesmoker"
+		},
+
+		DisableMethod = "Delete"
+	},
+	["Pipsqueak"] = {
+		Folder = "Workspace",
+		Variants = {
+			"Pipsqueak",
+			"RidgePipsqueak"
+		},
+
+		DisableMethod = "Delete"
+	},
+	["A200"] = {
+		Folder = "Workspace",
+
+		DisableMethod = "Delete"
+	},
+	["WitchingHour"] = {
+		Folder = "Workspace",
+
+		DisableMethod = "Delete"
+	},
+	["Lopee"] = {
+		Folder = "Workspace",
+
+		DisableMethod = "Delete"
+	},
+	["GOM"] = {
+		Folder = "Players.LocalPlayer.PlayerGui.Main",
+		Variants = {
+			"GOMFrame"
+		},
+
+		DisableMethod = "MovingFiles"
+	}
+}
+
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+
+function FindByThreadText(PathStart, Thread)
+	if PathStart and Thread then
+		local PickedFolder = PathStart
+
+		for _, Path in string.split(Thread, ".") do
+			if Path == "LocalPlayer" then
+				PickedFolder = game.Players.LocalPlayer
+			else
+				if PickedFolder:FindFirstChild(Path) then
+					PickedFolder = PickedFolder:FindFirstChild(Path)
+				else
+					print(Path)
+					return
+				end
+			end
+		end
+
+		return PickedFolder
+	end
+
+	return
+end
+
+game:GetService("RunService").RenderStepped:Connect(function()
+	for Entity, Info in LocalEntities do
+		if not UI.Settings:FindFirstChild("LocalEntitiesDisable") then
+			Instance.new("Folder", UI.Settings).Name = "LocalEntitiesDisable"
+		end
+
+		local EntityValue = UI.Settings.LocalEntitiesDisable:FindFirstChild(Entity)
+
+		if not EntityValue then
+			EntityValue = Instance.new("BoolValue", UI.Settings.LocalEntitiesDisable)
+			EntityValue.Name = Entity
+			EntityValue.Value = true
+		end
+
+		local DisabledFiles = game.ReplicatedStorage:FindFirstChild("DisabledFiles")
+
+		if not DisabledFiles then
+			DisabledFiles = Instance.new("Folder", game.ReplicatedStorage)
+			DisabledFiles.Name = "DisabledFiles"
+		end
+
+		local EntityFolder = FindByThreadText(game, Info.Folder)
+
+		if EntityFolder then
+			if Info.Variants then
+				for _, Variant in Info.Variants do
+					if Info.DisableMethod == "Delete" then
+						if EntityValue.Value == true and EntityFolder:FindFirstChild(Variant) then
+							EntityFolder[Variant]:Destroy()
+						end
+					elseif Info.DisableMethod == "MovingFiles" then
+						if EntityValue.Value == true then
+							if EntityFolder:FindFirstChild(Variant) then
+								if DisabledFiles:FindFirstChild(Variant) then
+									DisabledFiles[Variant]:Destroy()
+								end
+
+								EntityFolder[Variant].Parent = DisabledFiles
+							end
+						else
+							if DisabledFiles:FindFirstChild(Variant) then
+								if EntityFolder:FindFirstChild(Variant) then
+									EntityFolder[Variant]:Destroy()
+								end
+
+								DisabledFiles[Variant].Parent = EntityFolder
+							end
+						end
+					end
+				end
+			else
+				if Info.DisableMethod == "Delete" then
+					if EntityValue.Value == true and EntityFolder:FindFirstChild(Entity) then
+						EntityFolder[Entity]:Destroy()
+					end
+				elseif Info.DisableMethod == "MovingFiles" then
+					if EntityValue.Value == true then
+						if EntityFolder:FindFirstChild(Entity) then
+							if DisabledFiles:FindFirstChild(Entity) then
+								DisabledFiles[Entity]:Destroy()
+							end
+
+							EntityFolder[Entity].Parent = DisabledFiles
+						end
+					else
+						if DisabledFiles:FindFirstChild(Entity) then
+							if EntityFolder:FindFirstChild(Entity) then
+								EntityFolder[Entity]:Destroy()
+							end
+
+							DisabledFiles[Entity].Parent = EntityFolder
+						end
+					end
+				end
+			end
+		end
+	end
+end)
+
+print("PassiveLocalEntities loaded")
+
+local KeyBinds = {
+	Default = {
+		["PanelOpen"] = {
+			[1] = "Z"
+		},
+		["SkipRoom"] = {
+			[1] = "P"
+		},
+		["SkipRoomIgnoreConditions"] = {
+			[1] = "O"
+		},
+		["SkipRoomAuto"] = {
+			[1] = "Z and P"
+		},
+		["TeleportToRoom"] = {
+			[1] = "Z and One",
+			[2] = "Z and Two",
+			[3] = "Z and Three",
+			[4] = "Z and Four",
+			[5] = "Z and Five",
+			[6] = "Z and Six",
+		},
+		["CollectMoneyAuto"] = {
+			[1] = "Z and M"
+		},
+		["CancelAll"] = {
+			[1] = "Z and X"
+		}
+	}
+}
+
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+
+local Preset = game.Players.LocalPlayer.UserId
+
+if KeyBinds[Preset] == nil then
+	Preset = "Default"
+end
+
+for Action, Keys in KeyBinds[Preset] do
+	if not UI:FindFirstChild("KeyBinds") then
+		Instance.new("Folder", UI).Name = "KeyBinds"
+	end
+
+	local KeyBindValue = UI.KeyBinds:FindFirstChild(Action)
+
+	if not KeyBindValue then
+		KeyBindValue = Instance.new("StringValue", UI.KeyBinds)
+		KeyBindValue.Name = Action
+	end
+
+	for Number, KeyBind in Keys do
+		if Number <= 1 then
+			KeyBindValue.Value = KeyBind
+		else
+			KeyBindValue:SetAttribute("Extra"..(Number - 1), KeyBind)
+		end
+	end
+end
+
+print("KeyBindsLoader loaded")
+
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+
+local KeyPressed = {}
+local PressedCombination = {}
+
+function KeyBindPressed(KeyBindName, BindNumber)
+	print(KeyBindName)
+	if UI.Events:FindFirstChild(KeyBindName) then
+		local Status = nil
+
+		if KeyBindName == "SkipRoomIgnoreConditions" then
+			Status = "Ignore"
+		end
+
+		UI.Events[KeyBindName]:Fire(BindNumber, Status)
+	else
+		for _, Folder in {UI.ScriptStatuses, UI.Settings} do
+			if Folder:FindFirstChild(KeyBindName) then
+				if Folder[KeyBindName]:IsA("BoolValue") then
+					Folder[KeyBindName].Value = not Folder[KeyBindName].Value
+				end
+			end
+		end
+	end
+end
+
+game.UserInputService.InputBegan:Connect(function(Input)
+	KeyPressed[string.split(tostring(Input.KeyCode), ".")[3]] = true
+
+	for _, KeyBind in UI.KeyBinds:GetChildren() do
+		if string.find(KeyBind.Value, " and ") then
+			local AllKeyPressed = true
+
+			for _, Key in string.split(KeyBind.Value, " and ") do
+				if not KeyPressed[Key] then
+					AllKeyPressed = false
+				end
+			end
+
+			if AllKeyPressed then
+				for _, Key in string.split(KeyBind.Value, " and ") do
+					PressedCombination[Key] = true
+				end
+
+				KeyBindPressed(KeyBind.Name)
+			end
+		end
+
+		for _, ExtraKeyBind in KeyBind:GetAttributes() do
+			if string.find(ExtraKeyBind, " and ") then
+				local AllKeyPressed = true
+
+				for _, Key in string.split(ExtraKeyBind, " and ") do
+					if not KeyPressed[Key] then
+						AllKeyPressed = false
+					end
+				end
+
+				if AllKeyPressed then
+					for _, Key in string.split(ExtraKeyBind, " and ") do
+						PressedCombination[Key] = true
+					end
+
+					KeyBindPressed(KeyBind.Name)
+				end
+			end
+		end
+	end
+end)
+
+game.UserInputService.InputEnded:Connect(function(Input)
+	for _, KeyBind in UI.KeyBinds:GetChildren() do
+		if not string.find(KeyBind.Value, " and ") and KeyBind.Value == string.split(tostring(Input.KeyCode), ".")[3] and not PressedCombination[KeyBind.Value] then
+			KeyBindPressed(KeyBind.Name)
+		end
+
+		for _, ExtraKeyBind in KeyBind:GetAttributes() do
+			if not string.find(ExtraKeyBind, " and ") and KeyBind.Value == string.split(tostring(Input.KeyCode), ".")[3] and not PressedCombination[ExtraKeyBind] then
+				KeyBindPressed(KeyBind.Name)
+			end
+		end
+	end
+
+	if Input.KeyCode == Enum.KeyCode.Escape then
+		KeyPressed = {}
+		PressedCombination = {}
+	else
+		KeyPressed[string.split(tostring(Input.KeyCode), ".")[3]] = false
+		PressedCombination[string.split(tostring(Input.KeyCode), ".")[3]] = false
+	end
+end)
+
+print("KeyBinds loaded")
+
+local SkipRoom = {
+	OpenedRooms = {},
+	NextUngeneratedRoom = nil,
+
+	DoorRoot = nil,
+	DoorRootPrompt = nil,
+	DoorCollisionPartCFrame = nil,
+	DoorTouchPart = nil,
+
+	LockMain = nil,
+	LockPrompt = nil,
+	LockRemoteFunction = nil,
+
+	Enter = nil,
+	Exit = nil,
+
+	Keycard = nil,
+	KeycardParentPartCFrame = nil,
+	KeycardProxyPart = nil,
+	KeycardProxyPartPrompt = nil,
+	Password = nil,
+	PasswordCode = nil,
+
+	EndRunButtonHighlight = nil,
+	EndRunButtonHighlightCFrame = nil,
+	EndRunButtonHighlightPrompt = nil,
+
+	ElevatorHighlightCFrame = nil,
+
+	PressureDoors = {
+		["NormalDoor"] = {
+			Root = {
+				[1] = "Root"
+			},
+			CollisionPart = {
+				[1] = "CollisionPart"
+			},
+			LockMain = {
+				[1] = "Lock",
+				[2] = "Main"
+			},
+			LockPrompt = {
+				[1] = "Lock",
+				[2] = "Main"
+			},
+			LockRemoteFunction = {
+				[1] = "Lock",
+				[2] = "Main"
+			}
+		},
+		["BigDoor"] = {
+			Root = {
+				[1] = "Root"
+			},
+			CollisionPart = {
+				[1] = "CollisionPart"
+			},
+			LockMain = {
+				[1] = "HeavyLock",
+				[2] = "Main"
+			},
+			LockPrompt = {
+				[1] = "HeavyLock",
+				[2] = "Main"
+			}
+		},
+		["DoubleDoor"] = {
+			DoubleDoor = true,
+			DoorOfDoubleDoor = "NormalDoor",
+			Root = {
+				[1] = "Root"
+			},
+			CollisionPart = {
+				[1] = "CollisionPart"
+			},
+			LockMain = {
+				[1] = "Lock",
+				[2] = "Main"
+			},
+			LockPrompt = {
+				[1] = "Lock",
+				[2] = "Main"
+			},
+			LockRemoteFunction = {
+				[1] = "Lock",
+				[2] = "Main"
+			}
+		},
+		["DoubleDoorSewer"] = {
+			DoubleDoor = true,
+			DoorOfDoubleDoor = "NormalDoor",
+			Root = {
+				[1] = "Root"
+			},
+			CollisionPart = {
+				[1] = "CollisionPart"
+			},
+			LockMain = {
+				[1] = "Lock",
+				[2] = "Main"
+			},
+			LockPrompt = {
+				[1] = "Lock",
+				[2] = "Main"
+			},
+			LockRemoteFunction = {
+				[1] = "Lock",
+				[2] = "Main"
+			}
+		},
+		["LargeRoundDoor"] = {
+			Root = {
+				[1] = "RootPart"
+			},
+			CollisionPart = {
+				[1] = "CollisionPart"
+			},
+			TouchPart = {
+				[1] = "TouchPart"
+			}
+		}
+	},
+
+	BoardPuzzles = {
+		["Board1"] = {
+			["1-1"] = {180},
+			["2-1"] = {0},
+			["2-2"] = {0, 180},
+			["2-3"] = {0, 180},
+			["2-4"] = {0, 180},
+			["2-5"] = {0, 180},
+			["2-6"] = {180},
+			["3-6"] = {90, -90},
+			["4-6"] = {0, 90},
+			["4-7"] = {-90},
+			["3-7"] = {90, -90},
+			["2-7"] = {90},
+			["2-8"] = {180, -90},
+			["3-8"] = {0}
+		},
+		["Board2"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {180},
+			["2-2"] = {90, -90},
+			["3-2"] = {90, -90},
+			["4-2"] = {0},
+			["4-3"] = {0, 180},
+			["4-4"] = {0, 180},
+			["4-5"] = {-90},
+			["3-5"] = {90, -90},
+			["2-5"] = {180},
+			["2-4"] = {0, 180},
+			["2-3"] = {0},
+			["1-3"] = {90},
+			["1-4"] = {0, 180},
+			["1-5"] = {0, 180},
+			["1-6"] = {180},
+			["1-7"] = {180, -90},
+			["2-7"] = {0},
+			["2-8"] = {180},
+			["3-8"] = {0}
+		},
+		["Board3"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {180},
+			["2-2"] = {90, -90},
+			["3-2"] = {0, 90},
+			["3-3"] = {0, 180},
+			["3-4"] = {180},
+			["4-4"] = {0},
+			["4-5"] = {0, 180},
+			["4-6"] = {0, 180},
+			["4-7"] = {-90},
+			["3-7"] = {90, -90},
+			["2-7"] = {90},
+			["2-8"] = {180},
+			["3-8"] = {0}
+		},
+		["Board4"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {180},
+			["2-2"] = {90, -90},
+			["3-2"] = {90, -90},
+			["4-2"] = {0},
+			["4-3"] = {0, 180},
+			["4-4"] = {-90},
+			["3-4"] = {180},
+			["3-3"] = {0, 90},
+			["2-3"] = {90, -90},
+			["1-3"] = {90},
+			["1-4"] = {0, 180},
+			["1-5"] = {0, 180},
+			["1-6"] = {0, 180},
+			["1-7"] = {180, -90},
+			["2-7"] = {0, -90},
+			["2-6"] = {0, 180},
+			["2-5"] = {90},
+			["3-5"] = {0},
+			["3-6"] = {0, 180},
+			["3-7"] = {0, 180},
+			["3-8"] = {0, 180}
+		},
+		["Board5"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {180},
+			["2-2"] = {-90},
+			["2-1"] = {90},
+			["3-1"] = {0},
+			["3-2"] = {0, 180},
+			["3-3"] = {-90},
+			["2-3"] = {90, -90},
+			["1-3"] = {90},
+			["1-4"] = {0, 180},
+			["1-5"] = {0, 180},
+			["1-6"] = {180},
+			["2-6"] = {0, -90},
+			["2-5"] = {90},
+			["3-5"] = {-90},
+			["3-4"] = {90},
+			["4-4"] = {0},
+			["4-5"] = {0, 180},
+			["4-6"] = {0, 180},
+			["4-7"] = {-90},
+			["3-7"] = {90},
+			["3-8"] = {0, 180},
+
+			["1-7"] = {0, 180}
+		},
+		["Board6"] = {
+			["1-1"] = {180},
+			["2-1"] = {0},
+			["2-2"] = {0, 180},
+			["2-3"] = {180},
+			["3-3"] = {-90},
+			["3-2"] = {0, 180},
+			["3-1"] = {90},
+			["4-1"] = {0},
+			["4-2"] = {0, 180},
+			["4-3"] = {0, 180},
+			["4-4"] = {-90},
+			["3-4"] = {90},
+			["3-5"] = {180},
+			["4-5"] = {0},
+			["4-6"] = {0, 180},
+			["4-7"] = {0, 180},
+			["4-8"] = {-90},
+			["3-8"] = {90}
+		},
+		["Board7"] = {
+			["1-1"] = {180, -90},
+			["2-1"] = {0},
+			["2-2"] = {180},
+			["3-2"] = {-90},
+			["3-1"] = {90},
+			["4-1"] = {0},
+			["4-2"] = {0, 180},
+			["4-3"] = {-90},
+			["3-3"] = {90, -90},
+			["2-3"] = {90, -90},
+			["1-3"] = {90},
+			["1-4"] = {180, -90},
+			["2-4"] = {90, -90},
+			["3-4"] = {0},
+			["3-5"] = {0, 180},
+			["3-6"] = {180},
+			["4-6"] = {0},
+			["4-7"] = {-90},
+			["3-7"] = {90, -90},
+			["2-7"] = {90},
+			["2-8"] = {180},
+			["3-8"] = {0}
+		},
+		["Board8"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {0, 180},
+			["1-3"] = {0, 180},
+			["1-4"] = {180},
+			["2-4"] = {-90},
+			["2-3"] = {0, 180},
+			["2-2"] = {90},
+			["3-2"] = {90, -90},
+			["4-2"] = {0},
+			["4-3"] = {0, 180},
+			["4-4"] = {-90},
+			["3-4"] = {90},
+			["3-5"] = {-90},
+			["2-5"] = {90, -90},
+			["1-5"] = {90},
+			["1-6"] = {0, 180},
+			["1-7"] = {0, 180},
+			["1-8"] = {180},
+			["2-8"] = {90, -90},
+			["3-8"] = {0}
+		},
+		["Board9"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {0, 180},
+			["1-3"] = {0, 180},
+			["1-4"] = {0, 180},
+			["1-5"] = {0, 180},
+			["1-6"] = {0, 180},
+			["1-7"] = {180},
+			["2-7"] = {-90},
+			["3-7"] = {-90},
+			["3-6"] = {0, 180},
+			["3-5"] = {90},
+			["4-5"] = {0},
+			["4-6"] = {0, 180},
+			["4-7"] = {0, 180},
+			["4-8"] = {-90},
+			["3-8"] = {90},
+
+			["2-6"] = {0, 180},
+			["2-5"] = {0, 180},
+			["2-4"] = {0, 180},
+			["2-3"] = {90},
+			["3-3"] = {90, -90}
+		},
+		["Board11"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {0, 180},
+			["1-3"] = {0, 180},
+			["1-4"] = {180},
+			["2-4"] = {90, -90},
+			["3-4"] = {-90},
+			["3-3"] = {90},
+			["4-3"] = {0},
+			["4-4"] = {0, 180},
+			["4-5"] = {0, 180},
+			["4-6"] = {-90},
+			["3-6"] = {90, -90},
+			["2-6"] = {90},
+			["2-7"] = {0, 180},
+			["2-8"] = {180},
+			["3-8"] = {0}
+		},
+		["Board12"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {0, 180},
+			["1-3"] = {0, 180},
+			["1-4"] = {0, 180},
+			["1-5"] = {0, 180},
+			["1-6"] = {180, -90},
+			["2-6"] = {-90},
+			["2-5"] = {0, 180},
+			["2-4"] = {0, 180},
+			["2-3"] = {0, 180},
+			["2-2"] = {90},
+			["3-2"] = {0},
+			["3-3"] = {0, 180},
+			["3-4"] = {0, 180},
+			["3-5"] = {0, 180},
+			["3-6"] = {0, 180},
+			["3-7"] = {0, 180},
+			["3-8"] = {0, 180}
+		},
+		["Board13"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {180, -90},
+			["2-2"] = {0},
+			["2-3"] = {180},
+			["3-3"] = {90, -90},
+			["4-3"] = {0},
+			["4-4"] = {0, 180},
+			["4-5"] = {0, 180},
+			["4-6"] = {-90},
+			["3-6"] = {90},
+			["3-7"] = {0, 180},
+			["3-8"] = {0, 180}
+		},
+		["Board14"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {180, -90},
+			["2-2"] = {-90},
+			["2-1"] = {90},
+			["3-1"] = {90, -90},
+			["4-1"] = {0},
+			["4-2"] = {0, 180},
+			["4-3"] = {-90},
+			["3-3"] = {90, -90},
+			["2-3"] = {90},
+			["2-4"] = {0, 180},
+			["2-5"] = {0, 180},
+			["2-6"] = {0, 180},
+			["2-7"] = {180},
+			["3-7"] = {90, -90},
+			["4-7"] = {0},
+			["4-8"] = {-90},
+			["3-8"] = {90},
+		},
+		["Board15"] = {
+			["1-1"] = {0, 180},
+			["1-2"] = {180, -90},
+			["2-2"] = {0},
+			["2-3"] = {0, 180},
+			["2-4"] = {-90},
+			["3-4"] = {90, -90},
+			["4-4"] = {0},
+			["4-5"] = {-90},
+			["3-5"] = {90},
+			["2-5"] = {90, -90},
+			["1-5"] = {90},
+			["1-6"] = {180},
+			["2-6"] = {0, 90},
+			["2-7"] = {-90},
+			["3-7"] = {90, -90},
+			["4-7"] = {0},
+			["4-8"] = {-90},
+			["3-8"] = {90},
+
+			["2-1"] = {90},
+			["3-1"] = {90},
+			["3-2"] = {0, 180},
+			["3-3"] = {180},
+
+			["3-6"] = {180},
+
+			["1-7"] = {90}
+		}
+	}
+}
+
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+
+local Script = {
+	Action = UI.ScriptStatuses.SkipRoom,
+	AutoSkipRoom = UI.ScriptStatuses.SkipRoomAuto
+}
+
+local Main = {
+	Player = game.Players.LocalPlayer,
+	Character = game.Players.LocalPlayer.Character,
+	CharacterRoot = if game.Players.LocalPlayer.Character then
+		if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+		game.Players.LocalPlayer.Character.HumanoidRootPart
+		else warn("No HumanoidRootPart")
+	else nil,
+		CurrentCamera = game.Workspace.CurrentCamera,
+
+		GameplayFolder = if game.Workspace:FindFirstChild("GameplayFolder") then
+			game.Workspace.GameplayFolder
+			else warn("No GameplayFolder. Expect MUCH bugs"),
+		RoomsFolder = if game.Workspace:FindFirstChild("GameplayFolder") then
+			if game.Workspace.GameplayFolder:FindFirstChild("Rooms") then
+			game.Workspace.GameplayFolder.Rooms
+			else warn("No RoomsFolder. Expect MUCH bugs")
+		else warn("No GameplayFolder for RoomsFolder. Expect MUCH bugs"),
+
+			UnCollisionBoxCollisionParts = {},
+			HiddenPrompts = {}
+}
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function(Character)
+	Main.Character = Character
+	Main.CharacterRoot = Character:WaitForChild("HumanoidRootPart")
+end)
+
+function FindByThread(PathStart, Thread)
+	if PathStart and Thread then
+		local PickedFile = PathStart
+
+		for _, Path in Thread do
+			PickedFile = PickedFile:FindFirstChild(Path)
+		end
+
+		return PickedFile
+	end
+
+	return
+end
+
+function ReturnPrompts()
+	for _, Prompt in Main.HiddenPrompts do
+		if Prompt:IsA("ProximityPrompt") then
+			if Prompt.Enabled then
+				Prompt.Enabled = true
+				table.remove()
+			end
+		end
+	end
+end
+
+function PromptInFrontOfCamera(Part, Prompt, LookVectorOffset)
+	local PartOffset = LookVectorOffset or 7
+
+	for _, Prompt in game.Workspace:GetDescendants() do
+		if Prompt:IsA("ProximityPrompt") then
+			if Prompt.Enabled then
+				Prompt.Enabled = false
+				table.insert(Main.HiddenPrompts, Prompt)
+			end
+		end
+	end
+
+	Part.CFrame = CFrame.new(
+		Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * PartOffset
+	) * CFrame.fromOrientation(0, 0, 0)
+
+	Prompt.MaxActivationDistance = 100
+	Prompt.RequiresLineOfSight = false
+	Prompt.HoldDuration = 0
+	Prompt.Enabled = true
+	Prompt:InputHoldBegin()
+	Prompt:InputHoldEnd()
+end
+
+function ReturnCollision()
+	for _, Part in Main.UnCollisionBoxCollisionParts do
+		if Part ~= nil then
+			if Part.Parent ~= nil then
+				if Part:IsA("BasePart") and Part.Name ~= "CollisionPart" then
+					Part.CanCollide = true
+				end
+			end
+		end
+	end
+
+	if game.Workspace:FindFirstChild("TemporaryFloor") then
+		game.Workspace.TemporaryFloor:Destroy()
+	end
+
+	if game.Workspace:FindFirstChild("UncollisionBox") then
+		game.Workspace.UncollisionBox:Destroy()
+	end
+end
+
+function UnCollisionAll(TeleportCFrame)
+	for _, Part in Main.UnCollisionBoxCollisionParts do
+		if Part ~= nil then
+			if Part.Parent ~= nil then
+				if Part:IsA("BasePart") and Part.Name ~= "CollisionPart" then
+					Part.CanCollide = true
+				end
+			end
+		end
+	end
+
+	local TemporaryFloor = game.Workspace:FindFirstChild("TemporaryFloor")
+	if TemporaryFloor == nil then
+		TemporaryFloor = Instance.new("Part", game.Workspace)
+		TemporaryFloor.Name = "TemporaryFloor"
+		TemporaryFloor.Transparency = 0.5
+		TemporaryFloor.Anchored = true
+		TemporaryFloor.CanCollide = true
+		TemporaryFloor.CastShadow = false
+		TemporaryFloor.Size = Vector3.new(8, 1, 8)
+	end
+
+	local UncollisionBox = game.Workspace:FindFirstChild("UncollisionBox")
+	if UncollisionBox == nil then
+		UncollisionBox = Instance.new("Part", game.Workspace)
+		UncollisionBox.Name = "UncollisionBox"
+		UncollisionBox.Transparency = 0.5
+		UncollisionBox.Anchored = true
+		UncollisionBox.CanCollide = false
+		UncollisionBox.CastShadow = false
+		UncollisionBox.Size = Vector3.new(8, 8, 8)
+	end
+
+	UncollisionBox.CFrame = TeleportCFrame
+	TemporaryFloor.CFrame = TeleportCFrame + Vector3.new(0, -4, 0)
+
+	for _, Part in game.Workspace:GetPartsInPart(UncollisionBox) do
+		if Part.Parent ~= game.Players.LocalPlayer.Character and Part:IsA("BasePart") then
+			if Part:GetAttribute("Active") and Part:GetAttribute("Damage") then
+				Part:Destroy()
+				print("Deleted Dangerous Part")
+			end
+			if Part.CanCollide == true and Part ~= TemporaryFloor then
+				Part.CanCollide = false
+				table.insert(Main.UnCollisionBoxCollisionParts, Part)
+			end
+		end
+	end
+end
+
+function TeleportPlayer(TeleportCFrame)
+	Main.CharacterRoot.CFrame = TeleportCFrame
+	UnCollisionAll(TeleportCFrame)
+end
+
+function ClearAllStats(Info)
+	Script.Mode = "None"
+	if Info then
+		if Info.PrintStats == true then
+			if SkipRoom.NextUngeneratedRoom ~= nil then
+				print("Clear stats of Room: "..SkipRoom.NextUngeneratedRoom.Name)
+			end
+		end
+	end
+
+	for _, Stat in {
+		"DoorRoot",
+		"DoorRootPrompt",
+		"DoorCollisionPartCFrame",
+		"DoorTouchPart",
+		"DoorRootPrompt",
+		"LockPrompt",
+		"LockRemoteFunction",
+		"Enter",
+		"Exit",
+		"Keycard",
+		"KeycardParentPartCFrame",
+		"KeycardProxyPart",
+		"KeycardProxyPartPrompt",
+		"Password",
+		"PasswordCode",
+		"PipeRoomStatus",
+		} do
+		if Info then
+			if Info.PrintStats and Stat ~= nil then
+				local PrintMessage = Stat
+
+				if Stat == "PasswordCode" then
+					PrintMessage = Stat..": "..SkipRoom[Stat]
+				end
+
+				print(PrintMessage)
+			end
+		end
+
+		SkipRoom[Stat] = nil
+	end
+end
+
+function ChangePipes(Room)
+	local Finished = true
+
+	if Room ~= nil then
+		for Board, Pipes in SkipRoom.BoardPuzzles do
+			if Room:FindFirstChild(Board) then
+				if Room[Board]:FindFirstChild("puzzle") and Room[Board]:FindFirstChild("Main") and Room[Board]:FindFirstChild("Power") then
+					local BoardPuzzleMain = Room[Board].Main
+					local PowerPipe = Room[Board].Power
+
+					for PipePosition, PipeRotation in Pipes do
+						if Main.CharacterRoot ~= nil then
+							local TeleportCFrame = BoardPuzzleMain.CFrame
+							UnCollisionAll(TeleportCFrame)
+							Main.CharacterRoot.CFrame = TeleportCFrame
+
+							local Column = tonumber(string.split(PipePosition, "-")[1])
+							local Row = tonumber(string.split(PipePosition, "-")[2])
+
+							local PipeFindPart = game.Workspace:FindFirstChild("BoardPuzzlePipeFindPart")
+							if PipeFindPart == nil then
+								PipeFindPart = Instance.new("Part", game.Workspace)
+								PipeFindPart.Name = "BoardPuzzlePipeFindPart"
+								PipeFindPart.Transparency = 0.5
+								PipeFindPart.Anchored = true
+								PipeFindPart.CanCollide = true
+								PipeFindPart.CastShadow = false
+								PipeFindPart.Size = Vector3.new(0.5, 0.5, 0.5)
+							end
+
+							PipeFindPart.Position = PowerPipe.Position - (BoardPuzzleMain.CFrame.UpVector * (1.5 * (Column - 1)) + BoardPuzzleMain.CFrame.RightVector * (1.5 * Row))
+
+							for _, PipePart in game.Workspace:GetPartsInPart(PipeFindPart) do
+								if PipePart.Name == "Part" and PipePart.Parent ~= nil then
+									if PipePart.Parent.Parent ~= nil then
+										if PipePart.Parent.Parent == Room[Board].puzzle then
+											local NeedRotate = true
+											for _, Degree in PipeRotation do
+												if math.round(PipePart.Orientation.Z) ~= -180 then
+													if math.round(PipePart.Orientation.Z) == Degree then
+														NeedRotate = false
+													end
+												else
+													if math.round(math.abs(PipePart.Orientation.Z)) == Degree then
+														NeedRotate = false
+													end
+												end
+											end
+
+											if NeedRotate == true then
+												if PipePart.Parent:FindFirstChild("Highlight") then
+													if PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then						
+														local PromptPressed = false
+														PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Triggered:Connect(function()
+															PromptPressed = true
+														end)
+
+														while PromptPressed == false do
+															for _, OtherPipes in Room[Board].puzzle:GetChildren() do 
+																if OtherPipes:FindFirstChild("Highlight") then
+																	if OtherPipes.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then
+																		OtherPipes.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Enabled = false
+																	end
+																end
+															end
+
+															PipePart.Parent.Highlight.Anchored = true
+															PromptInFrontOfCamera(PipePart.Parent.Highlight, PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt"), 3)
+															task.wait()
+														end
+
+													end
+												end
+												Finished = false	
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	if Finished == false then
+		task.wait(0.5)
+	end
+
+	return Finished
+end
+
+function GetRoom(Info)
+	local PickedRoom = nil
+
+	local RoomsInExitValue = {}
+	for _, Room in Main.RoomsFolder:GetChildren() do
+		if Room:FindFirstChild("Entrances") then
+			for PressureDoorName, PressureDoor in SkipRoom.PressureDoors do
+				local Door = Room.Entrances:FindFirstChild(PressureDoorName)
+				if Door ~= nil then
+					if Door:FindFirstChild("Exit") then
+						if Door.Exit:IsA("ObjectValue") then
+							local ExitRoom = Door.Exit.Value
+							if ExitRoom ~= nil then
+								if ExitRoom.Parent ~= nil then
+									table.insert(RoomsInExitValue, ExitRoom)
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	local CorrectRooms = {}
+	for _, Room in Main.RoomsFolder:GetChildren() do
+		if table.find(RoomsInExitValue, Room) == nil and Room:GetAttribute("Room") then
+			if Info then
+				if Info.SpecificRoom then
+					table.insert(CorrectRooms, Room)
+				else
+					PickedRoom = Room
+				end
+			else
+				PickedRoom = Room
+			end
+		end
+	end
+
+	if Info then
+		if Info.SpecificRoom then
+			for _, Room in CorrectRooms do
+				print("Room Of Few Rooms: "..Room.Name)
+				if (type(Info.SpecificRoom) ~= "string" and Room == Info.SpecificRoom) or ((type(Info.SpecificRoom) == "string" and Room.Name == Info.SpecificRoom)) then
+					PickedRoom = Room
+				end
+			end
+		end
+	end
+
+	if Info.GetRoom then
+		return PickedRoom
+	else
+		SkipRoom.NextUngeneratedRoom = PickedRoom
+	end
+end
+
+function RoomStats()
+	if SkipRoom.NextUngeneratedRoom == nil then
+		if SkipRoom.NextUngeneratedRoom.Parent == Main.RoomsFolder then
+			if SkipRoom.NextUngeneratedRoom:FindFirstChild("Entrances") then
+				for PressureDoorName, PressureDoor in SkipRoom.PressureDoors do
+					local Door = SkipRoom.NextUngeneratedRoom.Entrances:FindFirstChild(PressureDoorName)
+					local OriginalDoor = Door
+					if Door then
+						if PressureDoor.DoubleDoor then
+							if not Door:FindFirstChild(PressureDoor.DoorOfDoubleDoor) then
+								print("ERROR | Double Door '"..PressureDoorName.."' has not single door '"..PressureDoor.DoorOfDoubleDoor.."' in room '"..SkipRoom.NextUngeneratedRoom.Name.."'")
+							else
+								local MinY = nil
+								for _, NormalDoor in Door:GetChildren() do
+									if NormalDoor.Name == PressureDoor.DoorOfDoubleDoor and NormalDoor:FindFirstChild("CollisionPart") then
+										if MinY == nil then
+											Door = NormalDoor
+										else
+											if MinY > NormalDoor.CollisionPart.Position.Y then
+												Door = NormalDoor
+											end
+										end
+										MinY = NormalDoor.CollisionPart.Position.Y
+									end
+								end
+							end
+						end
+
+						local OpenValue = Door:WaitForChild("OpenValue")
+						if OpenValue == nil then
+							print("ERROR | Door '"..PressureDoorName.."'' has not 'OpenValue' in room '"..SkipRoom.NextUngeneratedRoom.Name.."'")
+						else
+							if not OpenValue:IsA("BoolValue") then
+								print("ERROR | Door '"..PressureDoorName.."'' has 'OpenValue' but it is not BoolValue in room '"..SkipRoom.NextUngeneratedRoom.Name.."'")
+							else
+								OpenValue:GetPropertyChangedSignal("Value"):Once(function()
+									if OpenValue.Value == true and Script.Action.Value ~= "Start" then
+										Script.Action.Value = "Idle"
+										ClearAllStats()
+										if Script.AutoSkipRoom.Value == true then
+											task.wait(UI.Settings.SkipRoomAutoCooldown)
+											OpenNextDoor()
+										end
+									end
+								end)
+							end
+						end
+
+						for _, LockedRoom in Main.RoomsFolder:GetChildren() do
+							SkipRoom.Keycard = LockedRoom:FindFirstChild("NormalKeyCard", true)
+							if SkipRoom.Keycard == nil then
+								SkipRoom.Keycard = LockedRoom:FindFirstChild("RidgeKeyCard", true)
+							end
+							SkipRoom.Password = LockedRoom:FindFirstChild("PasswordPaper", true)
+							if SkipRoom.Keycard ~= nil then
+								if SkipRoom.Keycard.Parent ~= nil then
+									if SkipRoom.Keycard.Parent:IsA("BasePart") then
+										SkipRoom.KeycardParentPartCFrame = SkipRoom.Keycard.Parent.CFrame
+									end
+								end
+								if SkipRoom.Keycard:FindFirstChild("ProxyPart") then
+									if SkipRoom.Keycard.ProxyPart:IsA("BasePart") then
+										SkipRoom.KeycardProxyPart = SkipRoom.Keycard.ProxyPart
+									end
+									SkipRoom.KeycardProxyPartPrompt = SkipRoom.Keycard.ProxyPart:FindFirstChildWhichIsA("ProximityPrompt")
+								end
+								break
+							elseif SkipRoom.Password ~= nil then
+								if SkipRoom.Password:FindFirstChild("Code") then
+									if SkipRoom.Password.Code:FindFirstChildWhichIsA("SurfaceGui") then
+										if SkipRoom.Password.Code:FindFirstChildWhichIsA("SurfaceGui"):FindFirstChildWhichIsA("TextLabel") then
+											SkipRoom.PasswordCode = SkipRoom.Password.Code:FindFirstChildWhichIsA("SurfaceGui"):FindFirstChildWhichIsA("TextLabel").Text
+										end
+									end
+								end
+								break
+							end
+						end
+
+						if SkipRoom.Keycard ~= nil or SkipRoom.Password ~= nil then
+							SkipRoom.LockMain = FindByThread(Door, PressureDoor.LockMain)
+							SkipRoom.LockPrompt = FindByThread(Door, PressureDoor.LockPrompt)
+							SkipRoom.LockRemoteFunction = FindByThread(Door, PressureDoor.LockRemoteFunction)
+						end
+
+						SkipRoom.DoorRoot = FindByThread(Door, PressureDoor.Root)
+						SkipRoom.DoorRootPrompt = if SkipRoom.DoorRoot ~= nil then
+							SkipRoom.DoorRoot:FindFirstChildWhichIsA("ProximityPrompt")
+							else nil			
+						SkipRoom.DoorCollisionPartCFrame = FindByThread(Door, PressureDoor.CollisionPart)
+						SkipRoom.DoorTouchPart = FindByThread(Door, PressureDoor.Touch)
+						SkipRoom.Enter = OriginalDoor:FindFirstChild("Enter")
+						SkipRoom.Exit = OriginalDoor:FindFirstChild("Exit")
+
+						if SkipRoom.Exit ~= nil then
+							if SkipRoom.Exit.Value.Name == "ModifierEnding" then
+								if SkipRoom.Exit.Value:FindFirstChild("Interactables") then
+									if SkipRoom.Exit.Value.Interactables:FindFirstChild("EndRun") then
+										if SkipRoom.Exit.Value.Interactables.EndRun:FindFirstChild("Highlight") then
+											SkipRoom.EndRunButtonHighlight = SkipRoom.Exit.Value.Interactables.EndRun.Highlight
+											SkipRoom.EndRunButtonHighlightCFrame = SkipRoom.Exit.Value.Interactables.EndRun.Highlight.CFrame
+											SkipRoom.EndRunButtonHighlightPrompt = SkipRoom.Exit.Value.Interactables.EndRun.Highlight:FindFirstChildWhichIsA("ProximityPrompt")
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+function OpenNextDoor()
+	Script.Action.Value = "Start"
+	GetRoom({
+		Number = 0
+	})
+	RoomStats()
+end
+
+game:GetService("RunService").RenderStepped:Connect(function()
+	if Script.Action.Value ~= "Idle" then
+		if game.Workspace:FindFirstChild("Elevator") then
+			if game.Workspace.Elevator:FindFirstChild("ElevatorKey") then
+				if game.Workspace.Elevator.ElevatorKey:FindFirstChild("Highlight") then
+					if SkipRoom.ElevatorHighlightCFrame == nil then
+						SkipRoom.ElevatorHighlightCFrame = game.Workspace.Elevator.ElevatorKey.Highlight.CFrame
+					end
+					if game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then
+						Script.Action.Value = "Press ElevatorPrompt"
+						PromptInFrontOfCamera(game.Workspace.Elevator.ElevatorKey.Highlight, 7, game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt"))
+
+						TeleportPlayer(SkipRoom.ElevatorHighlightCFrame)
+					end
+				end
+			end
+		else
+			for _, Room in Main.RoomsFolder:GetChildren() do
+				if Room:FindFirstChild("Elevator") then
+					GetRoom({
+						SpecificRoom = Room
+					})
+					RoomStats()
+				end
+			end
+		end
+
+		if Script.Action.Value ~= "Press ElevatorPrompt" then
+			if SkipRoom.Exit ~= nil then
+				if SkipRoom.Exit.Value:GetAttribute("SpecialTag") == "BoardPuzzle" then
+					Script.Action.Value = "Solving BoardPuzzle"
+					local BoardPuzzleFinished = ChangePipes(SkipRoom.Exit.Value)
+					if BoardPuzzleFinished == true then
+						Script.Action.Value = "Solved BoardPuzzle"
+					end
+				end
+				if SkipRoom.Exit.Value.Name == "ModifierEnding" then
+					if SkipRoom.EndRunButtonHighlight ~= nil and SkipRoom.EndRunButtonHighlightPrompt ~= nil then
+						Script.Action.Value = "Run Finish"
+						PromptInFrontOfCamera(SkipRoom.EndRunButtonHighlight, 7, SkipRoom.EndRunButtonHighlightPrompt)
+
+						TeleportPlayer(SkipRoom.EndRunButtonHighlightCFrame)
+					end
+				end
+			end
+
+			if Script.Action.Value ~= "Run Finish" and Script.Action.Value ~= "Solving BoardPuzzle" and Script.Action.Value ~= "Press ElevatorPrompt" then
+				if SkipRoom.DoorRoot ~= nil and SkipRoom.DoorRootPrompt ~= nil then
+					Script.Action.Value = "Open ProgressDoor Root"
+					PromptInFrontOfCamera(SkipRoom.DoorRoot, 7, SkipRoom.DoorRootPrompt)
+				end
+
+				if SkipRoom.Keycard ~= nil then
+					if game.Players.LocalPlayer.PlayerGui.Main.Health.AuxItems.NormalKeyCard.Visible == false then
+						if SkipRoom.KeycardParentPartCFrame ~= nil and SkipRoom.KeycardProxyPart ~= nil and SkipRoom.KeycardProxyPartPrompt ~= nil then
+							Script.Action.Value = "Pick Keycard"
+							PromptInFrontOfCamera(SkipRoom.KeycardProxyPart, 7, SkipRoom.KeycardProxyPartPrompt)
+
+							TeleportPlayer(SkipRoom.KeycardParentPartCFrame + Vector3.new(0, -10, 0))
+						end
+					else
+						if SkipRoom.LockMain ~= nil and SkipRoom.LockPrompt ~= nil then
+							Script.a = "Open ProgressDoor Keycard"
+
+							if SkipRoom.KeycardProxyPartPrompt ~= nil then
+								SkipRoom.KeycardProxyPartPrompt.Enabled = false
+							end
+
+							SkipRoom.KeycardParentPartCFrame = nil
+							SkipRoom.KeycardProxyPart = nil
+							SkipRoom.KeycardProxyPartPrompt = nil
+
+							PromptInFrontOfCamera(SkipRoom.LockMain, SkipRoom.LockPrompt)
+						end
+					end
+				else
+					if SkipRoom.LockRemoteFunction ~= nil and SkipRoom.PasswordCode ~= nil then
+						Script.Action.Value = "Open ProgressDoor Password"
+						SkipRoom.LockRemoteFunction:InvokeServer(SkipRoom.PasswordCode)
+					end
+				end
+
+				if SkipRoom.DoorTouchPart ~= nil then
+					TeleportPlayer(SkipRoom.DoorTouchPart.CFrame)
+
+					game.ReplicatedStorage.Events.ZoneChange:FireServer(SkipRoom.NextUngeneratedRoom)
+				end
+				if string.find(Script.Action.Value, "Open ProgressDoor") and Main.CharacterRoot ~= nil and SkipRoom.DoorCollisionPartCFrame ~= nil then
+					local Offset = if SkipRoom.Keycard ~= nil or SkipRoom.Password ~= nil then
+						-10
+						else -8
+
+					TeleportPlayer(SkipRoom.DoorCollisionPartCFrame + Vector3.new(0, Offset, 0))
+
+					game.ReplicatedStorage.Events.ZoneChange:FireServer(SkipRoom.NextUngeneratedRoom)
+				end
+			end
+		end
+	end
+end)
+
+UI.Events.SkipRoom.Event:Connect(function(Info)
+	Script.AutoSkipRoom.Value = false
+
+	if Info then
+		if Info.Status == "Ignore" then
+			print("Ignore")
+		end
+	end
+
+	if Script.Action.Value == "Idle" then
+		OpenNextDoor()
+	end
+end)
+
+UI.Events.CancelAll.Event:Connect(function()
+	Script.Action.Value = "Cancel"
+	Script.AutoSkipRoom.Value = false
+
+	ClearAllStats({
+		PrintStats = true
+	})
+end)
+
+UI.Events.TeleportToRoom.Event:Connect(function(Info)
+	ReturnCollision()
+	ReturnPrompts()
+end)
+
+Script.AutoSkipRoom:GetPropertyChangedSignal("Value"):Connect(function()
+	if Script.AutoSkipRoom.Value == true and Script.Action.Value == "Idle" then
+		OpenNextDoor()
+	end
+end)
+
+print("SkipRoom loaded")
