@@ -33,6 +33,9 @@ local LocalEntities = {
 	},
 	["Lopee"] = {
 		Folder = "Workspace",
+		Variants = {
+			"LopeePart"
+		},
 		
 		DisableMethod = "Delete"
 	},
@@ -46,7 +49,14 @@ local LocalEntities = {
 	}
 }
 
-local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+local UI = game.Players.LocalPlayer.PlayerGui:FindFirstChild("FunnyMenu")
+
+if not UI then
+	UI = Instance.new("Folder", game.ReplicatedStorage)
+	UI.Name = "LocalEntitiesToDisable"
+	
+	Instance.new("Folder", UI).Name = "Settings"
+end
 
 function FindByThreadText(PathStart, Thread)
 	if PathStart and Thread then
@@ -108,7 +118,9 @@ game:GetService("RunService").RenderStepped:Connect(function()
 									DisabledFiles[Variant]:Destroy()
 								end
 								
-								EntityFolder[Variant].Parent = DisabledFiles
+								
+								EntityFolder[Variant]:Clone().Parent = DisabledFiles
+								EntityFolder[Variant]:Destroy()
 							end
 						else
 							if DisabledFiles:FindFirstChild(Variant) then
@@ -133,7 +145,8 @@ game:GetService("RunService").RenderStepped:Connect(function()
 								DisabledFiles[Entity]:Destroy()
 							end
 							
-							EntityFolder[Entity].Parent = DisabledFiles
+							EntityFolder[Entity]:Clone().Parent = DisabledFiles
+							EntityFolder[Entity]:Destroy()
 						end
 					else
 						if DisabledFiles:FindFirstChild(Entity) then
