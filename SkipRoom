@@ -721,14 +721,20 @@ function GetRoom(Info)
 	local RoomsInExitValue = {}
 	for _, Room in Main.RoomsFolder:GetChildren() do
 		if Room:FindFirstChild("Entrances") then
+			print("GetRoom 1")
 			for PressureDoorName, PressureDoor in SkipRoom.PressureDoors do
 				local Door = Room.Entrances:FindFirstChild(PressureDoorName)
 				if Door ~= nil then
+					print("GetRoom 2")
 					if Door:FindFirstChild("Exit") then
+						print("GetRoom 3")
 						if Door.Exit:IsA("ObjectValue") then
+							print("GetRoom 4")
 							local ExitRoom = Door.Exit.Value
 							if ExitRoom ~= nil then
+								print("GetRoom 5")
 								if ExitRoom.Parent ~= nil then
+									print("GetRoom 6")
 									table.insert(RoomsInExitValue, ExitRoom)
 								end
 							end
@@ -743,18 +749,21 @@ function GetRoom(Info)
 	for _, Room in Main.RoomsFolder:GetChildren() do
 		if table.find(RoomsInExitValue, Room) == nil and Room:GetAttribute("Room") then
 			if Info then
+				print("GetRoom Info 1")
 				if Info.SpecificRoom then
 					table.insert(CorrectRooms, Room)
 				else
 					PickedRoom = Room
 				end
 			else
+				print("GetRoom Info 2")
 				PickedRoom = Room
 			end
 		end
 	end
 
 	if Info then
+		print("GetRoom Info 3")
 		if Info.SpecificRoom then
 			for _, Room in CorrectRooms do
 				print("Room Of Few Rooms: "..Room.Name)
@@ -763,12 +772,14 @@ function GetRoom(Info)
 				end
 			end
 		end
+		
 		if Info.GetRoom then
 			return PickedRoom
 		else
 			SkipRoom.NextUngeneratedRoom = PickedRoom
 		end
 	else
+		print("GetRoom Info 4")
 		SkipRoom.NextUngeneratedRoom = PickedRoom
 	end
 end
