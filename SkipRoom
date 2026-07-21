@@ -956,7 +956,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 					if game.Players.LocalPlayer.PlayerGui.Main.Health.AuxItems.NormalKeyCard.Visible == false then
 						if SkipRoom.KeycardParentPartCFrame ~= nil and SkipRoom.KeycardProxyPart ~= nil and SkipRoom.KeycardProxyPartPrompt ~= nil then
 							Script.Action.Value = "Pick Keycard"
-							PromptInFrontOfCamera(SkipRoom.KeycardProxyPart, 7, SkipRoom.KeycardProxyPartPrompt)
+							PromptInFrontOfCamera(SkipRoom.KeycardProxyPart, SkipRoom.KeycardProxyPartPrompt, 7)
 
 							TeleportPlayer(SkipRoom.KeycardParentPartCFrame + Vector3.new(0, -10, 0))
 						end
