@@ -608,7 +608,7 @@ function ClearAllStats(Info)
 		"PipeRoomStatus",
 		} do
 		if Info then
-			if Info.PrintStats and Stat ~= nil then
+			if Info.PrintStats and SkipRoom[Stat] ~= nil then
 				local PrintMessage = Stat
 				
 				if Stat == "PasswordCode" then
@@ -717,8 +717,10 @@ function ChangePipes(Room)
 end
 
 function GetRoom(Info)
+	print("GetRoom()")
+
 	local PickedRoom = nil
-	
+
 	local RoomsInExitValue = {}
 	for _, Room in Main.RoomsFolder:GetChildren() do
 		if Room:FindFirstChild("Entrances") then
@@ -754,7 +756,7 @@ function GetRoom(Info)
 			end
 		end
 	end
-	
+
 	if Info then
 		if Info.SpecificRoom then
 			for _, Room in CorrectRooms do
@@ -764,16 +766,19 @@ function GetRoom(Info)
 				end
 			end
 		end
-	end
-	
-	if Info.GetRoom then
-		return PickedRoom
+		if Info.GetRoom then
+			return PickedRoom
+		else
+			SkipRoom.NextUngeneratedRoom = PickedRoom
+		end
 	else
 		SkipRoom.NextUngeneratedRoom = PickedRoom
 	end
 end
 
 function RoomStats()
+	print("RoomStats()")
+	
 	if SkipRoom.NextUngeneratedRoom == nil then
 		if SkipRoom.NextUngeneratedRoom.Parent == Main.RoomsFolder then
 			if SkipRoom.NextUngeneratedRoom:FindFirstChild("Entrances") then
@@ -888,6 +893,7 @@ function RoomStats()
 end
 
 function OpenNextDoor()
+	print("OpenNextDoor()")
 	Script.Action.Value = "Start"
 	GetRoom({
 		Number = 0
