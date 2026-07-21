@@ -815,6 +815,7 @@ function RoomStats()
 									if OpenValue.Value == true and Script.Action.Value ~= "Start" then
 										Script.Action.Value = "Idle"
 										ClearAllStats()
+										
 										if Script.AutoSkipRoom.Value == true then
 											task.wait(UI.Settings.SkipRoomAutoCooldown.Value)
 											OpenNextDoor()
