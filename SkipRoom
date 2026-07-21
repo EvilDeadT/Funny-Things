@@ -860,6 +860,9 @@ function RoomStats()
 								SkipRoom.LockPrompt = SkipRoom.LockPrompt:FindFirstChildWhichIsA("ProximityPrompt")
 							end
 							SkipRoom.LockRemoteFunction = FindByThread(Door, PressureDoor.LockRemoteFunction)
+							if SkipRoom.LockRemoteFunction then
+								SkipRoom.LockRemoteFunction = SkipRoom.LockRemoteFunction:FindFirstChildWhichIsA("RemoteFunction")
+							end
 						end
 						
 						SkipRoom.DoorRoot = FindByThread(Door, PressureDoor.Root)
@@ -895,7 +898,6 @@ function RoomStats()
 end
 
 function OpenNextDoor()
-	print("OpenNextDoor()")
 	Script.Action.Value = "Start"
 	GetRoom({
 		Number = 0
@@ -967,7 +969,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 						end
 					else
 						if SkipRoom.LockMain ~= nil and SkipRoom.LockPrompt ~= nil then
-							Script.a = "Open ProgressDoor Keycard"
+							Script.Action.Value = "Open ProgressDoor Keycard"
 
 							if SkipRoom.KeycardProxyPartPrompt ~= nil then
 								SkipRoom.KeycardProxyPartPrompt.Enabled = false
