@@ -594,6 +594,7 @@ function ClearAllStats(Info)
 		"DoorCollisionPartCFrame",
 		"DoorTouchPart",
 		"DoorRootPrompt",
+		"LockMain",
 		"LockPrompt",
 		"LockRemoteFunction",
 		"Enter",
@@ -774,19 +775,13 @@ function GetRoom(Info)
 end
 
 function RoomStats()
-	print("RoomStats()")
-	
 	if SkipRoom.NextUngeneratedRoom ~= nil then
-		print("RoomStats 1")
 		if SkipRoom.NextUngeneratedRoom.Parent == Main.RoomsFolder then
-			print("RoomStats 2")
 			if SkipRoom.NextUngeneratedRoom:FindFirstChild("Entrances") then
-				print("RoomStats 3")
 				for PressureDoorName, PressureDoor in SkipRoom.PressureDoors do
 					local Door = SkipRoom.NextUngeneratedRoom.Entrances:FindFirstChild(PressureDoorName)
 					local OriginalDoor = Door
 					if Door then
-						print("RoomStats 4")
 						if PressureDoor.DoubleDoor then
 							if not Door:FindFirstChild(PressureDoor.DoorOfDoubleDoor) then
 								print("ERROR | Double Door '"..PressureDoorName.."' has not single door '"..PressureDoor.DoorOfDoubleDoor.."' in room '"..SkipRoom.NextUngeneratedRoom.Name.."'")
@@ -861,6 +856,9 @@ function RoomStats()
 						if SkipRoom.Keycard ~= nil or SkipRoom.Password ~= nil then
 							SkipRoom.LockMain = FindByThread(Door, PressureDoor.LockMain)
 							SkipRoom.LockPrompt = FindByThread(Door, PressureDoor.LockPrompt)
+							if SkipRoom.LockPrompt then
+								SkipRoom.LockPrompt = SkipRoom.LockPrompt:FindFirstChildWhichIsA("ProximityPrompt")
+							end
 							SkipRoom.LockRemoteFunction = FindByThread(Door, PressureDoor.LockRemoteFunction)
 						end
 						
