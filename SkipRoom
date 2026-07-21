@@ -1,7 +1,8 @@
 local SkipRoom = {
 	OpenedRooms = {},
 	NextUngeneratedRoom = nil,
-
+	
+	Door = nil,
 	DoorRoot = nil,
 	DoorRootPrompt = nil,
 	DoorCollisionPartCFrame = nil,
@@ -589,6 +590,7 @@ function ClearAllStats(Info)
 	end
 	
 	for _, Stat in {
+		"Door",
 		"DoorRoot",
 		"DoorRootPrompt",
 		"DoorCollisionPartCFrame",
@@ -865,6 +867,7 @@ function RoomStats()
 							end
 						end
 						
+						SkipRoom.Door = OriginalDoor
 						SkipRoom.DoorRoot = FindByThread(Door, PressureDoor.Root)
 						SkipRoom.DoorRootPrompt = if SkipRoom.DoorRoot ~= nil then
 													SkipRoom.DoorRoot:FindFirstChildWhichIsA("ProximityPrompt")
@@ -995,9 +998,14 @@ game:GetService("RunService").RenderStepped:Connect(function()
 					game.ReplicatedStorage.Events.ZoneChange:FireServer(SkipRoom.NextUngeneratedRoom)
 				end
 				if string.find(Script.Action.Value, "Open ProgressDoor") and Main.CharacterRoot ~= nil and SkipRoom.DoorCollisionPartCFrame ~= nil then
-					local Offset = if SkipRoom.Keycard ~= nil or SkipRoom.Password ~= nil then
-										-10
-									else -8
+					local Offset = -10
+					if SkipRoom.Keycard ~= nil or SkipRoom.Password ~= nil then
+						Offset = -8
+					elseif SkipRoom.Door then
+						if SkipRoom.Door.Name == "BigDoor" then
+							Offset = -12
+						end
+					end
 					
 					TeleportPlayer(SkipRoom.DoorCollisionPartCFrame + Vector3.new(0, Offset, 0))
 					
