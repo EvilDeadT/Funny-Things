@@ -1024,6 +1024,8 @@ UI.Events.CancelAll.Event:Connect(function()
 	ClearAllStats({
 		PrintStats = true
 	})
+	
+	Script.Action.Value = "Idle"
 end)
 
 UI.Events.TeleportToRoom.Event:Connect(function(Info)
