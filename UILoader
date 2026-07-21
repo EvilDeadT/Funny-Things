@@ -389,7 +389,8 @@ local DefaultProperties = {
 	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
 	StrokeSizingMode = Enum.StrokeSizingMode.ScaledSize,
 	ScrollBarThickness = 0,
-	ScrollBarImageTransparency = 1
+	ScrollBarImageTransparency = 1,
+	ResetOnSpawn = false
 }
 
 function LoadInstance(InstanceToLoad, InstanceParent)
