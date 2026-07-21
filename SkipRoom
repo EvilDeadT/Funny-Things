@@ -689,7 +689,7 @@ function ChangePipes(Room)
 															PromptPressed = true
 														end)
 
-														while PromptPressed do
+														while not PromptPressed do
 															PipePart.Parent.Highlight.Anchored = true
 															PromptInFrontOfCamera(PipePart.Parent.Highlight, PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt"), 3)
 															task.wait()
