@@ -918,7 +918,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 					end
 					if game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then
 						Script.Action.Value = "Press ElevatorPrompt"
-						PromptInFrontOfCamera(game.Workspace.Elevator.ElevatorKey.Highlight, 7, game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt"))
+						PromptInFrontOfCamera(game.Workspace.Elevator.ElevatorKey.Highlight, game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt"))
 
 						TeleportPlayer(SkipRoom.ElevatorHighlightCFrame)
 					end
@@ -949,7 +949,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 				if SkipRoom.Exit.Value.Name == "ModifierEnding" then
 					if SkipRoom.EndRunButtonHighlight ~= nil and SkipRoom.EndRunButtonHighlightPrompt ~= nil then
 						Script.Action.Value = "Run Finish"
-						PromptInFrontOfCamera(SkipRoom.EndRunButtonHighlight, 7, SkipRoom.EndRunButtonHighlightPrompt)
+						PromptInFrontOfCamera(SkipRoom.EndRunButtonHighlight, SkipRoom.EndRunButtonHighlightPrompt)
 						
 						TeleportPlayer(SkipRoom.EndRunButtonHighlightCFrame)
 					end
@@ -959,14 +959,14 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			if Script.Action.Value ~= "Run Finish" and Script.Action.Value ~= "Solving BoardPuzzle" and Script.Action.Value ~= "Press ElevatorPrompt" then
 				if SkipRoom.DoorRoot ~= nil and SkipRoom.DoorRootPrompt ~= nil then
 					Script.Action.Value = "Open ProgressDoor Root"
-					PromptInFrontOfCamera(SkipRoom.DoorRoot, SkipRoom.DoorRootPrompt, 7)
+					PromptInFrontOfCamera(SkipRoom.DoorRoot, SkipRoom.DoorRootPrompt)
 				end
 
 				if SkipRoom.Keycard ~= nil then
 					if game.Players.LocalPlayer.PlayerGui.Main.Health.AuxItems.NormalKeyCard.Visible == false then
 						if SkipRoom.KeycardParentPartCFrame ~= nil and SkipRoom.KeycardProxyPart ~= nil and SkipRoom.KeycardProxyPartPrompt ~= nil then
 							Script.Action.Value = "Pick Keycard"
-							PromptInFrontOfCamera(SkipRoom.KeycardProxyPart, SkipRoom.KeycardProxyPartPrompt, 7)
+							PromptInFrontOfCamera(SkipRoom.KeycardProxyPart, SkipRoom.KeycardProxyPartPrompt)
 
 							TeleportPlayer(SkipRoom.KeycardParentPartCFrame + Vector3.new(0, -10, 0))
 						end
