@@ -474,7 +474,7 @@ function ReturnPrompts()
 		if Prompt:IsA("ProximityPrompt") then
 			if Prompt.Enabled then
 				Prompt.Enabled = true
-				table.remove()
+				table.remove(Main.HiddenPrompts, table.find(Main.HiddenPrompts, Prompt))
 			end
 		end
 	end
