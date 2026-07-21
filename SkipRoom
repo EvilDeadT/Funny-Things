@@ -580,7 +580,6 @@ function TeleportPlayer(TeleportCFrame)
 end
 
 function ClearAllStats(Info)
-	Script.Mode = "None"
 	if Info then
 		if Info.PrintStats == true then
 			if SkipRoom.NextUngeneratedRoom ~= nil then
@@ -608,7 +607,7 @@ function ClearAllStats(Info)
 		"PipeRoomStatus",
 		} do
 		if Info then
-			if Info.PrintStats and SkipRoom[Stat] ~= nil then
+			if Info.PrintStats == true and SkipRoom[Stat] ~= nil then
 				local PrintMessage = Stat
 				
 				if Stat == "PasswordCode" then
@@ -717,8 +716,6 @@ function ChangePipes(Room)
 end
 
 function GetRoom(Info)
-	print("GetRoom()")
-
 	local PickedRoom = nil
 
 	local RoomsInExitValue = {}
@@ -780,12 +777,16 @@ function RoomStats()
 	print("RoomStats()")
 	
 	if SkipRoom.NextUngeneratedRoom == nil then
+		print("RoomStats 1")
 		if SkipRoom.NextUngeneratedRoom.Parent == Main.RoomsFolder then
+			print("RoomStats 2")
 			if SkipRoom.NextUngeneratedRoom:FindFirstChild("Entrances") then
+				print("RoomStats 3")
 				for PressureDoorName, PressureDoor in SkipRoom.PressureDoors do
 					local Door = SkipRoom.NextUngeneratedRoom.Entrances:FindFirstChild(PressureDoorName)
 					local OriginalDoor = Door
 					if Door then
+						print("RoomStats 4")
 						if PressureDoor.DoubleDoor then
 							if not Door:FindFirstChild(PressureDoor.DoorOfDoubleDoor) then
 								print("ERROR | Double Door '"..PressureDoorName.."' has not single door '"..PressureDoor.DoorOfDoubleDoor.."' in room '"..SkipRoom.NextUngeneratedRoom.Name.."'")
