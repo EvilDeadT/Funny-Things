@@ -932,6 +932,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 					})
 					RoomStats()
 					
+					Script.Action.Value = "After Elevator"
 					SkipRoom.ElevatorHighlightCFrame = nil
 				end
 			end
@@ -939,7 +940,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 
 		if Script.Action.Value ~= "Press ElevatorPrompt" then
 			if SkipRoom.Exit ~= nil then
-				if SkipRoom.Exit.Value:GetAttribute("SpecialTag") == "BoardPuzzle" then
+				if SkipRoom.Exit.Value:GetAttribute("SpecialTag") == "BoardPuzzle" and Script.Action.Value ~= "Solving BoardPuzzle" then
 					Script.Action.Value = "Solving BoardPuzzle"
 					local BoardPuzzleFinished = ChangePipes(SkipRoom.Exit.Value)
 					if BoardPuzzleFinished == true then
@@ -956,7 +957,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 				end
 			end
 
-			if Script.Action.Value ~= "Run Finish" and Script.Action.Value ~= "Solving BoardPuzzle" and Script.Action.Value ~= "Press ElevatorPrompt" then
+			if Script.Action.Value ~= "Run Finish" and Script.Action.Value ~= "Solving BoardPuzzle" then
 				if SkipRoom.DoorRoot ~= nil and SkipRoom.DoorRootPrompt ~= nil then
 					Script.Action.Value = "Open ProgressDoor Root"
 					PromptInFrontOfCamera(SkipRoom.DoorRoot, SkipRoom.DoorRootPrompt)
