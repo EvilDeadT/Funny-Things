@@ -926,6 +926,8 @@ game:GetService("RunService").RenderStepped:Connect(function()
 						SpecificRoom = Room
 					})
 					RoomStats()
+					
+					SkipRoom.ElevatorHighlightCFrame = nil
 				end
 			end
 		end
