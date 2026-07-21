@@ -867,6 +867,9 @@ function RoomStats()
 													SkipRoom.DoorRoot:FindFirstChildWhichIsA("ProximityPrompt")
 												else nil			
 						SkipRoom.DoorCollisionPartCFrame = FindByThread(Door, PressureDoor.CollisionPart)
+						if SkipRoom.DoorCollisionPartCFrame then
+							SkipRoom.DoorCollisionPartCFrame = SkipRoom.DoorCollisionPartCFrame.CFrame
+						end
 						SkipRoom.DoorTouchPart = FindByThread(Door, PressureDoor.Touch)
 						SkipRoom.Enter = OriginalDoor:FindFirstChild("Enter")
 						SkipRoom.Exit = OriginalDoor:FindFirstChild("Exit")
