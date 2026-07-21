@@ -4,7 +4,6 @@ local KeyPressed = {}
 local PressedCombination = {}
 
 function KeyBindPressed(KeyBindName, BindNumber)
-	print(KeyBindName)
 	if UI.Events:FindFirstChild(KeyBindName) then
 		local Status = nil
 
