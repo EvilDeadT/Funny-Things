@@ -1,3 +1,5 @@
+print("Script First Line")
+
 local UIContent = {
 	["FunnyMenu"] = {
 		ClassName = "ScreenGui",
@@ -441,6 +443,7 @@ LoadInstance(UIContent, game.Players.LocalPlayer.PlayerGui)
 
 game.Players.LocalPlayer.PlayerGui.FunnyMenu.Events.PanelOpen.Event:Connect(function()
 	game.Players.LocalPlayer.PlayerGui.FunnyMenu.Enabled = not game.Players.LocalPlayer.PlayerGui.FunnyMenu.Enabled
+	game.UserInputService.MouseIconEnabled = game.Players.LocalPlayer.PlayerGui.FunnyMenu.Enabled
 end)
 
 print("UILoader loaded. Start loading scripts")
