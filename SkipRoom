@@ -949,7 +949,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			if Script.Action.Value ~= "Run Finish" and Script.Action.Value ~= "Solving BoardPuzzle" and Script.Action.Value ~= "Press ElevatorPrompt" then
 				if SkipRoom.DoorRoot ~= nil and SkipRoom.DoorRootPrompt ~= nil then
 					Script.Action.Value = "Open ProgressDoor Root"
-					PromptInFrontOfCamera(SkipRoom.DoorRoot, 7, SkipRoom.DoorRootPrompt)
+					PromptInFrontOfCamera(SkipRoom.DoorRoot, SkipRoom.DoorRootPrompt, 7)
 				end
 
 				if SkipRoom.Keycard ~= nil then
