@@ -484,11 +484,11 @@ end
 function PromptInFrontOfCamera(Part, Prompt, LookVectorOffset)
 	local PartOffset = LookVectorOffset or 7
 	
-	for _, Prompt in game.Workspace:GetDescendants() do
-		if Prompt:IsA("ProximityPrompt") then
-			if Prompt.Enabled then
-				Prompt.Enabled = false
-				table.insert(Main.HiddenPrompts, Prompt)
+	for _, PromptToHide in game.Workspace:GetDescendants() do
+		if PromptToHide:IsA("ProximityPrompt") then
+			if PromptToHide.Enabled then
+				PromptToHide.Enabled = false
+				table.insert(Main.HiddenPrompts, PromptToHide)
 			end
 		end
 	end
@@ -503,6 +503,15 @@ function PromptInFrontOfCamera(Part, Prompt, LookVectorOffset)
 	Prompt.Enabled = true
 	Prompt:InputHoldBegin()
 	Prompt:InputHoldEnd()
+	
+	for _, PromptHidden in Main.HiddenPrompts do
+		if PromptHidden:IsA("ProximityPrompt") then
+			if PromptHidden.Enabled == false then
+				PromptHidden.Enabled = true
+				table.remove(Main.HiddenPrompts, table.find(Main.HiddenPrompts, PromptHidden))
+			end
+		end
+	end
 end
 
 function ReturnCollision()
@@ -637,9 +646,7 @@ function ChangePipes(Room)
 
 					for PipePosition, PipeRotation in Pipes do
 						if Main.CharacterRoot ~= nil then
-							local TeleportCFrame = BoardPuzzleMain.CFrame
-							UnCollisionAll(TeleportCFrame)
-							Main.CharacterRoot.CFrame = TeleportCFrame
+							TeleportPlayer(BoardPuzzleMain.CFrame)
 
 							local Column = tonumber(string.split(PipePosition, "-")[1])
 							local Row = tonumber(string.split(PipePosition, "-")[2])
@@ -674,7 +681,7 @@ function ChangePipes(Room)
 												end
 											end
 
-											if NeedRotate == true then
+											if NeedRotate then
 												if PipePart.Parent:FindFirstChild("Highlight") then
 													if PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then						
 														local PromptPressed = false
@@ -682,15 +689,7 @@ function ChangePipes(Room)
 															PromptPressed = true
 														end)
 
-														while PromptPressed == false do
-															for _, OtherPipes in Room[Board].puzzle:GetChildren() do 
-																if OtherPipes:FindFirstChild("Highlight") then
-																	if OtherPipes.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then
-																		OtherPipes.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Enabled = false
-																	end
-																end
-															end
-
+														while PromptPressed do
 															PipePart.Parent.Highlight.Anchored = true
 															PromptInFrontOfCamera(PipePart.Parent.Highlight, PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt"), 3)
 															task.wait()
@@ -711,10 +710,16 @@ function ChangePipes(Room)
 		end
 	end
 
-	if Finished == false then
+	if Finished then
+		print("Finished: true")
+		if game.Workspace:FindFirstChild("BoardPuzzlePipeFindPart") then
+			game.Workspace.BoardPuzzlePipeFindPart:Destroy()
+		end
+	else
+		print("Finished: false")
 		task.wait(0.5)
 	end
-
+	
 	return Finished
 end
 
@@ -929,7 +934,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			for _, Room in Main.RoomsFolder:GetChildren() do
 				if Room:FindFirstChild("Elevator") then
 					GetRoom({
-						SpecificRoom = Room
+						PreviousRoom = Room
 					})
 					RoomStats()
 					
