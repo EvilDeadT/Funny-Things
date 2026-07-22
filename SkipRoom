@@ -459,12 +459,14 @@ end
 function PromptClearPrompts()
 	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
 		for _, UsedPrompt in game.Workspace.PartInFrontOfCamera:GetChildren() do
-			for _, Info in {"MaxActivationDistance", "RequiresLineOfSight", "HoldDuration", "Enabled", "Parent"} do
-				UsedPrompt[Info] = UsedPrompt["Prompt"..Info].Value
+			for _, Info in UsedPrompt:GetChildren() do
+				if string.find(Info.Name, "Prompt") then
+					UsedPrompt[string.split(Info.Name, "Prompt")[2]] = Info.Value
+				end
+				
+				Info:Destroy()
 			end
 		end
-
-		Main.AutoPrompt = {}
 	end
 end
 
