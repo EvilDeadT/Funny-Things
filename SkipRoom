@@ -457,28 +457,46 @@ function ReturnPrompts()
 		end
 	end
 	
+	Main.AutoPrompt = {}
+	
 	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
 		game.Workspace.PartInFrontOfCamera:Destroy()
 	end
 end
 
-function PromptInFrontOfCamera(Prompt, LookVectorOffset)
-	if Prompt == nil then
+function PromptInFrontOfCamera(GivenPrompt, LookVectorOffset)
+	if GivenPrompt == nil then
 		print("PromptInFrontOfCamera No Prompt")
 		
 		return
 	end
 	
+	local Prompt = GivenPrompt
 	local PartOffset = LookVectorOffset or 7
 	
-	Main.AutoPrompt = {
-		AutoPrompt = Prompt,
-		MaxActivationDistance = Prompt.MaxActivationDistance,
-		RequiresLineOfSight = Prompt.RequiresLineOfSight,
-		HoldDuration = Prompt.HoldDuration,
-		Enabled = Prompt.Enabled,
-		Parent = Prompt.Parent
-	}
+	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
+		if game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt") then
+			Prompt = game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt")
+		else
+			Main.AutoPrompt = {
+				AutoPrompt = Prompt,
+				MaxActivationDistance = Prompt.MaxActivationDistance,
+				RequiresLineOfSight = Prompt.RequiresLineOfSight,
+				HoldDuration = Prompt.HoldDuration,
+				Enabled = Prompt.Enabled,
+				Parent = Prompt.Parent
+			}
+		end
+	else
+		Main.AutoPrompt = {
+			AutoPrompt = Prompt,
+			MaxActivationDistance = Prompt.MaxActivationDistance,
+			RequiresLineOfSight = Prompt.RequiresLineOfSight,
+			HoldDuration = Prompt.HoldDuration,
+			Enabled = Prompt.Enabled,
+			Parent = Prompt.Parent
+		}
+	end
 	
 	for _, PromptToHide in game.Workspace:GetDescendants() do
 		if PromptToHide:IsA("ProximityPrompt") and PromptToHide ~= Main.AutoPrompt.AutoPrompt then
@@ -511,8 +529,6 @@ function PromptInFrontOfCamera(Prompt, LookVectorOffset)
 	Prompt.Parent = PartInFrontOfCamera
 	Prompt:InputHoldBegin()
 	Prompt:InputHoldEnd()
-	
-	Prompt.Parent = Main.AutoPrompt.Parent
 	
 	for _, PromptHidden in Main.HiddenPrompts do
 		if PromptHidden:IsA("ProximityPrompt") and PromptHidden ~= Main.AutoPrompt.AutoPrompt then
