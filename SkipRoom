@@ -483,6 +483,7 @@ function PromptSetInfo(Prompt)
 			
 			PromptInfo.Name = "Prompt"..Info
 			PromptInfo.Value = Prompt[Info]
+			PromptInfo.Parent = Prompt
 		end
 	end
 end
