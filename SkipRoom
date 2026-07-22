@@ -980,6 +980,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 					Script.Action.Value = "After Elevator"
 					SkipRoom.ElevatorHighlightCFrame = nil
 					
+					ClearAllStats()
 					OpenNextDoor()
 				end
 			end
