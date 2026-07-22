@@ -879,7 +879,7 @@ function RoomStats()
 								print("ERROR | Door '"..PressureDoorName.."'' has 'OpenValue' but it is not BoolValue in room '"..SkipRoom.NextUngeneratedRoom.Name.."'")
 							else
 								OpenValue:GetPropertyChangedSignal("Value"):Once(function()
-									if OpenValue.Value == true and Script.Action.Value ~= "Start" then
+									if OpenValue.Value == true and Script.Action.Value ~= "Start Open" then
 										Script.Action.Value = "Idle"
 										ClearAllStats()
 										
@@ -952,7 +952,7 @@ function RoomStats()
 end
 
 function OpenNextDoor()
-	Script.Action.Value = "Start"
+	Script.Action.Value = "Start Open"
 	GetRoom({
 		Number = 0
 	})
@@ -960,7 +960,7 @@ function OpenNextDoor()
 end
 
 game:GetService("RunService").RenderStepped:Connect(function()
-	if Script.Action.Value ~= "Idle" then
+	if Script.Action.Value ~= "Idle" and Script.Action.Value ~= "After Elevator" then
 		if game.Workspace:FindFirstChild("Elevator") then
 			if game.Workspace.Elevator:FindFirstChild("ElevatorKey") then
 				if game.Workspace.Elevator.ElevatorKey:FindFirstChild("Highlight") then
@@ -979,6 +979,8 @@ game:GetService("RunService").RenderStepped:Connect(function()
 				if Room:FindFirstChild("Elevator") then
 					Script.Action.Value = "After Elevator"
 					SkipRoom.ElevatorHighlightCFrame = nil
+					
+					OpenNextDoor()
 				end
 			end
 		end
