@@ -770,13 +770,9 @@ function ChangePipes(Room)
 		end
 	else
 		if Script.Action.Value == "Solving BoardPuzzle" then
-			task.wait(0.5)
-			
-			if Script.Action.Value == "Solving BoardPuzzle" then
-				Script.Action.Value = "NotFinished BoardPuzzle"
-				
-				OpenNextDoor()
-			end
+			Script.Action.Value = "NotFinished BoardPuzzle"
+
+			OpenNextDoor()
 		end
 	end
 	
