@@ -739,13 +739,10 @@ function ChangePipes(Room)
 													if PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then						
 														local OrientationBefore = PipePart.Orientation.Z
 														
-														game:GetService("RunService"):BindToRenderStep("BoardPuzzle PipeTurn", 202, function()
-															if PipePart.Orientation.Z ~= OrientationBefore then
-																game:GetService("RunService"):UnbindFromRenderStep("BoardPuzzle PipeTurn")
-															end
-															
+														while PipePart.Orientation.Z == OrientationBefore do
 															PromptInFrontOfCamera(PipePart.Parent.Highlight, 3)
-														end)
+															task.wait()
+														end
 													end
 												end
 												Finished = false	
@@ -1001,7 +998,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 				end
 			end
 
-			if Script.Action.Value ~= "Run Finish" and Script.Action.Value ~= "Solving BoardPuzzle" then
+			if Script.Action.Value ~= "Run Finish" and Script.Action.Value ~= "Solving BoardPuzzle" and Script.Action.Value ~= "NotFinished BoardPuzzle" then
 				if SkipRoom.Keycard ~= nil then
 					if game.Players.LocalPlayer.PlayerGui.Main.Health.AuxItems.NormalKeyCard.Visible == false then
 						if SkipRoom.KeycardParentPartCFrame ~= nil and SkipRoom.KeycardProxyPartPrompt ~= nil then
