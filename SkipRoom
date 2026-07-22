@@ -615,8 +615,7 @@ function ClearAllStats(Info)
 		"KeycardProxyPart",
 		"KeycardProxyPartPrompt",
 		"Password",
-		"PasswordCode",
-		"PipeRoomStatus",
+		"PasswordCode"
 		} do
 		if Info then
 			if Info.PrintStats == true and SkipRoom[Stat] ~= nil then
@@ -684,12 +683,9 @@ function ChangePipes(Room)
 											if NeedRotate then
 												if PipePart.Parent:FindFirstChild("Highlight") then
 													if PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then						
-														local PromptPressed = false
-														PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Triggered:Connect(function()
-															PromptPressed = true
-														end)
+														local OrientationBefore = PipePart.Orientation.Z
 
-														while not PromptPressed do
+														while OrientationBefore == PipePart.Orientation.Z do
 															PipePart.Parent.Highlight.Anchored = true
 															PromptInFrontOfCamera(PipePart.Parent.Highlight, PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt"), 3)
 															task.wait()
