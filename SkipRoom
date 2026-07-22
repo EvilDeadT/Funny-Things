@@ -459,6 +459,7 @@ end
 function PromptClearPrompts()
 	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
 		for _, UsedPrompt in game.Workspace.PartInFrontOfCamera:GetChildren() do
+			UsedPrompt.KeyboardKeyCode = Enum.KeyCode.E
 			for _, Info in UsedPrompt:GetChildren() do
 				if string.find(Info.Name, "Prompt") then
 					UsedPrompt[string.split(Info.Name, "Prompt")[2]] = Info.Value
@@ -554,6 +555,7 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 	Prompt.RequiresLineOfSight = false
 	Prompt.HoldDuration = 0
 	Prompt.Enabled = true
+	Prompt.KeyboardKeyCode = Enum.KeyCode.KeypadZero
 	Prompt.Parent = PartInFrontOfCamera
 	Prompt:InputHoldBegin()
 	Prompt:InputHoldEnd()
