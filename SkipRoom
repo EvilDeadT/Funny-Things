@@ -1002,11 +1002,6 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			end
 
 			if Script.Action.Value ~= "Run Finish" and Script.Action.Value ~= "Solving BoardPuzzle" then
-				if SkipRoom.DoorRootPrompt ~= nil then
-					Script.Action.Value = "Open ProgressDoor Root"
-					PromptInFrontOfCamera(SkipRoom.DoorRootPrompt)
-				end
-
 				if SkipRoom.Keycard ~= nil then
 					if game.Players.LocalPlayer.PlayerGui.Main.Health.AuxItems.NormalKeyCard.Visible == false then
 						if SkipRoom.KeycardParentPartCFrame ~= nil and SkipRoom.KeycardProxyPartPrompt ~= nil then
@@ -1026,15 +1021,21 @@ game:GetService("RunService").RenderStepped:Connect(function()
 					if SkipRoom.LockRemoteFunction ~= nil and SkipRoom.PasswordCode ~= nil then
 						Script.Action.Value = "Open ProgressDoor Password"
 						SkipRoom.LockRemoteFunction:InvokeServer(SkipRoom.PasswordCode)
+					else
+						if SkipRoom.DoorRootPrompt ~= nil then
+							Script.Action.Value = "Open ProgressDoor Root"
+							PromptInFrontOfCamera(SkipRoom.DoorRootPrompt)
+						end
 					end
 				end
 
 				if SkipRoom.DoorTouchPart ~= nil then
+					Script.Action.Value = "Open ProgressDoor TouchPart"
 					TeleportPlayer(SkipRoom.DoorTouchPart.CFrame)
 					
 					game.ReplicatedStorage.Events.ZoneChange:FireServer(SkipRoom.NextUngeneratedRoom)
 				end
-				if string.find(Script.Action.Value, "Open ProgressDoor") and Main.CharacterRoot ~= nil and SkipRoom.DoorCollisionPartCFrame ~= nil then
+				if string.find(Script.Action.Value, "Open ProgressDoor") and not string.find(Script.Action.Value, "TouchPart") and SkipRoom.DoorCollisionPartCFrame ~= nil then
 					local Offset = -10
 					if SkipRoom.Keycard ~= nil or SkipRoom.Password ~= nil then
 						Offset = -8
