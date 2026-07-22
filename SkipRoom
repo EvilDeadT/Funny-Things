@@ -741,8 +741,14 @@ function ChangePipes(Room)
 													if PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then						
 														local Pressed = false
 														
+														local AntiStuck = task.delay(0.5, function()
+															Pressed = true
+														end)
+														
 														PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Triggered:Once(function()
 															Pressed = true
+															
+															task.cancel(AntiStuck)
 														end)
 														
 														while not Pressed do
