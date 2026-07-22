@@ -965,22 +965,16 @@ game:GetService("RunService").RenderStepped:Connect(function()
 					if SkipRoom.ElevatorHighlightCFrame == nil then
 						SkipRoom.ElevatorHighlightCFrame = game.Workspace.Elevator.ElevatorKey.Highlight.CFrame
 					end
-					if game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then
-						Script.Action.Value = "Press ElevatorPrompt"
-						PromptInFrontOfCamera(game.Workspace.Elevator.ElevatorKey.Highlight)
+					
+					Script.Action.Value = "Press ElevatorPrompt"
+					PromptInFrontOfCamera(game.Workspace.Elevator.ElevatorKey.Highlight)
 
-						TeleportPlayer(SkipRoom.ElevatorHighlightCFrame)
-					end
+					TeleportPlayer(SkipRoom.ElevatorHighlightCFrame)
 				end
 			end
 		else
 			for _, Room in Main.RoomsFolder:GetChildren() do
 				if Room:FindFirstChild("Elevator") then
-					GetRoom({
-						PreviousRoom = Room
-					})
-					RoomStats()
-					
 					Script.Action.Value = "After Elevator"
 					SkipRoom.ElevatorHighlightCFrame = nil
 				end
