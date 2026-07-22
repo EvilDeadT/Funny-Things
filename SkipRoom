@@ -508,8 +508,11 @@ function PromptInFrontOfCamera(Prompt, LookVectorOffset)
 	Prompt.RequiresLineOfSight = false
 	Prompt.HoldDuration = 0
 	Prompt.Enabled = true
+	Prompt.Parent = PartInFrontOfCamera
 	Prompt:InputHoldBegin()
 	Prompt:InputHoldEnd()
+	
+	Prompt.Parent = Main.AutoPrompt.Parent
 	
 	for _, PromptHidden in Main.HiddenPrompts do
 		if PromptHidden:IsA("ProximityPrompt") and PromptHidden ~= Main.AutoPrompt.AutoPrompt then
