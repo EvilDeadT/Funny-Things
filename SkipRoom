@@ -979,9 +979,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 				if Room:FindFirstChild("Elevator") then
 					Script.Action.Value = "After Elevator"
 					SkipRoom.ElevatorHighlightCFrame = nil
-					
-					ClearAllStats()
-					OpenNextDoor()
+					print(SkipRoom.NextUngeneratedRoom.Name)
 				end
 			end
 		end
