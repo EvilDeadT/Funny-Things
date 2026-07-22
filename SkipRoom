@@ -480,6 +480,12 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 				if game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt").PromptParent.Value == PromptPart then
 					Prompt = game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt")
 				else
+					if Prompt == nil then
+						print("PromptInFrontOfCamera Prompt Not Found")
+
+						return
+					end
+					
 					Main.AutoPrompt = {
 						AutoPrompt = Prompt,
 						MaxActivationDistance = Prompt.MaxActivationDistance,
@@ -490,6 +496,12 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 					}
 				end
 			else
+				if Prompt == nil then
+					print("PromptInFrontOfCamera Prompt Not Found")
+
+					return
+				end
+				
 				Main.AutoPrompt = {
 					AutoPrompt = Prompt,
 					MaxActivationDistance = Prompt.MaxActivationDistance,
@@ -500,6 +512,12 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 				}
 			end
 		else
+			if Prompt == nil then
+				print("PromptInFrontOfCamera Prompt Not Found")
+
+				return
+			end
+			
 			Main.AutoPrompt = {
 				AutoPrompt = Prompt,
 				MaxActivationDistance = Prompt.MaxActivationDistance,
@@ -510,6 +528,12 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 			}
 		end
 	else
+		if Prompt == nil then
+			print("PromptInFrontOfCamera Prompt Not Found")
+			
+			return
+		end
+		
 		Main.AutoPrompt = {
 			AutoPrompt = Prompt,
 			MaxActivationDistance = Prompt.MaxActivationDistance,
@@ -518,10 +542,6 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 			Enabled = Prompt.Enabled,
 			Parent = Prompt.Parent
 		}
-	end
-	
-	if Prompt == nil then
-		print("PromptInFrontOfCamera Prompt Not Found")
 	end
 	
 	for _, PromptToHide in game.Workspace:GetDescendants() do
