@@ -26,37 +26,37 @@ local SkipRoom = {
 
 	PressureDoors = {
 		["NormalDoor"] = {
-			RootPrompt = "Root:FindFirstChildWhichIsA(ProximityPrompt)",
+			RootPrompt = "Root",
 			CollisionPart = "CollisionPart",
-			LockPrompt = "Lock.Main:FindFirstChildWhichIsA(ProximityPrompt)",
+			LockPrompt = "Lock.Main",
 			LockRemoteFunction = "Lock.Main:FindFirstChildWhichIsA(RemoteFunction)"
 		},
 		["BigDoor"] = {
-			RootPrompt = "Root:FindFirstChildWhichIsA(ProximityPrompt)",
+			RootPrompt = "Root",
 			CollisionPart = "CollisionPart",
-			LockPrompt = "HeavyLock.Main:FindFirstChildWhichIsA(ProximityPrompt)"
+			LockPrompt = "HeavyLock.Main"
 		},
 		["DoubleDoor"] = {
 			DoubleDoor = true,
 			DoorOfDoubleDoor = "NormalDoor",
 			
-			RootPrompt = "Root:FindFirstChildWhichIsA(ProximityPrompt)",
+			RootPrompt = "Root",
 			CollisionPart = "CollisionPart",
-			LockPrompt = "Lock.Main:FindFirstChildWhichIsA(ProximityPrompt)",
+			LockPrompt = "Lock.Main",
 			LockRemoteFunction = "Lock.Main:FindFirstChildWhichIsA(RemoteFunction)"
 		},
 		["DoubleDoorSewer"] = {
 			DoubleDoor = true,
 			DoorOfDoubleDoor = "NormalDoor",
 			
-			RootPrompt = "Root:FindFirstChildWhichIsA(ProximityPrompt)",
+			RootPrompt = "Root",
 			CollisionPart = "CollisionPart",
-			LockPrompt = "Lock.Main:FindFirstChildWhichIsA(ProximityPrompt)",
+			LockPrompt = "Lock.Main",
 			LockRemoteFunction = "Lock.Main:FindFirstChildWhichIsA(RemoteFunction)"
 		},
 		["LargeRoundDoor"] = {
-			CollisionPart = {"CollisionPart"},
-			TouchPart = {"TouchPart"}
+			CollisionPart = "CollisionPart",
+			TouchPart = "TouchPart"
 		}
 	},
 
@@ -451,7 +451,7 @@ function ReturnPrompts()
 	
 	if Main.AutoPrompt.AutoPrompt ~= nil then
 		for Property, Value in Main.AutoPrompt do
-			if Property ~= "AutoPrompt" and Value ~= nil then
+			if Property ~= "AutoPrompt" and Value ~= nil and Main.AutoPrompt.AutoPrompt.Parent ~= nil then
 				Main.AutoPrompt.AutoPrompt[Property] = Value
 			end
 		end
@@ -464,19 +464,41 @@ function ReturnPrompts()
 	end
 end
 
-function PromptInFrontOfCamera(GivenPrompt, LookVectorOffset)
-	if GivenPrompt == nil then
+function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
+	if PromptPart == nil then
 		print("PromptInFrontOfCamera No Prompt")
 		
 		return
 	end
 	
-	local Prompt = GivenPrompt
+	local Prompt = PromptPart:FindFirstChildWhichIsA("ProximityPrompt")
 	local PartOffset = LookVectorOffset or 7
 	
 	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
 		if game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt") then
-			Prompt = game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt")
+			if game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt"):FindFirstChild("PromptParent") then
+				if game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt").PromptParent.Value == PromptPart then
+					Prompt = game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt")
+				else
+					Main.AutoPrompt = {
+						AutoPrompt = Prompt,
+						MaxActivationDistance = Prompt.MaxActivationDistance,
+						RequiresLineOfSight = Prompt.RequiresLineOfSight,
+						HoldDuration = Prompt.HoldDuration,
+						Enabled = Prompt.Enabled,
+						Parent = Prompt.Parent
+					}
+				end
+			else
+				Main.AutoPrompt = {
+					AutoPrompt = Prompt,
+					MaxActivationDistance = Prompt.MaxActivationDistance,
+					RequiresLineOfSight = Prompt.RequiresLineOfSight,
+					HoldDuration = Prompt.HoldDuration,
+					Enabled = Prompt.Enabled,
+					Parent = Prompt.Parent
+				}
+			end
 		else
 			Main.AutoPrompt = {
 				AutoPrompt = Prompt,
@@ -521,6 +543,12 @@ function PromptInFrontOfCamera(GivenPrompt, LookVectorOffset)
 	PartInFrontOfCamera.CFrame = CFrame.new(
 		Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * PartOffset
 	) * CFrame.fromOrientation(0, 0, 0)
+	
+	if Prompt.Parent ~= PartInFrontOfCamera then
+		local PromptParent = Instance.new("ObjectValue", Prompt)
+		PromptParent.Name = "PromptParent"
+		PromptParent.Value = Prompt.Parent
+	end
 
 	Prompt.MaxActivationDistance = 100
 	Prompt.RequiresLineOfSight = false
@@ -716,7 +744,7 @@ function ChangePipes(Room)
 																game:GetService("RunService"):UnbindFromRenderStep("BoardPuzzle PipeTurn")
 															end
 															
-															PromptInFrontOfCamera(PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt"), 3)
+															PromptInFrontOfCamera(PipePart.Parent.Highlight, 3)
 														end)
 													end
 												end
@@ -870,7 +898,7 @@ function RoomStats()
 									end
 								end
 								if SkipRoom.Keycard:FindFirstChild("ProxyPart") then
-									SkipRoom.KeycardProxyPartPrompt = SkipRoom.Keycard.ProxyPart:FindFirstChildWhichIsA("ProximityPrompt")
+									SkipRoom.KeycardProxyPartPrompt = SkipRoom.Keycard.ProxyPart
 								end
 								break
 							elseif SkipRoom.Password ~= nil then
@@ -903,7 +931,7 @@ function RoomStats()
 									if SkipRoom.Exit.Value.Interactables:FindFirstChild("EndRun") then
 										if SkipRoom.Exit.Value.Interactables.EndRun:FindFirstChild("Highlight") then
 											SkipRoom.EndRunButtonHighlightCFrame = SkipRoom.Exit.Value.Interactables.EndRun.Highlight.CFrame
-											SkipRoom.EndRunButtonHighlightPrompt = SkipRoom.Exit.Value.Interactables.EndRun.Highlight:FindFirstChildWhichIsA("ProximityPrompt")
+											SkipRoom.EndRunButtonHighlightPrompt = SkipRoom.Exit.Value.Interactables.EndRun.Highlight
 										end
 									end
 								end
@@ -934,7 +962,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 					end
 					if game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then
 						Script.Action.Value = "Press ElevatorPrompt"
-						PromptInFrontOfCamera(game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt"))
+						PromptInFrontOfCamera(game.Workspace.Elevator.ElevatorKey.Highlight)
 
 						TeleportPlayer(SkipRoom.ElevatorHighlightCFrame)
 					end
