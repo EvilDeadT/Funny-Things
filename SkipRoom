@@ -449,18 +449,41 @@ function ReturnPrompts()
 		end
 	end
 	
-	if Main.AutoPrompt.AutoPrompt ~= nil then
-		for Property, Value in Main.AutoPrompt do
-			if Property ~= "AutoPrompt" and Value ~= nil and Main.AutoPrompt.AutoPrompt.Parent ~= nil then
-				Main.AutoPrompt.AutoPrompt[Property] = Value
-			end
-		end
-	end
-	
-	Main.AutoPrompt = {}
+	PromptClearPrompts()
 	
 	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
 		game.Workspace.PartInFrontOfCamera:Destroy()
+	end
+end
+
+function PromptClearPrompts()
+	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
+		for _, UsedPrompt in game.Workspace.PartInFrontOfCamera:GetChildren() do
+			for _, Info in {"MaxActivationDistance", "RequiresLineOfSight", "HoldDuration", "Enabled", "Parent"} do
+				UsedPrompt[Info] = UsedPrompt["Prompt"..Info].Value
+			end
+		end
+
+		Main.AutoPrompt = {}
+	end
+end
+
+function PromptSetInfo(Prompt)
+	if Prompt then
+		for _, Info in {"MaxActivationDistance", "RequiresLineOfSight", "HoldDuration", "Enabled", "Parent"} do
+			local PromptInfo = nil
+			
+			if Info == "RequiresLineOfSight" or Info == "Enabled" then
+				PromptInfo = Instance.new("BoolValue")
+			elseif Info == "MaxActivationDistance" or Info == "HoldDuration" then
+				PromptInfo = Instance.new("NumberValue")
+			elseif Info == "Parent" then
+				PromptInfo = Instance.new("ObjectValue")
+			end
+			
+			PromptInfo.Name = "Prompt"..Info
+			PromptInfo.Value = Prompt[Info]
+		end
 	end
 end
 
@@ -480,72 +503,24 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 				if game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt").PromptParent.Value == PromptPart then
 					Prompt = game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt")
 				else
-					if Prompt == nil then
-						print("PromptInFrontOfCamera Prompt Not Found")
-
-						return
-					end
-					
-					Main.AutoPrompt = {
-						AutoPrompt = Prompt,
-						MaxActivationDistance = Prompt.MaxActivationDistance,
-						RequiresLineOfSight = Prompt.RequiresLineOfSight,
-						HoldDuration = Prompt.HoldDuration,
-						Enabled = Prompt.Enabled,
-						Parent = Prompt.Parent
-					}
+					PromptSetInfo(Prompt)
 				end
 			else
-				if Prompt == nil then
-					print("PromptInFrontOfCamera Prompt Not Found")
-
-					return
-				end
-				
-				Main.AutoPrompt = {
-					AutoPrompt = Prompt,
-					MaxActivationDistance = Prompt.MaxActivationDistance,
-					RequiresLineOfSight = Prompt.RequiresLineOfSight,
-					HoldDuration = Prompt.HoldDuration,
-					Enabled = Prompt.Enabled,
-					Parent = Prompt.Parent
-				}
+				PromptSetInfo(Prompt)
 			end
 		else
-			if Prompt == nil then
-				print("PromptInFrontOfCamera Prompt Not Found")
-
-				return
-			end
-			
-			Main.AutoPrompt = {
-				AutoPrompt = Prompt,
-				MaxActivationDistance = Prompt.MaxActivationDistance,
-				RequiresLineOfSight = Prompt.RequiresLineOfSight,
-				HoldDuration = Prompt.HoldDuration,
-				Enabled = Prompt.Enabled,
-				Parent = Prompt.Parent
-			}
+			PromptSetInfo(Prompt)
 		end
 	else
-		if Prompt == nil then
-			print("PromptInFrontOfCamera Prompt Not Found")
-			
-			return
-		end
-		
-		Main.AutoPrompt = {
-			AutoPrompt = Prompt,
-			MaxActivationDistance = Prompt.MaxActivationDistance,
-			RequiresLineOfSight = Prompt.RequiresLineOfSight,
-			HoldDuration = Prompt.HoldDuration,
-			Enabled = Prompt.Enabled,
-			Parent = Prompt.Parent
-		}
+		PromptSetInfo(Prompt)
+	end
+	
+	if Prompt == nil then
+		return
 	end
 	
 	for _, PromptToHide in game.Workspace:GetDescendants() do
-		if PromptToHide:IsA("ProximityPrompt") and PromptToHide ~= Main.AutoPrompt.AutoPrompt then
+		if PromptToHide:IsA("ProximityPrompt") and PromptToHide ~= Prompt then
 			if PromptToHide.Enabled then
 				PromptToHide.Enabled = false
 				table.insert(Main.HiddenPrompts, PromptToHide)
@@ -569,20 +544,7 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 	) * CFrame.fromOrientation(0, 0, 0)
 	
 	if Prompt.Parent ~= PartInFrontOfCamera then
-		local PromptParent = Instance.new("ObjectValue", Prompt)
-		PromptParent.Name = "PromptParent"
-		PromptParent.Value = Prompt.Parent
-		
-		if Main.AutoPrompt.AutoPrompt ~= nil then
-			for Property, Value in Main.AutoPrompt do
-				if Property ~= "AutoPrompt" and Value ~= nil and Main.AutoPrompt.AutoPrompt.Parent ~= nil then
-					Main.AutoPrompt.AutoPrompt[Property] = Value
-				end
-			end
-		end
-
-		Main.AutoPrompt = {}
-		PartInFrontOfCamera:ClearAllChildren()
+		PromptClearPrompts()
 	end
 
 	Prompt.MaxActivationDistance = 100
@@ -594,7 +556,7 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 	Prompt:InputHoldEnd()
 	
 	for _, PromptHidden in Main.HiddenPrompts do
-		if PromptHidden:IsA("ProximityPrompt") and PromptHidden ~= Main.AutoPrompt.AutoPrompt then
+		if PromptHidden:IsA("ProximityPrompt") then
 			if PromptHidden.Enabled == false then
 				PromptHidden.Enabled = true
 				table.remove(Main.HiddenPrompts, table.find(Main.HiddenPrompts, PromptHidden))
