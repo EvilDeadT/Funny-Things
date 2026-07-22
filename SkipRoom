@@ -572,6 +572,17 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 		local PromptParent = Instance.new("ObjectValue", Prompt)
 		PromptParent.Name = "PromptParent"
 		PromptParent.Value = Prompt.Parent
+		
+		if Main.AutoPrompt.AutoPrompt ~= nil then
+			for Property, Value in Main.AutoPrompt do
+				if Property ~= "AutoPrompt" and Value ~= nil and Main.AutoPrompt.AutoPrompt.Parent ~= nil then
+					Main.AutoPrompt.AutoPrompt[Property] = Value
+				end
+			end
+		end
+
+		Main.AutoPrompt = {}
+		PartInFrontOfCamera:ClearAllChildren()
 	end
 
 	Prompt.MaxActivationDistance = 100
