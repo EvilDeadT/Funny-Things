@@ -737,9 +737,13 @@ function ChangePipes(Room)
 											if NeedRotate then
 												if PipePart.Parent:FindFirstChild("Highlight") then
 													if PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then						
-														local OrientationBefore = PipePart.Orientation.Z
+														local Pressed = false
 														
-														while PipePart.Orientation.Z == OrientationBefore do
+														PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Triggered:Once(function()
+															Pressed = true
+														end)
+														
+														while not Pressed do
 															PromptInFrontOfCamera(PipePart.Parent.Highlight, 3)
 															task.wait()
 														end
