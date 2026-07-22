@@ -763,17 +763,19 @@ function ChangePipes(Room)
 	end
 
 	if Finished then
-		print("Finished: true")
-		
 		if game.Workspace:FindFirstChild("BoardPuzzlePipeFindPart") then
 			game.Workspace.BoardPuzzlePipeFindPart:Destroy()
 		end
 	else
-		print("Finished: false")
-		
-		task.wait(0.5)
-		
-		Script.Action.Value = "NotFinished BoardPuzzle"
+		if Script.Action.Value == "Solving BoardPuzzle" then
+			task.wait(0.5)
+			
+			if Script.Action.Value == "Solving BoardPuzzle" then
+				Script.Action.Value = "NotFinished BoardPuzzle"
+				
+				OpenNextDoor()
+			end
+		end
 	end
 	
 	return Finished
