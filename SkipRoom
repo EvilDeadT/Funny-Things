@@ -472,6 +472,7 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 	end
 	
 	local Prompt = PromptPart:FindFirstChildWhichIsA("ProximityPrompt")
+	print(Prompt.Name)
 	local PartOffset = LookVectorOffset or 7
 	
 	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
