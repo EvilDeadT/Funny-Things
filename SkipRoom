@@ -750,22 +750,24 @@ function ChangePipes(Room, Info)
 														if PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then						
 															local Pressed = false
 
-															local AntiStuck = task.delay(0.5, function()
-																local Solved = ChangePipes(Room, {
-																	CheckOnly = true
-																})
-																
-																if Solved then
-																	Pressed = true
-																end
-															end)
-
 															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Triggered:Once(function()
 																Pressed = true
-
-																task.cancel(AntiStuck)
 															end)
+															
+															task.spawn(function()
+																while not Pressed do
+																	local Solved = ChangePipes(Room, {
+																		CheckOnly = true
+																	})
 
+																	if Solved then
+																		Pressed = true
+																	else
+																		task.wait(0.5)
+																	end
+																end
+															end)
+															
 															while not Pressed do
 																PromptInFrontOfCamera(PipePart.Parent.Highlight, 3)
 																task.wait()
