@@ -725,7 +725,8 @@ function ChangePipes(Room, Info)
 							end
 
 							PipeFindPart.Position = PowerPipe.Position - (BoardPuzzleMain.CFrame.UpVector * (1.5 * (Column - 1)) + BoardPuzzleMain.CFrame.RightVector * (1.5 * Row))
-
+							PipeFindPart.Orientation = PowerPipe.Orientation
+							
 							for _, PipePart in game.Workspace:GetPartsInPart(PipeFindPart) do
 								if PipePart.Name == "Part" and PipePart.Parent ~= nil then
 									if PipePart.Parent.Parent ~= nil then
