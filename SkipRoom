@@ -689,8 +689,15 @@ function ClearAllStats(Info)
 	end
 end
 
-function ChangePipes(Room)
+function ChangePipes(Room, Info)
 	local Finished = true
+	
+	local CheckOnly = false
+	if Info then
+		if Info.CheckOnly then
+			CheckOnly = Info.CheckOnly
+		end
+	end
 
 	if Room ~= nil then
 		for Board, Pipes in SkipRoom.BoardPuzzles do
@@ -735,29 +742,39 @@ function ChangePipes(Room)
 													end
 												end
 											end
+											
+											if not CheckOnly then
+												if NeedRotate then
+													if PipePart.Parent:FindFirstChild("Highlight") then
+														if PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then						
+															local Pressed = false
 
-											if NeedRotate then
-												if PipePart.Parent:FindFirstChild("Highlight") then
-													if PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then						
-														local Pressed = false
-														
-														local AntiStuck = task.delay(0.5, function()
-															Pressed = true
-														end)
-														
-														PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Triggered:Once(function()
-															Pressed = true
-															
-															task.cancel(AntiStuck)
-														end)
-														
-														while not Pressed do
-															PromptInFrontOfCamera(PipePart.Parent.Highlight, 3)
-															task.wait()
+															local AntiStuck = task.delay(0.5, function()
+																local Solved = ChangePipes(Room, {
+																	CheckOnly = true
+																})
+																
+																if Solved then
+																	Pressed = true
+																end
+															end)
+
+															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Triggered:Once(function()
+																Pressed = true
+
+																task.cancel(AntiStuck)
+															end)
+
+															while not Pressed do
+																PromptInFrontOfCamera(PipePart.Parent.Highlight, 3)
+																task.wait()
+															end
 														end
 													end
+													Finished = false	
 												end
-												Finished = false	
+											else
+												return not NeedRotate
 											end
 										end
 									end
@@ -964,6 +981,8 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		if game.Workspace:FindFirstChild("Elevator") then
 			if game.Workspace.Elevator:FindFirstChild("ElevatorKey") then
 				if game.Workspace.Elevator.ElevatorKey:FindFirstChild("Highlight") then
+					print("Elevator TP. Action: "..Script.Action.Value)
+					
 					if SkipRoom.ElevatorHighlightCFrame == nil then
 						SkipRoom.ElevatorHighlightCFrame = game.Workspace.Elevator.ElevatorKey.Highlight.CFrame
 					end
@@ -1000,12 +1019,14 @@ game:GetService("RunService").RenderStepped:Connect(function()
 						Script.Action.Value = "Solved BoardPuzzle"
 					end
 				end
-				if SkipRoom.Exit.Value.Name == "ModifierEnding" then
-					if SkipRoom.EndRunButtonHighlightCFrame ~= nil and SkipRoom.EndRunButtonHighlightPrompt ~= nil then
-						Script.Action.Value = "Run Finish"
-						PromptInFrontOfCamera(SkipRoom.EndRunButtonHighlightPrompt)
-						
-						TeleportPlayer(SkipRoom.EndRunButtonHighlightCFrame)
+				if SkipRoom.Exit ~= nil then
+					if SkipRoom.Exit.Value.Name == "ModifierEnding" then
+						if SkipRoom.EndRunButtonHighlightCFrame ~= nil and SkipRoom.EndRunButtonHighlightPrompt ~= nil then
+							Script.Action.Value = "Run Finish"
+							PromptInFrontOfCamera(SkipRoom.EndRunButtonHighlightPrompt)
+
+							TeleportPlayer(SkipRoom.EndRunButtonHighlightCFrame)
+						end
 					end
 				end
 			end
