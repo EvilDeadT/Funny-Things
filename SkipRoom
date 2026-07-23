@@ -980,9 +980,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 	if Script.Action.Value ~= "Idle" and Script.Action.Value ~= "After Elevator" then
 		if game.Workspace:FindFirstChild("Elevator") then
 			if game.Workspace.Elevator:FindFirstChild("ElevatorKey") then
-				if game.Workspace.Elevator.ElevatorKey:FindFirstChild("Highlight") then
-					print("Elevator TP. Action: "..Script.Action.Value)
-					
+				if game.Workspace.Elevator.ElevatorKey:FindFirstChild("Highlight") and not string.find(Script.Action.Value, "Open ProgressDoor") then
 					if SkipRoom.ElevatorHighlightCFrame == nil then
 						SkipRoom.ElevatorHighlightCFrame = game.Workspace.Elevator.ElevatorKey.Highlight.CFrame
 					end
@@ -996,6 +994,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		else
 			for _, Room in Main.RoomsFolder:GetChildren() do
 				if Room:FindFirstChild("Elevator") then
+					print("Waiting After Elevator")
 					Script.Action.Value = "After Elevator"
 					SkipRoom.ElevatorHighlightCFrame = nil
 					
