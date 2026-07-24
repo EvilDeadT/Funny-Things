@@ -657,13 +657,13 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 			return
 		end
 
-		if (Turret:GetAttribute("MagazinesLeft") <= 0 and not game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("TurretUpgrades")) or not Turret:GetAttribute("Active") or Turret.Target.Value and Info.PlayerMain == nil or Info.Target == nil then
+		if (Turret:GetAttribute("MagazinesLeft") <= 0 and not game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("TurretUpgrades")) or not Turret:GetAttribute("Active") or Target.Value and Info.PlayerMain == nil or Info.Target == nil then
 			return
 		end
 
-		if Info.Target:IsA("Model") then
-			Turret.Target.Value = Info.Target.PrimaryPart or Info.Target
-		elseif Info.Target == game.Players.LocalPlayer and not Info.PlayerMain.PainterDead then
+		if Info.Target.Value:IsA("Model") then
+			Turret.Target.Value = Info.Target.Value.PrimaryPart or Info.Target.Value
+		elseif Info.Target.Value == game.Players.LocalPlayer and not Info.PlayerMain.PainterDead then
 			Turret.Target.Value = game.Players.LocalPlayer.Character.HumanoidRootPart
 		end
 
@@ -902,7 +902,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 		return -v1, -sum
 	end
 
-	Target.Changed:Connect(function()
+	Target:GetPropertyChangedSignal("Value"):Connect(function()
 		local TurretTarget = Target.Value
 		if TurretTarget == game.Players.LocalPlayer.Character.HumanoidRootPart then
 			if PlayerMain.Data.GameSettings.DeafMode.Value == 1 then
