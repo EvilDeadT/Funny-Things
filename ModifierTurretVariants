@@ -1,1 +1,976 @@
+local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main"):WaitForChild("Client"):WaitForChild("MainClient"))
+local PlayerZone = PlayerMain.Zones
 
+local TurretVariantsInfo = {
+	["Default"] = {
+		Default = {
+			FireRate = 7,
+			MaxMagazines = 5,
+			MaxBullets = 15,
+			BulletSpeed = 300,
+			BulletSpread = 4, -- Instead of "Accurate"
+			SearchSpeedTime = 1.5,
+			TrackingSpeed = 0.125,
+
+			MaxUp = 14,
+			MaxDown = 14,
+			MaxLeft = -45,
+			MaxRight = 45,
+			
+			Color = {
+				BaseColor = Color3.fromRGB(94, 109, 127),
+				SecondaryColor = Color3.fromRGB(66, 66, 67),
+				LightColor = Color3.fromRGB(138, 162, 177),
+				BulletColor = Color3.fromRGB(255, 176, 0),
+				ParticleColor = Color3.fromRGB(255, 255, 0),
+				TrailColor = Color3.fromRGB(255, 238, 0),
+				SightColor = Color3.fromRGB(138, 162, 177),
+				BeamColor = Color3.fromRGB(138, 162, 177),
+				BeamLightColor = Color3.fromRGB(138, 162, 177)
+			}
+		},
+		Strong = {}
+	},
+	["VoidTurret"] = {
+		Default = {
+			Color = {
+				BaseColor = Color3.fromRGB(37, 14, 79),
+				SecondaryColor = Color3.fromRGB(20, 20, 20),
+				LightColor = Color3.fromRGB(98, 37, 209),
+				BulletColor = Color3.fromRGB(98, 37, 209),
+				ParticleColor = Color3.fromRGB(118, 45, 255),
+				TrailColor = Color3.fromRGB(118, 45, 255),
+				SightColor = Color3.fromRGB(118, 45, 255),
+				BeamColor = Color3.fromRGB(138, 162, 177),
+				BeamLightColor = Color3.fromRGB(118, 45, 255)
+			}
+		}
+	},
+	["IncendiaryTurret"] = {
+		Default = {
+			FireRate = 3.5,
+			
+			Color = {
+				BaseColor = Color3.fromRGB(108, 0, 0),
+				SecondaryColor = Color3.fromRGB(30, 30, 30),
+				LightColor = Color3.fromRGB(168, 51, 13),
+				BulletColor = Color3.fromRGB(250, 0, 0),
+				ParticleColor = Color3.fromRGB(250, 0, 0),
+				TrailColor = Color3.fromRGB(250, 0, 0),
+				SightColor = Color3.fromRGB(255, 0, 0),
+				BeamColor = Color3.fromRGB(255, 229, 32),
+				BeamLightColor = Color3.fromRGB(255, 140, 0)
+			}
+		}
+	},
+	["ExplosiveTurret"] = {
+		Default = {
+			FireRate = 0.5,
+			MaxMagazines = 1,
+			MaxBullets = 2,
+			
+			Color = {
+				BaseColor = Color3.fromRGB(112, 0, 0),
+				SecondaryColor = Color3.fromRGB(126, 46, 0),
+				LightColor = Color3.fromRGB(184, 98, 23),
+				BulletColor = Color3.fromRGB(167, 0, 0),
+				ParticleColor = Color3.fromRGB(167, 0, 0),
+				TrailColor = Color3.fromRGB(167, 0, 0),
+				SightColor = Color3.fromRGB(255, 140, 0),
+				BeamColor = Color3.fromRGB(255, 0, 0),
+				BeamLightColor = Color3.fromRGB(255, 140, 0)
+			}
+		}
+	},
+	["DanceTurret"] = {
+		Default = {
+			FireRate = 0.5,
+			MaxMagazines = 1,
+			MaxBullets = 2,
+			
+			Color = {
+				BaseColor = Color3.fromRGB(255, 104, 153),
+				SecondaryColor = Color3.fromRGB(204, 82, 122),
+				LightColor = Color3.fromRGB(255, 153, 194),
+				BulletColor = Color3.fromRGB(230, 46, 115),
+				ParticleColor = Color3.fromRGB(230, 46, 115),
+				TrailColor = Color3.fromRGB(230, 46, 115),
+				SightColor = Color3.fromRGB(255, 180, 210),
+				BeamColor = Color3.fromRGB(255, 51, 153),
+				BeamLightColor = Color3.fromRGB(255, 180, 210)
+			}
+		}
+	}
+}
+
+local TurretSounds = {
+	Default = {
+		AllFireSounds = game.ReplicatedStorage.Interactions.Turret.Sounds.FireSounds:GetChildren(),
+		AllShotSounds = game.ReplicatedStorage.Interactions.Turret.Sounds.ShotSounds:GetChildren(),
+		AllImpactMetalSounds = game.ReplicatedStorage.Interactions.Turret.Sounds.ImpactSounds.Metal:GetChildren(),
+		AllImpactGeneralSounds = game.ReplicatedStorage.Interactions.Turret.Sounds.ImpactSounds.General:GetChildren(),
+		AllImpactPlayerSounds = game.ReplicatedStorage.Interactions.Turret.Sounds.ImpactSounds.Player:GetChildren()
+	}
+}
+
+local ChosenVariants = "VoidTurret and IncendiaryTurret and ExplosiveTurret and DanceTurret"
+local ReallyStrongTurretsChance = 0
+
+local TurretVariants = {}
+local TurretCount = 1
+
+for _, Variant in string.split(ChosenVariants, " and ") do
+	table.insert(TurretVariants, Variant)
+end
+
+function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
+	if TurretOriginalPart == nil then
+		return print("CreateCustomTurrer No TurretOriginalPart")
+	end
+	
+	if TurretRoom == nil then
+		return print("CreateCustomTurrer No TurretRoom")
+	end
+	
+	local TurretInfo = {
+		Variant = "Default",
+		PowerVariant = "Default",
+		
+		Anim = {},
+		Color = {}
+	}
+	
+	if Info then
+		for Property, Value in TurretInfo do
+			if Info[Property] then
+				TurretInfo[Property] = Info[Property]
+			end
+		end
+	end
+	
+	if TurretVariantsInfo[TurretInfo.Variant] == nil then
+		return print("CreateCustomTurret No Info For Variant: "..TurretInfo.Variant)
+	end
+	
+	TurretCount += 1
+	
+	for _, BehaviorInfo in {"FireRate", "MaxMagazines", "MaxBullets", "BulletSpread", "SearchSpeedTime", "MaxUp", "MaxDown", "MaxLeft", "MaxRight"} do
+		if TurretVariantsInfo[TurretInfo.Variant][TurretInfo.PowerVariant][BehaviorInfo] then
+			TurretInfo[BehaviorInfo] = TurretVariantsInfo[TurretInfo.Variant][TurretInfo.PowerVariant][BehaviorInfo]
+		else
+			TurretInfo[BehaviorInfo] = TurretVariantsInfo.Default[TurretInfo.PowerVariant][BehaviorInfo]
+		end
+	end
+	
+	local Turret = game.ReplicatedStorage.Assets.Turret:Clone()
+	Turret:PivotTo(TurretOriginalPart.CFrame)
+	Turret.Parent = TurretRoom:FindFirstChild("Interactables") or TurretRoom
+	
+	Turret:SetAttribute("CustomMade", true)
+	Turret:SetAttribute("Disabled", false)
+	
+	if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("TurretUpgrades") then
+		Turret:SetAttribute("BeamsDisabled", true)
+	end
+	
+	TurretOriginalPart:SetAttribute("CustomChecked", true)
+	Instance.new("ObjectValue", Turret).Name = "ShootReal"
+	
+	if TurretOriginalPart:FindFirstChild("Shoot") then
+		Turret.ShootReal.Value = TurretOriginalPart.Shoot
+	else
+		TurretOriginalPart.ChildAdded:Connect(function(Child)
+			if Child.Name == "Shoot" and Child:IsA("UnreliableRemoteEvent") then
+				Turret.ShootReal.Value = Child
+			end
+		end)
+	end
+	
+	for Property, Value in TurretInfo do
+		if type(Value) ~= "table" then
+			Turret:SetAttribute(Property, Value)
+			
+			if Property == "MaxMagazines" then
+				Turret:SetAttribute("MagazinesLeft", Value)
+			end
+		end
+	end
+	
+	for ColorName, ColorValue in TurretVariantsInfo.Default[TurretInfo.PowerVariant].Color do
+		TurretInfo.Color[ColorName] = TurretVariantsInfo[TurretInfo.Variant][TurretInfo.PowerVariant].Color[ColorName] or ColorValue
+	end
+	
+	for _, Anim in game.ReplicatedStorage.Interactions.Turret.Animations:GetChildren() do
+		TurretInfo.Anim[Anim.Name] = Turret.AnimationController.Animator:LoadAnimation(Anim)
+	end
+	
+	game.ReplicatedStorage.Interactions.Turret.Sounds.TurretReload:Clone().Parent = Turret
+	
+	TurretInfo.Anim.OffIdle:Play()
+	
+	local Barrel = Turret.Barrel
+	local BaseJoint = Turret.BaseJoint
+	local Root = Turret.Root
+	local Shoot = Instance.new("BindableEvent", Turret)
+	Shoot.Name = "Shoot"
+	local AllBeams = Barrel.Beams:GetChildren()
+	local BeamMesh = Turret.BeamMesh
+	local BaseJoint_2 = Root.BaseJoint
+	local Pivot = BaseJoint.Pivot
+	local BarrelAttachment = Barrel.BarrelAttachment
+	local Target = Instance.new("ObjectValue", Turret)
+	Target.Name = "Target"
+	
+	local BulletColor = TurretInfo.Color.BulletColor
+	Turret.BaseJoint.Color = TurretInfo.Color.BaseColor
+	Turret.Pivot.Color = TurretInfo.Color.BaseColor
+	Turret.BaseJointWelds.Color = TurretInfo.Color.SecondaryColor
+	Turret.SecondaryBase2.Color = TurretInfo.Color.SecondaryColor
+	Turret.SecondaryBase.Color = TurretInfo.Color.SecondaryColor
+	Turret.Barrel.Color = TurretInfo.Color.SecondaryColor
+	Turret.TurretNeon.Color = TurretInfo.Color.LightColor
+	Turret.BulletChain.Color = TurretInfo.Color.BulletColor
+	Turret.Bullet.Color = TurretInfo.Color.BulletColor
+	Turret.BeamMesh.Color = TurretInfo.Color.SightColor
+	Turret.BeamMesh.Attachment0.SpotLight.Color = TurretInfo.Color.BeamLightColor
+	Turret.BeamMesh.Beam.Color = ColorSequence.new(TurretInfo.Color.BeamColor, TurretInfo.Color.BeamColor)
+	
+	local FilterRaycast = {Turret}
+	
+	local RaycastBeam = RaycastParams.new()
+	RaycastBeam.FilterType = Enum.RaycastFilterType.Exclude
+	RaycastBeam.FilterDescendantsInstances = FilterRaycast
+	
+	local TurretDespawnSound = game.ReplicatedStorage.Interactions.Turret.Sounds.TurretDespawn:Clone()
+	TurretDespawnSound.Parent = BaseJoint
+	local BeepSounds = game.ReplicatedStorage.Interactions.Turret.Sounds.RamdomBeeps:GetChildren()
+	local TurretMovingLoopSound = game.ReplicatedStorage.Interactions.Turret.Sounds.TurretMovingLoop:Clone()
+	TurretMovingLoopSound.Parent = BaseJoint
+	
+	local UniqueTurretTag = "Turret"..TurretCount
+	local TurretAttack = false
+	local MonsterAttacked = {}
+	local TurretAimBaseJoint_2 = nil
+	local TurretAimPivot = nil
+	local v30 = nil
+	
+	TurretInfo.Anim.Open:GetMarkerReachedSignal("OpeningSound"):Connect(function()
+		local TurretSpawnSound = script.Sounds.TurretSpawn:Clone()
+		TurretSpawnSound.Parent = BaseJoint
+		TurretSpawnSound:Play()
+
+		game.Debris:AddItem(TurretSpawnSound, 2)
+	end)
+
+	local function ToggleActive()
+		if Turret:GetAttribute("Active") then
+			if TurretAimBaseJoint_2 then
+				TurretAimBaseJoint_2:Pause()
+				TurretAimBaseJoint_2 = nil
+			end
+			if TurretAimPivot then
+				TurretAimPivot:Pause()
+				TurretAimPivot = nil
+			end
+			BaseJoint_2.C1 = CFrame.new(-0.02, 0, 0)
+			Pivot.C1 = CFrame.new(0.5, 0.5, 0.75)
+			TurretInfo.Anim.Close:Stop()
+			TurretInfo.Anim.Open:Play()
+			TurretInfo.Anim.OffIdle:Stop()
+			TurretInfo.Anim.OnIdle:Play()
+			
+			local t2 = {}
+			v30 = t2
+			while t2 == t2 and Turret:GetAttribute("Active") do
+				task.wait(math.random(5, 7))
+
+				if t2 ~= t2 or not Turret:GetAttribute("Active") then
+					break
+				end
+
+				local BeepSound = BeepSounds[math.random(1, #BeepSounds)]:Clone()
+				BeepSound.Parent = BaseJoint
+				BeepSound:Play()
+
+				game.Debris:AddItem(BeepSound, 3)
+			end
+		else
+			if TurretAimBaseJoint_2 then
+				TurretAimBaseJoint_2:Pause()
+				TurretAimBaseJoint_2 = nil
+			end
+			if TurretAimPivot then
+				TurretAimPivot:Pause()
+				TurretAimPivot = nil
+			end
+			BaseJoint_2.C1 = CFrame.new(-0.02, 0, 0)
+			Pivot.C1 = CFrame.new(0.5, 0.5, 0.75)
+			game.RunService:UnbindFromRenderStep(UniqueTurretTag)
+			game.RunService:UnbindFromRenderStep("track"..UniqueTurretTag)
+			for _, Beam in pairs(AllBeams) do
+				Beam.Enabled = false
+			end
+			BeamMesh.Transparency = 1
+			BeamMesh.Attachment0.SpotLight.Enabled = false
+			BeamMesh.Beam.Enabled = false
+			TurretInfo.Anim.Close:Play()
+
+			TurretDespawnSound:Play()
+			TurretMovingLoopSound:Stop()
+
+			task.wait(1)
+
+			if Turret:GetAttribute("Active") then
+				return
+			end
+
+			TurretInfo.Anim.OffIdle:Play()
+			TurretInfo.Anim.OnIdle:Stop()
+		end
+	end
+
+	Turret:GetAttributeChangedSignal("Active"):Connect(function()
+		ToggleActive()
+	end)
+
+	local Particle = game.ReplicatedStorage.Assets.TurretAssets.Particle
+	local BulletImpact = game.ReplicatedStorage.Assets.TurretAssets.BulletImpact
+	local FireImpact = game.ReplicatedStorage.Assets.TurretAssets.FireImpact
+	local ExplosionImpact = game.ReplicatedStorage.Assets.TurretAssets.ExplosionImpact
+
+	local function ParticleEmit(ParticleParent)
+		for _, ParticleToEmit in pairs(ParticleParent) do
+			ParticleToEmit:Emit(ParticleToEmit:GetAttribute("Emit") or 1)
+		end
+	end
+
+	local FireA = Barrel.fireA:GetChildren()
+	local FireB = Barrel.fireB:GetChildren()
+	
+	local function TurretShoot()
+		local BulletSpreadX = math.rad(math.random(-Turret:GetAttribute("BulletSpread"), Turret:GetAttribute("BulletSpread")))
+		local BulletSpreadY = math.rad(math.random(-Turret:GetAttribute("BulletSpread"), Turret:GetAttribute("BulletSpread")))
+
+		if Turret:GetAttribute("Active") then
+			TurretInfo.Anim.Fire:Play()
+			TurretInfo.Anim.Fire:GetMarkerReachedSignal("Fire"):Once(function()
+				local Bullet = Turret.Bullet:Clone()
+				Bullet.Transparency = 0
+				Bullet.AssemblyLinearVelocity = Bullet.CFrame.RightVector * -math.random(30, 40) + Bullet.CFrame.UpVector * math.random(15, 30)
+				local FireSound = TurretSounds[TurretInfo.Variant].AllFireSounds[math.random(1, #TurretSounds[TurretInfo.Variant].AllFireSounds)]:Clone()
+				FireSound.Parent = Barrel
+				local ShotSound = TurretSounds[TurretInfo.Variant].AllShotSounds[math.random(1, #TurretSounds[TurretInfo.Variant].AllShotSounds)]:Clone()
+				ShotSound.Parent = Turret.Pivot.CaseSounds
+
+
+				FireSound:Play()
+				ShotSound:Play()
+
+				game.Debris:AddItem(FireSound, 2)
+				game.Debris:AddItem(ShotSound, 2)
+
+				Barrel.BarrelAttachment.FireLight.Enabled = true
+
+				task.delay(0.1, function()
+					Barrel.BarrelAttachment.FireLight.Enabled = false
+				end)
+
+				Bullet.Parent = game.Workspace.GameplayFolder.Debris
+
+				ParticleEmit(FireA)
+				ParticleEmit(FireB)
+
+				task.delay(4, function()
+					game.TweenService:Create(Bullet, TweenInfo.new(1), {
+						Transparency = 1
+					}):Play()
+				end)
+
+				game.Debris:AddItem(Bullet, 6)
+
+				local WorldPosition = BarrelAttachment.WorldPosition
+				local ObjectRaycast = game.Workspace:Raycast(WorldPosition, (BarrelAttachment.WorldCFrame * CFrame.Angles(BulletSpreadX, BulletSpreadY, 0)).LookVector * 200, RaycastBeam)
+				
+				if not ObjectRaycast then
+					return
+				end
+				
+				local ParticleEffect = Particle:Clone()
+				ParticleEffect.CFrame = BarrelAttachment.WorldCFrame
+				ParticleEffect.Color = BulletColor
+				ParticleEffect.PointLight.Color = BulletColor
+				local ColorX, ColorY, ColorZ = ParticleEffect.PointLight.Color:ToHSV()
+				ParticleEffect.PointLight.Color = Color3.fromHSV(ColorX, ColorY, (math.clamp(ColorZ - 0.35, 0, 1)))
+				ParticleEffect.Trail.Color = ColorSequence.new(BulletColor, BulletColor)
+				ParticleEffect.Parent = game.Workspace.GameplayFolder.Debris
+				
+				local ParticleTime = (ObjectRaycast.Position - WorldPosition).Magnitude / Turret:GetAttribute("BulletSpeed")
+				
+				game.TweenService:Create(ParticleEffect, TweenInfo.new(ParticleTime, Enum.EasingStyle.Linear), {
+					CFrame = CFrame.new(ObjectRaycast.Position)
+				}):Play()
+				game.Debris:AddItem(ParticleEffect, ParticleTime)
+				
+				task.delay(ParticleTime, function()
+					if TurretInfo.Variant == "ExplosiveTurret" or TurretInfo.Variant == "DanceTurret" then
+						local ExplosionEffect = ExplosionImpact:Clone()
+						ExplosionEffect.CFrame = CFrame.new(ObjectRaycast.Position, ObjectRaycast.Position + ObjectRaycast.Normal)
+						ExplosionEffect.Parent = game.Workspace.GameplayFolder.Debris
+						
+						if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Characters) or ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
+							ExplosionEffect.Decal.Transparency = 1
+							ExplosionEffect.Decal2.Transparency = 1
+							if PlayerMain.LockerState or not ObjectRaycast.Instance:IsDescendantOf(game.Players.LocalPlayer.Character) then
+								if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
+									local MonsterExploded = nil
+									for _, Monster in pairs(game.Workspace.GameplayFolder.Monsters:GetChildren()) do
+										if ObjectRaycast.Instance:IsDescendantOf(Monster) then
+											MonsterExploded = Monster
+										end
+									end
+									if not MonsterExploded:GetAttribute("Dead") and Turret.ShootReal.Value then
+										MonsterExploded:SetAttribute("Dead", true)
+										Turret.ShootReal.Value:FireServer(MonsterExploded)
+									end
+								end
+							end
+						end
+						
+						ExplosionEffect.MineExplode:Play()
+						
+						if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - ExplosionEffect.Position).Magnitude <= 8 and not (PlayerMain.IsGhost or PlayerMain.PlayerDead) then
+							if TurretInfo.Variant == "ExplosiveTurret" then
+								game.ReplicatedStorage.Events.LocalDamage:FireServer(40, "DefenseSystem", 1, nil, nil, nil)
+								
+								local Part = Instance.new("Part")
+								Part.Anchored = true
+								Part.Transparency = 1
+								Part.CanCollide = false
+								Part.Size = Vector3.new(1, 1, 1)
+								Part.Parent = game.Workspace.GameplayFolder.Debris
+								Part.CFrame = ExplosionEffect.CFrame
+								
+								local Attachment = Instance.new("Attachment")
+								Attachment.WorldCFrame = ExplosionEffect.CFrame
+								Attachment.Parent = Part
+								game:GetService("Debris"):AddItem(Part, 5)
+
+								PlayerMain.SpecialLocalEffects.Effects.ApplyForceRelative(Attachment.WorldCFrame, 250)
+								game.ReplicatedStorage.Events.Rag:FireServer(true)
+								
+								task.delay(2, function()
+									game.ReplicatedStorage.Events.Rag:FireServer(false)
+								end)
+							elseif TurretInfo.Variant == "DanceTurret" then
+								game.ReplicatedStorage.Events.LocalDamage:FireServer(5, "DefenseSystem", 1, nil, nil, nil)
+								
+								if not PlayerMain.DanceMode then
+									PlayerMain.DanceMode = true
+									PlayerMain.Dancing = true
+									PlayerMain.Toolbar.CanEquip = false
+									PlayerMain.Toolbar.UnSelect()
+									PlayerMain.Interactions.Base.AllDisabled = true
+									
+									local Sound = Instance.new("Sound")
+									Sound.SoundId = "rbxassetid://6461722330"
+									Sound.Volume = 0.3
+									Sound.Parent = game.Players.LocalPlayer.Character.HumanoidRootPart
+									Sound:Play()
+									
+									game:GetService("Debris"):AddItem(Sound, 10)
+									task.spawn(function()
+										while PlayerMain.Dancing do
+											PlayerMain.Emotes.PlayEmote()
+											task.wait(0.5)
+										end
+									end)
+									
+									game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
+									PlayerMain.CameraModule.Switch("HeadFollow")
+									
+									task.delay(2.5, function()
+										PlayerMain.Dancing = nil
+										game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
+										
+										if PlayerMain.PlayerDead then
+											return
+										end
+										
+										PlayerMain.CameraModule.Switch("PlayerControl")
+									end)
+									
+									task.delay(5, function()
+										PlayerMain.Toolbar.CanEquip = true
+										PlayerMain.DanceMode = nil
+										PlayerMain.Interactions.Base.AllDisabled = false
+									end)
+								end
+							end
+						end
+						
+						for _, ExplosionEffectParticle in ExplosionEffect.Explosion:GetChildren() do
+							ExplosionEffectParticle:Emit(50)
+						end
+						
+						if ExplosionEffect.Decal.Transparency ~= 1 then
+							game.TweenService:Create(ExplosionEffect.Decal, TweenInfo.new(3, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 4), {
+								Transparency = 1
+							}):Play()
+							game.TweenService:Create(ExplosionEffect.Decal2, TweenInfo.new(3, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 4), {
+								Transparency = 1
+							}):Play()
+						end
+						
+						game.Debris:AddItem(ExplosionEffect, 6)
+					elseif TurretInfo.Variant == "IncendiaryTurret" then
+						if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Characters) or ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
+							local HitSound = TurretSounds[TurretInfo.Variant].AllImpactPlayerSounds[math.random(1, #TurretSounds[TurretInfo.Variant].AllImpactPlayerSounds)]:Clone()
+							
+							if PlayerMain.LockerState or not ObjectRaycast.Instance:IsDescendantOf(game.Players.LocalPlayer.Character) then
+								if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
+									local DetectedMonster = nil
+
+									for _, Monster in pairs(workspace.GameplayFolder.Monsters:GetChildren()) do
+										if ObjectRaycast.Instance:IsDescendantOf(Monster) then
+											DetectedMonster = Monster
+										end
+									end
+									
+									if not DetectedMonster:GetAttribute("Dead") and Turret.ShootReal.Value then
+										DetectedMonster:SetAttribute("Dead", true)
+										Turret.ShootReal.Value:FireServer(DetectedMonster)
+									end
+								end
+							else
+								game.ReplicatedStorage.Events.LocalDamage:FireServer(5, "DefenseSystem", 1, nil, nil, nil)
+							end
+							
+							HitSound.Parent = ObjectRaycast.Instance
+							HitSound:Play()
+							game.Debris:AddItem(HitSound, 5)
+						else
+							local FireEffect = FireImpact:Clone()
+							FireEffect.CFrame = CFrame.new(ObjectRaycast.Position, ObjectRaycast.Position + ObjectRaycast.Normal)
+							FireEffect.Parent = game.Workspace.GameplayFolder.Debris
+							
+							local HitSound = TurretSounds[TurretInfo.Variant].AllImpactGeneralSounds[math.random(1, #TurretSounds[TurretInfo.Variant].AllImpactGeneralSounds)]:Clone()
+							if ObjectRaycast.Material == Enum.Material.Metal then
+								HitSound = TurretSounds[TurretInfo.Variant].AllImpactMetalSounds[math.random(1, #TurretSounds[TurretInfo.Variant].AllImpactMetalSounds)]:Clone()
+							end
+							HitSound.Parent = FireEffect
+							
+							HitSound:Play()
+							FireEffect.Fire.FireLoop:Play()
+							
+							task.delay(15, function()
+								FireEffect.Fire.FireLoop:Stop()
+								FireEffect.Fire.Embers.Enabled = false
+								FireEffect.Fire.Fire.Enabled = false
+								FireEffect.Fire.Fire2.Enabled = false
+								FireEffect.Fire.FireCore.Enabled = false
+								FireEffect.Fire.Smoke.Enabled = false
+								FireEffect.Fire.PointLight.Enabled = false
+								FireEffect.Fire:SetAttribute("Active", false)
+								
+								if FireEffect.Decal.Transparency == 1 then
+									return
+								end
+								
+								game.TweenService:Create(FireEffect.Decal, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 4), {
+									Transparency = 1
+								}):Play()
+								game.TweenService:Create(FireEffect.Decal2, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 4), {
+									Transparency = 1
+								}):Play()
+							end)
+							
+							game.Debris:AddItem(FireEffect, 22.5)
+						end
+					else
+						local BulletHit = BulletImpact:Clone()
+						BulletHit.CFrame = CFrame.new(ObjectRaycast.Position, ObjectRaycast.Position + ObjectRaycast.Normal)
+						BulletHit.Parent = game.Workspace.GameplayFolder.Debris
+						BulletHit.Smoke:Emit(BulletHit.Smoke.Rate)
+						local HitSound = nil
+						
+						if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Characters) or ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
+							Bullet.Decal.Transparency = 1
+							HitSound = TurretSounds[TurretInfo.Variant].AllImpactPlayerSounds[math.random(1, #TurretSounds[TurretInfo.Variant].AllImpactPlayerSounds)]:Clone()
+							
+							if PlayerMain.LockerState or not ObjectRaycast.Instance:IsDescendantOf(game.Players.LocalPlayer.Character) then
+								if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
+									local DetectedMonster = nil
+
+									for _, Monster in pairs(workspace.GameplayFolder.Monsters:GetChildren()) do
+										if ObjectRaycast.Instance:IsDescendantOf(Monster) then
+											DetectedMonster = Monster
+										end
+									end
+									
+									if not DetectedMonster:GetAttribute("Dead") and Turret.ShootReal.Value then
+										DetectedMonster:SetAttribute("Dead", true)
+										Turret.ShootReal.Value:FireServer(DetectedMonster)
+									end
+								end
+							else
+								if TurretInfo.Variant == "Default" then
+									game.ReplicatedStorage.Events.LocalDamage:FireServer(15, "DefenseSystem", 1, nil, nil, nil)
+								elseif TurretInfo.Variant == "VoidTurret" then
+									game.ReplicatedStorage.Events.LocalDamage:FireServer(3, "DefenseSystem", 1, nil, nil, nil, 10)
+								end
+							end
+						elseif ObjectRaycast.Material == Enum.Material.Metal then
+							HitSound = TurretSounds[TurretInfo.Variant].AllImpactMetalSounds[math.random(1, #TurretSounds[TurretInfo.Variant].AllImpactMetalSounds)]:Clone()
+							Bullet.MetalHit:Emit(Bullet.MetalHit.Rate)
+						else
+							HitSound = TurretSounds[TurretInfo.Variant].AllImpactGeneralSounds[math.random(1, #TurretSounds[TurretInfo.Variant].AllImpactGeneralSounds)]:Clone()
+							Bullet.Debris:Emit(Bullet.Debris.Rate)
+						end
+						
+						HitSound.Parent = Bullet
+						HitSound:Play()
+						
+						if Bullet.Decal.Transparency ~= 1 then
+							game.TweenService:Create(Bullet.Decal, TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 4), {
+								Transparency = 1
+							}):Play()
+						end
+						
+						game.Debris:AddItem(Bullet, 5)
+					end
+					if PlayerMain.PlayerDead or PlayerMain.IsGhost or not game.Players.LocalPlayer.Character:FindFirstChild("Head") then
+						return
+					end
+					
+					if not ((ObjectRaycast.Position - game.Players.LocalPlayer.Character.Head.Position).Magnitude < 10) then
+						return
+					end
+					
+					PlayerMain.SpecialLocalEffects.Effects.TurretBullet()
+				end)
+			end)
+		end
+	end
+	
+	local function TurretDesiredLocationShoot(Info)
+		if Info == nil then
+			return
+		end
+
+		if (Turret:GetAttribute("MagazinesLeft") <= 0 and not game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("TurretUpgrades")) or not Turret:GetAttribute("Active") or Turret.Target.Value and Info.PlayerMain == nil or Info.Target == nil then
+			return
+		end
+
+		if Info.Target:IsA("Model") then
+			Turret.Target.Value = Info.Target.PrimaryPart or Info.Target
+		elseif Info.Target == game.Players.LocalPlayer and not Info.PlayerMain.PainterDead then
+			Turret.Target.Value = game.Players.LocalPlayer.Character.HumanoidRootPart
+		end
+
+		Turret:SetAttribute("Shooting", true)
+		Turret:SetAttribute("MagazinesLeft", Turret:GetAttribute("MagazinesLeft") - 1)
+
+		task.wait(0.6)
+
+		for i = 1, Turret:GetAttribute("MaxBullets") do
+			TurretShoot()
+
+			task.wait(1 / Turret:GetAttribute("FireRate"))
+		end
+		Turret:SetAttribute("Shooting", false)
+
+		task.wait(0.5)
+
+		Turret.Target.Value = nil
+		
+		if Turret:GetAttribute("MagazinesLeft") <= 0 and not game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("TurretUpgrades") then
+			Turret:SetAttribute("Active", false)
+
+			task.wait(3)
+
+			Turret.TurretReload:Play()
+
+			task.wait(4)
+			
+			Turret:SetAttribute("MagazinesLeft", Turret:GetAttribute("MaxMagazines"))
+			
+			if Turret:GetAttribute("PlayerInRoom") and not Turret:GetAttribute("Disabled") then
+				Turret:SetAttribute("Active", true)
+			end
+		end
+	end
+	
+	local v35 = nil
+	local v36 = nil
+	
+	local function TurretDesiredLocationIdle(p1, p2)
+		if not Turret:GetAttribute("Active") then
+			return
+		end
+		
+		if TurretAimBaseJoint_2 then
+			TurretAimBaseJoint_2:Pause()
+			TurretAimBaseJoint_2 = nil
+		end
+		if TurretAimPivot then
+			TurretAimPivot:Pause()
+			TurretAimPivot = nil
+		end
+		
+		if (v35 ~= p1 or v36 ~= p2) and not TurretMovingLoopSound.Playing then
+			TurretMovingLoopSound:Play()
+		end
+		local v1 = math.rad(p1)
+		local v2 = math.rad(p2)
+		v35 = v1
+		v36 = v2
+		TurretAimBaseJoint_2 = game.TweenService:Create(BaseJoint_2, TweenInfo.new(Turret:GetAttribute("SearchSpeedTime"), Enum.EasingStyle.Linear), {
+			C1 = CFrame.new(-0.02, 0, 0) * CFrame.Angles(0, v2, 0)
+		})
+		TurretAimPivot = game.TweenService:Create(Pivot, TweenInfo.new(Turret:GetAttribute("SearchSpeedTime"), Enum.EasingStyle.Linear), {
+			C1 = CFrame.new(0.5, 0.5, 0.75) * CFrame.Angles(v1, 0, 0)
+		})
+		
+		TurretAimBaseJoint_2:Play()
+		TurretAimPivot:Play()
+		
+		task.wait(Turret:GetAttribute("SearchSpeedTime"))
+		
+		if v1 ~= v1 or v2 ~= v2 then
+			return
+		end
+		
+		TurretMovingLoopSound:Stop()
+	end
+	
+	local Horisontal = "max"
+	local v11 = "mid"
+
+	local function StartTurret()
+		Turret:SetAttribute("Active", true)
+		
+		while Turret:GetAttribute("Active") do
+			local TurretHorisontal = nil
+
+			if Target.Value or Turret:GetAttribute("Shooting") then
+				task.wait(0.3)
+			end
+
+			local TurretVertical = math.random(Turret:GetAttribute("MaxUp"), Turret:GetAttribute("MaxDown"))
+			
+			if Horisontal == "max" then
+				if v11 == "max" then
+					TurretHorisontal = (Turret:GetAttribute("MaxLeft") + Turret:GetAttribute("Right")) / 2
+					v11 = "mid"
+				else
+					TurretHorisontal = Turret:GetAttribute("MaxLeft")
+					Horisontal = "min"
+					v11 = "min"
+				end
+			elseif v11 == "min" then
+				TurretHorisontal = (Turret:GetAttribute("MaxLeft") + Turret:GetAttribute("Right")) / 2
+				v11 = "mid"
+			else
+				TurretHorisontal = Turret:GetAttribute("MaxRight")
+				Horisontal = "max"
+				v11 = "max"
+			end
+			
+			TurretDesiredLocationIdle(TurretVertical, TurretHorisontal)
+			
+			if v11 == "mid" then
+				task.wait(Turret:GetAttribute("SearchSpeedTime"))
+			else
+				task.wait(Turret:GetAttribute("SearchSpeedTime") + 1)
+			end
+		end
+	end
+	
+	TurretInfo.Anim.Open:GetMarkerReachedSignal("EnableLights"):Connect(function()
+		if not Turret:GetAttribute("BeamsDisabled") then
+			for _, Beam in AllBeams do
+				Beam.Enabled = true
+			end
+			BeamMesh.Transparency = 0.98
+			BeamMesh.Attachment0.SpotLight.Enabled = true
+			BeamMesh.Beam.Enabled = true
+		end
+		
+		task.wait(0.5)
+		
+		if not Turret:GetAttribute("Active") then
+			return
+		end
+		
+		
+		
+		game.RunService:UnbindFromRenderStep(UniqueTurretTag)
+		game.RunService:BindToRenderStep(UniqueTurretTag, 250, function()
+			local DetectedPlayer = nil
+			local DetectedMonster = nil
+			for _, Beam in pairs(AllBeams) do
+				local ObjectInRaycast = game.Workspace:Raycast(Beam.Attachment0.WorldPosition, CFrame.lookAt(Beam.Attachment0.WorldPosition, Beam.Attachment1.WorldPosition).LookVector * 200, RaycastBeam)
+				if ObjectInRaycast then
+					if ObjectInRaycast.Instance.Transparency > 0.8 then
+						table.insert(FilterRaycast, ObjectInRaycast.Instance)
+						RaycastBeam.FilterDescendantsInstances = FilterRaycast
+					end
+					
+					Beam.Attachment1.WorldPosition = ObjectInRaycast.Position
+					
+					if not PlayerMain.Dead and (not PlayerMain.IsGhost and (not PlayerMain.LockerState and (not DetectedPlayer and (not Target.Value and ObjectInRaycast.Instance:IsDescendantOf(game.Players.LocalPlayer.Character))))) then
+						DetectedPlayer = true
+					end
+					
+					if ObjectInRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
+						for _, Monster in game.Workspace.GameplayFolder.Monsters:GetChildren() do
+							if ObjectInRaycast.Instance:IsDescendantOf(Monster) then
+								DetectedMonster = Monster
+							end
+						end
+					end
+				end
+			end
+			if DetectedPlayer and not TurretAttack then
+				TurretAttack = true
+				
+				TurretDesiredLocationShoot({
+					PlayerMain = PlayerMain,
+					Target = game.Players.LocalPlayer
+				})
+				
+				if game.Workspace.GameSettings.Modifier:FindFirstChild("ArtPortfolio") then
+					for i = 1, math.random(1, 2) do
+						PlayerMain.SpecialLocalEffects.Effects.PainterPopup("rbxassetid://74954245678736")
+					end
+				end
+			end
+			if DetectedMonster and not MonsterAttacked[DetectedMonster] then
+				MonsterAttacked[DetectedMonster] = true
+				
+				task.delay(1, function()
+					MonsterAttacked[DetectedMonster] = nil
+				end)
+				
+				TurretDesiredLocationShoot({
+					PlayerMain = PlayerMain,
+					Target = DetectedMonster
+				})
+			end
+		end)
+	end)
+	
+	Turret:GetAttributeChangedSignal("Shooting"):Connect(function()
+		if not Turret:GetAttribute("Shooting") then
+			return
+		end
+		
+		if TurretAimBaseJoint_2 then
+			TurretAimBaseJoint_2:Pause()
+			TurretAimBaseJoint_2 = nil
+		end
+		if TurretAimPivot then
+			TurretAimPivot:Pause()
+			TurretAimPivot = nil
+		end
+		
+		BaseJoint.TurretAlerted:Play()
+		
+		if not Turret:GetAttribute("BeamsDisabled") then
+			for i = 1, 5 do
+				for _, Beam in AllBeams do
+					Beam.Enabled = not Beam.Enabled
+				end
+				
+				task.wait(0.1)
+			end
+			
+			for _, Beam in AllBeams do
+				Beam.Enabled = Turret:GetAttribute("Active")
+			end
+		end
+	end)
+	
+	local function TurretUpdateMainPosition(NewPart)
+		local v1, v2, _ = Root.CFrame:ToObjectSpace(NewPart):ToOrientation()
+		local sum = v2 + math.pi
+		if sum > math.pi then
+			sum = sum - 6.283185307179586
+		elseif sum < -3.141592653589793 then
+			sum = sum + 6.283185307179586
+		end
+		return -v1, -sum
+	end
+
+	Target.Changed:Connect(function()
+		local TurretTarget = Target.Value
+		if TurretTarget == game.Players.LocalPlayer.Character.HumanoidRootPart then
+			if PlayerMain.Data.GameSettings.DeafMode.Value == 1 then
+				PlayerMain.SubTitles.new("A turret has locked on to me!", 4):Show()
+			end
+		else
+			TurretAttack = false
+		end
+		if TurretTarget then
+			game.RunService:UnbindFromRenderStep("track"..UniqueTurretTag)
+			game.RunService:BindToRenderStep("track"..UniqueTurretTag, 251, function()
+				local OrienX, OrienY, OrienZ = Root.CFrame:ToObjectSpace((CFrame.lookAt(BaseJoint.Position, Target.Position))):ToOrientation()
+				local sum = OrienY + math.pi
+				if sum > math.pi then
+					sum = sum - 6.283185307179586
+				elseif sum < -3.141592653589793 then
+					sum = sum + 6.283185307179586
+				end
+				game.TweenService:Create(BaseJoint_2, TweenInfo.new(Turret:GetAttribute("TrackingSpeed"), Enum.EasingStyle.Linear), {
+					C1 = CFrame.new(-0.02, 0, 0) * CFrame.Angles(0, -sum, 0)
+				}):Play()
+				game.TweenService:Create(Pivot, TweenInfo.new(Turret:GetAttribute("TrackingSpeed"), Enum.EasingStyle.Linear), {
+					C1 = CFrame.new(0.5, 0.5, 0.75) * CFrame.Angles(-OrienX, 0, 0)
+				}):Play()
+			end)
+		else
+			game.RunService:UnbindFromRenderStep("track"..UniqueTurretTag)
+		end
+	end)
+	
+	if Turret:GetAttribute("Active") then
+		ToggleActive()
+		task.spawn(function()
+			StartTurret()
+		end)
+	else
+		TurretInfo.Anim.OffIdle:Play()
+		for _, Beam in pairs(AllBeams) do
+			Beam.Enabled = false
+		end
+		BeamMesh.Transparency = 1
+		BeamMesh.Attachment0.SpotLight.Enabled = false
+		BeamMesh.Beam.Enabled = false
+	end
+end
+
+game.RunService.RenderStepped:Connect(function()
+	for _, Room in game.Workspace.GameplayFolder.Rooms:GetChildren() do
+		if Room:FindFirstChild("Interactables") then
+			for _, Turret in Room.Interactables:GetChildren() do
+				if string.find(Turret.Name, "TurretSpawn") and Turret:IsA("BasePart") and not Turret:GetAttribute("CustomMade") and not Turret:GetAttribute("CustomChecked") then
+					CreateCustomTurret(Turret, Room, {
+						Variant = TurretVariants[math.random(1, #TurretVariants)]
+					})
+					
+					Turret:Destroy()
+				elseif string.find(Turret.Name, "Turret") and Turret:GetAttribute("CustomMade") then
+					if Room.Interactables:FindFirstChild("TurretControls") then
+						if Room.Interactables.TurretControls:FindFirstChildWhichIsA("ProximityPrompt", true) then
+							Turret:SetAttribute("Disabled", false)
+						else
+							Turret:SetAttribute("Disabled", true)
+						end
+					end
+					
+					Turret:SetAttribute("PlayerInRoom", PlayerZone.CurrentRoom == Room)
+				end
+			end
+		end
+	end
+end)
