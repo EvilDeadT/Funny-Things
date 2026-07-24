@@ -661,9 +661,9 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 			return
 		end
 
-		if Info.Target.Value:IsA("Model") then
-			Turret.Target.Value = Info.Target.Value.PrimaryPart or Info.Target.Value
-		elseif Info.Target.Value == game.Players.LocalPlayer and not Info.PlayerMain.PainterDead then
+		if Info.Target:IsA("Model") then
+			Turret.Target.Value = Info.Target.PrimaryPart or Info.Target
+		elseif Info.Target == game.Players.LocalPlayer and not Info.PlayerMain.PainterDead then
 			Turret.Target.Value = game.Players.LocalPlayer.Character.HumanoidRootPart
 		end
 
