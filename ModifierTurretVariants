@@ -255,7 +255,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 	local v30 = nil
 	
 	TurretInfo.Anim.Open:GetMarkerReachedSignal("OpeningSound"):Connect(function()
-		local TurretSpawnSound = script.Sounds.TurretSpawn:Clone()
+		local TurretSpawnSound = game.ReplicatedStorage.Interactions.Turret.Sounds.TurretSpawn:Clone()
 		TurretSpawnSound.Parent = BaseJoint
 		TurretSpawnSound:Play()
 
