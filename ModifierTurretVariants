@@ -169,6 +169,18 @@ local TurretVariantsInfo = {
 	}
 }
 
+local TurretCustomRoomPosition = {
+	["GauntletLeft"] = {
+		["TurretSpawn"] = {
+			ClassName = "Part",
+			Parent = "Interactables",
+			Anchored = true,
+			Position = Vector3.new(47.5, 6, -13),
+			Orientation = Vector3.new(0, 90, 0)
+		}
+	}
+}
+
 local ChosenVariants = "VoidTurret and IncendiaryTurret and ExplosiveTurret and DanceTurret"
 local ReallyStrongTurretsChance = 0
 
@@ -258,6 +270,45 @@ function FindByThread(PathStart, Thread)
 	end
 
 	return
+end
+
+function CreateCustomRoomPosition(Room)
+	if not Room:FindFirstChild("Entrances") then
+		return
+	end
+	
+	if #Room.Entrances:GetChildren() ~= 1 then
+		return
+	end
+	
+	local CollisionPart = Room.Entrances:GetChildren()[1]:FindFirstChild("CollisionPart")
+	
+	if not CollisionPart then
+		return
+	end
+	
+	Room:SetAttribute("TurretCustomPosition", true)
+	
+	for Name, Properties in TurretCustomRoomPosition[Room.Name] do
+		local NewInstance = Instance.new(Properties.ClassName)
+		NewInstance.Name = Name
+		NewInstance.Position = CollisionPart.Position + ((Properties.Position.X * CollisionPart.CFrame.LookVector)
+			+ (Properties.Position.Y * CollisionPart.CFrame.UpVector)
+			+ (Properties.Position.Z * CollisionPart.CFrame.RightVector))
+		NewInstance.Orientation = Vector3.new(
+			CollisionPart.Orientation.X + Properties.Orientation.X,
+			CollisionPart.Orientation.Y + Properties.Orientation.Y,
+			CollisionPart.Orientation.Z + Properties.Orientation.Z
+		)
+		
+		for Property, Value in Properties do
+			if Property ~= "ClassName" and Property ~= "Parent" and Property ~= "Position" and Property ~= "Orientation" then
+				NewInstance[Property] = Value
+			end
+		end
+		
+		NewInstance.Parent = FindByThread(Room, Properties.Parent)
+	end
 end
 
 function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
@@ -1256,6 +1307,10 @@ end
 
 game.RunService.RenderStepped:Connect(function()
 	for _, Room in game.Workspace.GameplayFolder.Rooms:GetChildren() do
+		if TurretCustomRoomPosition[Room.Name] and not Room:GetAttribute("TurretCustomPosition") then
+			CreateCustomRoomPosition(Room)
+		end
+		
 		if Room:FindFirstChild("Interactables") then
 			for _, Turret in Room.Interactables:GetChildren() do
 				if string.find(Turret.Name, "TurretSpawn") and Turret:IsA("BasePart") and not Turret:GetAttribute("CustomMade") and not Turret:GetAttribute("CustomChecked") then
