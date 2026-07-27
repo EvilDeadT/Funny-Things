@@ -538,7 +538,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 	
 	
 	local function ParticleEmit(ParticleParent)
-		for _, ParticleToEmit in pairs(ParticleParent) do
+		for _, ParticleToEmit in ParticleParent do
 			ParticleToEmit:Emit(ParticleToEmit:GetAttribute("Emit") or 1)
 		end
 	end
@@ -616,7 +616,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 							if PlayerMain.LockerState or not ObjectRaycast.Instance:IsDescendantOf(game.Players.LocalPlayer.Character) then
 								if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
 									local MonsterExploded = nil
-									for _, Monster in pairs(game.Workspace.GameplayFolder.Monsters:GetChildren()) do
+									for _, Monster in game.Workspace.GameplayFolder.Monsters:GetChildren() do
 										if ObjectRaycast.Instance:IsDescendantOf(Monster) then
 											MonsterExploded = Monster
 										end
@@ -724,7 +724,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 								if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
 									local DetectedMonster = nil
 
-									for _, Monster in pairs(workspace.GameplayFolder.Monsters:GetChildren()) do
+									for _, Monster in game.Workspace.GameplayFolder.Monsters:GetChildren() do
 										if ObjectRaycast.Instance:IsDescendantOf(Monster) then
 											DetectedMonster = Monster
 										end
@@ -794,7 +794,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 								if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
 									local DetectedMonster = nil
 
-									for _, Monster in pairs(workspace.GameplayFolder.Monsters:GetChildren()) do
+									for _, Monster in game.Workspace.GameplayFolder.Monsters:GetChildren() do
 										if ObjectRaycast.Instance:IsDescendantOf(Monster) then
 											DetectedMonster = Monster
 										end
@@ -942,9 +942,10 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 			for _, Beam in TurretInfo.Model.AllBeams do
 				Beam.Enabled = true
 			end
-			BeamMesh.Transparency = 0.98
-			BeamMesh.Attachment0.SpotLight.Enabled = true
-			BeamMesh.Beam.Enabled = true
+			
+			TurretInfo.Model.BeamMesh.Transparency = 0.98
+			TurretInfo.Model.BeamMesh.Attachment0.SpotLight.Enabled = true
+			TurretInfo.Model.BeamMesh.Beam.Enabled = true
 		end
 
 		task.wait(0.5)
@@ -1170,7 +1171,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 			game.RunService:UnbindFromRenderStep(UniqueTurretTag)
 			game.RunService:UnbindFromRenderStep("track"..UniqueTurretTag)
 			
-			for _, Beam in pairs(TurretInfo.Model.AllBeams) do
+			for _, Beam in TurretInfo.Model.AllBeams do
 				Beam.Enabled = false
 			end
 			
