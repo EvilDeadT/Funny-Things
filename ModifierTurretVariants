@@ -11,6 +11,7 @@ local TurretVariantsInfo = {
 			BulletSpread = 4, -- Instead of "Accurate"
 			DamageHit = 15,
 			SearchSpeedTime = 1.5,
+			TrackingTime = 0.6,
 			TrackingSpeed = 0.125,
 
 			MaxUp = 14,
@@ -153,6 +154,11 @@ local TurretVariantsInfo = {
 			FireRate = 0.5,
 			MaxMagazines = 1,
 			MaxBullets = 2,
+			BulletSpeed = 1000,
+			BulletSpread = 0,
+			DamageHit = 75,
+			SearchSpeedTime = 1.5,
+			TrackingTime = 0.3,
 
 			Color = {
 				BaseColor = Color3.fromRGB(255, 104, 153),
@@ -164,6 +170,25 @@ local TurretVariantsInfo = {
 				SightColor = Color3.fromRGB(255, 180, 210),
 				BeamColor = Color3.fromRGB(255, 51, 153),
 				BeamLightColor = Color3.fromRGB(255, 180, 210)
+			}
+		}
+	},
+	["SniperTurret"] = {
+		Default = {
+			FireRate = 0.5,
+			MaxMagazines = 10,
+			MaxBullets = 1,
+
+			Color = {
+				BaseColor = Color3.fromRGB(108, 0, 0),
+				SecondaryColor = Color3.fromRGB(30, 30, 30),
+				LightColor = Color3.fromRGB(168, 51, 13),
+				BulletColor = Color3.fromRGB(250, 0, 0),
+				ParticleColor = Color3.fromRGB(250, 0, 0),
+				TrailColor = Color3.fromRGB(250, 0, 0),
+				SightColor = Color3.fromRGB(255, 0, 0),
+				BeamColor = Color3.fromRGB(255, 229, 32),
+				BeamLightColor = Color3.fromRGB(255, 140, 0)
 			}
 		}
 	}
@@ -475,8 +500,15 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 	
 	Turret:SetAttribute("CustomMade", true)
 	Turret:SetAttribute("Active", false)
-	Turret:SetAttribute("Disabled", false)
 	Turret:SetAttribute("Reloading", false)
+	
+	if TurretOriginalPart:GetAttribute("ObjectCategory") == "Gauntlet" then
+		Turret:SetAttribute("Disabled", true)
+		
+		
+	else
+		Turret:SetAttribute("Disabled", false)
+	end
 
 	Turret:SetAttribute("BeamsDisabled", game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("TurretUpgrades") ~= nil)
 
@@ -975,7 +1007,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 
 		Turret:SetAttribute("Shooting", true)
 
-		task.wait(0.6)
+		task.wait(Turret:GetAttribute("TrackingTime"))
 
 		for i = 1, Turret:GetAttribute("MaxBullets") do
 			TurretShoot()
@@ -1153,7 +1185,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 					Beam.Enabled = not Beam.Enabled
 				end
 
-				task.wait(0.1)
+				task.wait(Turret:GetAttribute("TrackingTime") / 6)
 			end
 
 			for _, Beam in TurretInfo.Model.AllBeams do
