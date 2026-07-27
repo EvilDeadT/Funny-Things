@@ -9,6 +9,7 @@ local TurretVariantsInfo = {
 			MaxBullets = 15,
 			BulletSpeed = 300,
 			BulletSpread = 4, -- Instead of "Accurate"
+			DamageHit = 15,
 			SearchSpeedTime = 1.5,
 			TrackingSpeed = 0.125,
 
@@ -84,6 +85,11 @@ local TurretVariantsInfo = {
 	},
 	["VoidTurret"] = {
 		Default = {
+			DamageHit = 5,
+			PoisonDamage = 1,
+			PoisonSpeed = 2,
+			PoisonDuration = 10,
+			
 			Color = {
 				BaseColor = Color3.fromRGB(37, 14, 79),
 				SecondaryColor = Color3.fromRGB(20, 20, 20),
@@ -95,6 +101,15 @@ local TurretVariantsInfo = {
 				BeamColor = Color3.fromRGB(138, 162, 177),
 				BeamLightColor = Color3.fromRGB(118, 45, 255)
 			}
+		},
+		Strong = {
+			DamageHit = 15,
+			PoisonDamage = 1,
+			PoisonSpeed = 1,
+			PoisonDuration = 10,
+			PoisonFatal = true,
+			
+			
 		}
 	},
 	["IncendiaryTurret"] = {
@@ -794,7 +809,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 
 						if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Characters) or ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
 							BulletHit.Decal.Transparency = 1
-							HitSound = LoadSound(TurretInfo.Sound.AllImpactPlayerSounds, BulletHit, true)
+							HitSound = LoadSound(TurretInfo.Sound.ImpactSoundsPlayer, BulletHit, true)
 
 							if PlayerMain.LockerState or not ObjectRaycast.Instance:IsDescendantOf(game.Players.LocalPlayer.Character) then
 								if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
@@ -815,7 +830,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 								if TurretInfo.Variant == "Default" then
 									game.ReplicatedStorage.Events.LocalDamage:FireServer(15, "DefenseSystem", 1, nil, nil, nil)
 								elseif TurretInfo.Variant == "VoidTurret" then
-									game.ReplicatedStorage.Events.LocalDamage:FireServer(3, "DefenseSystem", 1, nil, nil, nil, 10)
+									game.ReplicatedStorage.Events.LocalDamage:FireServer(0, "DefenseSystem", 1, nil, nil, nil, 5)
 								end
 							end
 						elseif ObjectRaycast.Material == Enum.Material.Metal then
@@ -1225,13 +1240,13 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 			end
 		else
 			TurretUnactiveTimer = task.delay(3, function()
-				if not Turret:GetAttribute("PlayerInRoom") and not Turret:GetAttribute("Disabled") then
+				if not Turret:GetAttribute("Disabled") then
 					if Turret:GetAttribute("Shooting") then
 						Turret:GetAttributeChangedSignal("Shooting"):Wait()
-						
-						if not Turret:GetAttribute("PlayerInRoom") and not Turret:GetAttribute("Disabled") and not Turret:GetAttribute("Shooting") then
-							Turret:SetAttribute("Active", false)
-						end
+					end
+					
+					if not Turret:GetAttribute("PlayerInRoom") and not Turret:GetAttribute("Disabled") and not Turret:GetAttribute("Shooting") then
+						Turret:SetAttribute("Active", false)
 					end
 				end
 			end)
