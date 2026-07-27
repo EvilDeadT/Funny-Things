@@ -177,7 +177,11 @@ end
 local function LoadSound(SelectedSound, SoundParent, RandomSound)
 	if type(SelectedSound) == "table" then
 		if RandomSound then
+			for _, SoundL in SelectedSound do
+				print(SoundL.Name)
+			end
 			SelectedSound = SelectedSound[math.random(1, #SelectedSound)]
+			print(SelectedSound)
 		end
 	end
 
@@ -997,7 +1001,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 					Target = game.Players.LocalPlayer
 				})
 
-				if game.Workspace.GameSettings.Modifier:FindFirstChild("ArtPortfolio") then
+				if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("ArtPortfolio") then
 					for i = 1, math.random(1, 2) do
 						PlayerMain.SpecialLocalEffects.Effects.PainterPopup("rbxassetid://74954245678736")
 					end
