@@ -1224,14 +1224,6 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 			end)
 		end
 	end)
-	
-	task.wait(5)
-	
-	Turret:SetAttribute("Active", true)
-	
-	TurretDesiredLocationShoot({
-		Target = game.Players.LocalPlayer
-	})
 end
 
 game.RunService.RenderStepped:Connect(function()
