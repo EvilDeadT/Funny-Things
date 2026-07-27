@@ -176,7 +176,14 @@ local TurretCustomRoomPosition = {
 			Parent = "Interactables",
 			Anchored = true,
 			Position = Vector3.new(47.5, 6, -13),
-			Orientation = Vector3.new(0, 90, 0)
+			Orientation = Vector3.new(0, 90, 0),
+			
+			Attributes = {
+				["MaxLeft"] = -85,
+				["MaxRight"] = 85,
+				["MaxUp"] = 8,
+				["MaxDown"] = 8
+			}
 		}
 	}
 }
@@ -303,7 +310,13 @@ function CreateCustomRoomPosition(Room)
 		
 		for Property, Value in Properties do
 			if Property ~= "ClassName" and Property ~= "Parent" and Property ~= "Position" and Property ~= "Orientation" then
-				NewInstance[Property] = Value
+				if Property == "Attributes" then
+					for AttributeName, AttributeValue in Value do
+						NewInstance:SetAttribute(AttributeName, AttributeValue)
+					end
+				else
+					NewInstance[Property] = Value
+				end
 			end
 		end
 		
