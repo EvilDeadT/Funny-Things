@@ -820,21 +820,21 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 							end
 						elseif ObjectRaycast.Material == Enum.Material.Metal then
 							HitSound = LoadSound(TurretInfo.Sound.ImpactSoundsMetal, BulletHit, true)
-							BulletHit.MetalHit:Emit(Bullet.MetalHit.Rate)
+							BulletHit.MetalHit:Emit(BulletHit.MetalHit.Rate)
 						else
 							HitSound = LoadSound(TurretInfo.Sound.ImpactSoundsGeneral, BulletHit, true)
-							BulletHit.Debris:Emit(Bullet.Debris.Rate)
+							BulletHit.Debris:Emit(BulletHit.Debris.Rate)
 						end
 
 						PlaySound(HitSound)
 
-						if Bullet.Decal.Transparency ~= 1 then
-							game.TweenService:Create(Bullet.Decal, TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 4), {
+						if BulletHit.Decal.Transparency ~= 1 then
+							game.TweenService:Create(BulletHit.Decal, TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 4), {
 								Transparency = 1
 							}):Play()
 						end
 
-						game.Debris:AddItem(Bullet, 5)
+						game.Debris:AddItem(BulletHit, 5)
 					end
 					if PlayerMain.PlayerDead or PlayerMain.IsGhost or not game.Players.LocalPlayer.Character:FindFirstChild("Head") then
 						return
