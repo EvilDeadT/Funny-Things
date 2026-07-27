@@ -1136,16 +1136,12 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 					local TurretVertical = math.random(Turret:GetAttribute("MaxUp"), Turret:GetAttribute("MaxDown"))
 
 					if Horisontal == "max" then
-						print("1")
 						TurretHorisontal = Turret:GetAttribute("MaxLeft")
 						Horisontal = "min"
 					elseif Horisontal == "min" then
-						print("3")
 						TurretHorisontal = Turret:GetAttribute("MaxRight")
 						Horisontal = "max"
 					end
-					
-					print(TurretVertical, TurretHorisontal)
 					
 					TurretDesiredLocationIdle(TurretVertical, TurretHorisontal)
 
