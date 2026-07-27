@@ -478,9 +478,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 	Turret:SetAttribute("Disabled", false)
 	Turret:SetAttribute("Reloading", false)
 
-	if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("TurretUpgrades") then
-		Turret:SetAttribute("BeamsDisabled", true)
-	end
+	Turret:SetAttribute("BeamsDisabled", game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("TurretUpgrades") ~= nil)
 
 	TurretOriginalPart:SetAttribute("CustomChecked", true)
 	
@@ -925,7 +923,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 								if TurretInfo.Variant == "Default" then
 									game.ReplicatedStorage.Events.LocalDamage:FireServer(15, "DefenseSystem", 1, nil, nil, nil)
 								elseif TurretInfo.Variant == "VoidTurret" then
-									game.ReplicatedStorage.Events.LocalDamage:FireServer(0, "DefenseSystem", 1, nil, nil, nil, 5)
+									game.ReplicatedStorage.Events.LocalDamage:FireServer(5, "DefenseSystem", 1, nil, nil, nil, 5)
 								end
 							end
 						elseif ObjectRaycast.Material == Enum.Material.Metal then
