@@ -171,18 +171,38 @@ local TurretVariantsInfo = {
 
 local TurretCustomRoomPosition = {
 	["GauntletLeft"] = {
-		["TurretSpawn"] = {
-			ClassName = "Part",
-			Parent = "Interactables",
-			Anchored = true,
-			Position = Vector3.new(47.5, 6, -13),
-			Orientation = Vector3.new(0, 90, 0),
-			
-			Attributes = {
-				["MaxLeft"] = -85,
-				["MaxRight"] = 85,
-				["MaxUp"] = 8,
-				["MaxDown"] = 8
+		Gauntlet = {
+			["TurretSpawn"] = {
+				ClassName = "Part",
+				Parent = "Interactables",
+				Anchored = true,
+				Position = Vector3.new(47.5, 6, -13),
+				Orientation = Vector3.new(0, 90, 0),
+
+				Attributes = {
+					["MaxLeft"] = -85,
+					["MaxRight"] = 85,
+					["MaxUp"] = 8,
+					["MaxDown"] = 8
+				}
+			}
+		}
+	},
+	["GauntletRight"] = {
+		Gauntlet = {
+			["TurretSpawn"] = {
+				ClassName = "Part",
+				Parent = "Interactables",
+				Anchored = true,
+				Position = Vector3.new(47.5, 6, 13),
+				Orientation = Vector3.new(0, 0, 0),
+
+				Attributes = {
+					["MaxLeft"] = -85,
+					["MaxRight"] = 85,
+					["MaxUp"] = 8,
+					["MaxDown"] = 8
+				}
 			}
 		}
 	}
@@ -296,31 +316,40 @@ function CreateCustomRoomPosition(Room)
 	
 	Room:SetAttribute("TurretCustomPosition", true)
 	
-	for Name, Properties in TurretCustomRoomPosition[Room.Name] do
-		local NewInstance = Instance.new(Properties.ClassName)
-		NewInstance.Name = Name
-		NewInstance.Position = CollisionPart.Position + ((Properties.Position.X * CollisionPart.CFrame.LookVector)
-			+ (Properties.Position.Y * CollisionPart.CFrame.UpVector)
-			+ (Properties.Position.Z * CollisionPart.CFrame.RightVector))
-		NewInstance.Orientation = Vector3.new(
-			CollisionPart.Orientation.X + Properties.Orientation.X,
-			CollisionPart.Orientation.Y + Properties.Orientation.Y,
-			CollisionPart.Orientation.Z + Properties.Orientation.Z
-		)
-		
-		for Property, Value in Properties do
-			if Property ~= "ClassName" and Property ~= "Parent" and Property ~= "Position" and Property ~= "Orientation" then
-				if Property == "Attributes" then
-					for AttributeName, AttributeValue in Value do
-						NewInstance:SetAttribute(AttributeName, AttributeValue)
+	local function CreateCustomObject(Category, CategoryObjects)
+		for Name, Properties in CategoryObjects do
+			local NewInstance = Instance.new(Properties.ClassName)
+			NewInstance.Name = Name
+			NewInstance.Position = CollisionPart.Position + ((Properties.Position.X * CollisionPart.CFrame.LookVector)
+				+ (Properties.Position.Y * CollisionPart.CFrame.UpVector)
+				+ (Properties.Position.Z * CollisionPart.CFrame.RightVector))
+			NewInstance.Orientation = Vector3.new(
+				CollisionPart.Orientation.X + Properties.Orientation.X,
+				CollisionPart.Orientation.Y + Properties.Orientation.Y,
+				CollisionPart.Orientation.Z + Properties.Orientation.Z
+			)
+			NewInstance:SetAttribute("ObjectCategory", Category)
+
+			for Property, Value in Properties do
+				if Property ~= "ClassName" and Property ~= "Parent" and Property ~= "Position" and Property ~= "Orientation" then
+					if Property == "Attributes" then
+						for AttributeName, AttributeValue in Value do
+							NewInstance:SetAttribute(AttributeName, AttributeValue)
+						end
+					else
+						NewInstance[Property] = Value
 					end
-				else
-					NewInstance[Property] = Value
 				end
 			end
+
+			NewInstance.Parent = FindByThread(Room, Properties.Parent)
 		end
-		
-		NewInstance.Parent = FindByThread(Room, Properties.Parent)
+	end
+	
+	for Category, CategoryObjects in TurretCustomRoomPosition[Room.Name] do
+		if Category == "Gauntlet" and (Room:GetAttribute("SpecialTag") == "Gauntlet" or Room:GetAttribute("MonsterRoomType") == "Gauntlet") then
+			CreateCustomObject(Category, CategoryObjects)
+		end
 	end
 end
 
@@ -414,10 +443,17 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 		PowerVariant = "Default",
 	}
 
+	TurretCount += 1
+
+	local Turret = game.ReplicatedStorage.Assets.Turret:Clone()
+	Turret:PivotTo(TurretOriginalPart.CFrame)
+	Turret.Parent = TurretRoom:FindFirstChild("Interactables") or TurretRoom
+	
 	if Info then
 		for Property, Value in TurretInfo do
 			if Info[Property] then
 				TurretInfo[Property] = Info[Property]
+				Turret:SetAttribute(Property, Info[Property])
 			end
 		end
 	end
@@ -425,12 +461,6 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 	if TurretVariantsInfo[TurretInfo.Variant] == nil then
 		return print("CreateCustomTurret No Info For Variant: "..TurretInfo.Variant)
 	end
-
-	TurretCount += 1
-
-	local Turret = game.ReplicatedStorage.Assets.Turret:Clone()
-	Turret:PivotTo(TurretOriginalPart.CFrame)
-	Turret.Parent = TurretRoom:FindFirstChild("Interactables") or TurretRoom
 	
 	if TurretOriginalPart:FindFirstChild("Shoot") then
 		if TurretOriginalPart.Shoot:IsA("UnreliableRemoteEvent") then
@@ -446,6 +476,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 	Turret:SetAttribute("CustomMade", true)
 	Turret:SetAttribute("Active", false)
 	Turret:SetAttribute("Disabled", false)
+	Turret:SetAttribute("Reloading", false)
 
 	if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("TurretUpgrades") then
 		Turret:SetAttribute("BeamsDisabled", true)
@@ -962,6 +993,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 		Turret.Target.Value = nil
 
 		if Turret:GetAttribute("MagazinesLeft") <= 0 and not game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("TurretUpgrades") then
+			Turret:SetAttribute("Reloading", true)
 			Turret:SetAttribute("Active", false)
 
 			task.wait(3)
@@ -971,6 +1003,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 			task.wait(4)
 
 			Turret:SetAttribute("MagazinesLeft", Turret:GetAttribute("MaxMagazines"))
+			Turret:SetAttribute("Reloading", false)
 
 			if Turret:GetAttribute("PlayerInRoom") and not Turret:GetAttribute("Disabled") then
 				Turret:SetAttribute("Active", true)
@@ -1179,7 +1212,6 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 	end)
 	
 	local Horisontal = "max"
-	local Vertical = "mid"
 
 	Turret:GetAttributeChangedSignal("Active"):Connect(function()
 		if Turret:GetAttribute("Active") then
@@ -1219,11 +1251,17 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 					end
 					
 					TurretDesiredLocationIdle(TurretVertical, TurretHorisontal)
-
-					if Vertical == "mid" then
-						task.wait(Turret:GetAttribute("SearchSpeedTime"))
-					else
-						task.wait(Turret:GetAttribute("SearchSpeedTime") + 1)
+					
+					local SearchTime = Turret:GetAttribute("SearchSpeedTime") * 10
+					
+					while SearchTime > 0 do
+						task.wait(0.1)
+						
+						if Turret:GetAttribute("Active") then
+							SearchTime -= 1
+						else
+							SearchTime = 0
+						end
 					end
 				end
 			end)
@@ -1284,7 +1322,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 		if Turret:GetAttribute("Disabled") then
 			Turret:SetAttribute("Active", false)
 		else
-			if Turret:GetAttribute("PlayerInRoom") then
+			if Turret:GetAttribute("PlayerInRoom") and not Turret:GetAttribute("Reloading") then
 				Turret:SetAttribute("Active", true)
 			end
 		end
@@ -1299,7 +1337,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 				TurretUnactiveTimer = nil
 			end
 			
-			if not Turret:GetAttribute("Disabled") then
+			if not Turret:GetAttribute("Disabled") and not Turret:GetAttribute("Reloading") then
 				Turret:SetAttribute("Active", true)
 			end
 		else
