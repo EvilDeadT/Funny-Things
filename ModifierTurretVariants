@@ -820,10 +820,10 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 							end
 						elseif ObjectRaycast.Material == Enum.Material.Metal then
 							HitSound = LoadSound(TurretInfo.Sound.ImpactSoundsMetal, BulletHit, true)
-							Bullet.MetalHit:Emit(Bullet.MetalHit.Rate)
+							BulletHit.MetalHit:Emit(Bullet.MetalHit.Rate)
 						else
 							HitSound = LoadSound(TurretInfo.Sound.ImpactSoundsGeneral, BulletHit, true)
-							Bullet.Debris:Emit(Bullet.Debris.Rate)
+							BulletHit.Debris:Emit(Bullet.Debris.Rate)
 						end
 
 						PlaySound(HitSound)
