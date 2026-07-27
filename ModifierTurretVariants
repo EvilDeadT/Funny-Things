@@ -1234,7 +1234,13 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 		else
 			TurretUnactiveTimer = task.delay(3, function()
 				if not Turret:GetAttribute("PlayerInRoom") and not Turret:GetAttribute("Disabled") then
-					Turret:SetAttribute("Active", false)
+					if Turret:GetAttribute("Shooting") then
+						Turret:GetAttributeChangedSignal("Shooting"):Wait()
+						
+						if not Turret:GetAttribute("PlayerInRoom") and not Turret:GetAttribute("Disabled") and not Turret:GetAttribute("Shooting") then
+							Turret:SetAttribute("Active", false)
+						end
+					end
 				end
 			end)
 		end
