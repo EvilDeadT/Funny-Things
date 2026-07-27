@@ -508,7 +508,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 	
 	for SoundName, SoundValue in TurretInfo.Sound do
 		if type(SoundValue) ~= "table" then
-			SoundName.Parent = Turret
+			SoundValue.Parent = Turret
 		end
 	end
 
