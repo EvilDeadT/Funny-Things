@@ -793,7 +793,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 						local HitSound = nil
 
 						if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Characters) or ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
-							Bullet.Decal.Transparency = 1
+							BulletHit.Decal.Transparency = 1
 							HitSound = LoadSound(TurretInfo.Sound.AllImpactPlayerSounds, BulletHit, true)
 
 							if PlayerMain.LockerState or not ObjectRaycast.Instance:IsDescendantOf(game.Players.LocalPlayer.Character) then
@@ -1018,7 +1018,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 	end)
 	
 	TurretInfo.Anim.Open:GetMarkerReachedSignal("OpeningSound"):Connect(function()
-		PlaySound(TurretInfo.Sound.Spawn:Play())
+		PlaySound(TurretInfo.Sound.Spawn)
 	end)
 
 	Turret:GetAttributeChangedSignal("Shooting"):Connect(function()
