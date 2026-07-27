@@ -1058,7 +1058,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 		local TurretTarget = Target.Value
 		if TurretTarget == game.Players.LocalPlayer.Character.HumanoidRootPart then
 			if PlayerMain.Data.GameSettings.DeafMode.Value == 1 then
-				--PlayerMain.SubTitles.new("A turret has locked on to me!", 4):Show()
+				PlayerMain.SubTitles.new("A turret has locked on to me!", 4):Show()
 			end
 		else
 			TurretAttack = false
