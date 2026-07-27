@@ -505,6 +505,12 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 			end
 		end
 	end
+	
+	for SoundName, SoundValue in TurretInfo.Sound do
+		if type(SoundValue) ~= "table" then
+			SoundName.Parent = Turret
+		end
+	end
 
 	TurretInfo.Anim.OffIdle:Play()
 	
@@ -1009,6 +1015,10 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 				})
 			end
 		end)
+	end)
+	
+	TurretInfo.Anim.Open:GetMarkerReachedSignal("OpeningSound"):Connect(function()
+		PlaySound(TurretInfo.Sound.Spawn:Play())
 	end)
 
 	Turret:GetAttributeChangedSignal("Shooting"):Connect(function()
