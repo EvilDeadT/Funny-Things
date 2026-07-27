@@ -177,11 +177,7 @@ end
 local function LoadSound(SelectedSound, SoundParent, RandomSound)
 	if type(SelectedSound) == "table" then
 		if RandomSound then
-			for _, SoundL in SelectedSound do
-				print(SoundL.Name)
-			end
 			SelectedSound = SelectedSound[math.random(1, #SelectedSound)]
-			print(SelectedSound)
 		end
 	end
 
@@ -563,8 +559,8 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 				local Bullet = Turret.Bullet:Clone()
 				Bullet.Transparency = 0
 				Bullet.AssemblyLinearVelocity = Bullet.CFrame.RightVector * -math.random(30, 40) + Bullet.CFrame.UpVector * math.random(15, 30)
-				local FireSound = LoadSound(TurretInfo.Model.FireSounds, TurretInfo.Model.Barrel, true)
-				local ShotSound = LoadSound(TurretInfo.Model.ShotSounds, TurretInfo.Model.CaseSounds, true)
+				local FireSound = LoadSound(TurretInfo.Sound.FireSounds, TurretInfo.Model.Barrel, true)
+				local ShotSound = LoadSound(TurretInfo.Sound.ShotSounds, TurretInfo.Model.CaseSounds, true)
 
 				PlaySound(FireSound)
 				PlaySound(ShotSound)
