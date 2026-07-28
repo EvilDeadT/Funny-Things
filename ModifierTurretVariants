@@ -503,7 +503,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 	Turret:SetAttribute("Reloading", false)
 	
 	if TurretOriginalPart:GetAttribute("ObjectCategory") == "Gauntlet" then
-		Turret:SetAttribute("Disabled", true)
+		Turret:SetAttribute("Disabled", false)
 		
 		
 	else
@@ -671,6 +671,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 	local MonsterAttacked = {}
 	local TurretAimBaseJoint_2 = nil
 	local TurretAimPivot = nil
+	local TurretIdleTimer = nil
 	local v30 = nil
 
 	local BulletColor = TurretInfo.Color.BulletColor
@@ -1041,10 +1042,10 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 		end
 	end
 	
-	local v35 = nil
-	local v36 = nil
+	local LastTurretVerticalPos = nil
+	local LastTurretHorisontaPos = nil
 
-	local function TurretDesiredLocationIdle(TurretVerticalPos, TurretHorisontalPos)
+	local function TurretDesiredLocationIdle(TurretVerticalPos, TurretHorisontalPos, TurretHorisontalStatus)
 		if not Turret:GetAttribute("Active") then
 			return
 		end
@@ -1057,30 +1058,47 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 			TurretAimPivot:Pause()
 			TurretAimPivot = nil
 		end
+		if TurretIdleTimer then
+			task.cancel(TurretIdleTimer)
+			TurretIdleTimer = nil
+		end
 
-		if (v35 ~= TurretVerticalPos or v36 ~= TurretHorisontalPos) and not TurretInfo.Sound.MovingLoop.Playing then
+		if (LastTurretVerticalPos ~= TurretVerticalPos or LastTurretHorisontaPos ~= TurretHorisontalPos) and not TurretInfo.Sound.MovingLoop.Playing then
 			PlaySound(TurretInfo.Sound.MovingLoop)
 		end
 		
-		local v1 = math.rad(TurretVerticalPos)
-		local v2 = math.rad(TurretHorisontalPos)
-		v35 = v1
-		v36 = v2
-		TurretAimBaseJoint_2 = game.TweenService:Create(TurretInfo.Model.BaseJoint_2, TweenInfo.new(Turret:GetAttribute("SearchSpeedTime"), Enum.EasingStyle.Linear), {
-			C1 = CFrame.new(-0.02, 0, 0) * CFrame.Angles(0, v2, 0)
+		local CurrentVerticalPos = math.rad(TurretVerticalPos)
+		local CurrentHorisontalPos = math.rad(TurretHorisontalPos)
+		local CurrectCenterPos = math.rad((Turret:GetAttribute("MaxLeft") + Turret:GetAttribute("MaxRight")) / 2)
+		LastTurretVerticalPos = TurretVerticalPos
+		LastTurretHorisontaPos = TurretHorisontalPos
+		
+		local TurretAimSpeed = Turret:GetAttribute("SearchSpeedTime") * (math.abs(Turret:GetAttribute("MaxLeft") - Turret:GetAttribute("MaxRight")) / 150)
+		print(TurretAimSpeed)
+		
+		TurretAimBaseJoint_2 = game.TweenService:Create(TurretInfo.Model.BaseJoint_2, TweenInfo.new(TurretAimSpeed / 2, Enum.EasingStyle.Linear), {
+			C1 = CFrame.new(-0.02, 0, 0) * CFrame.Angles(0, CurrectCenterPos, 0)
 		})
-		TurretAimPivot = game.TweenService:Create(TurretInfo.Model.Pivot, TweenInfo.new(Turret:GetAttribute("SearchSpeedTime"), Enum.EasingStyle.Linear), {
-			C1 = CFrame.new(0.5, 0.5, 0.75) * CFrame.Angles(v1, 0, 0)
+		TurretAimPivot = game.TweenService:Create(TurretInfo.Model.Pivot, TweenInfo.new(TurretAimSpeed / 2, Enum.EasingStyle.Linear), {
+			C1 = CFrame.new(0.5, 0.5, 0.75) * CFrame.Angles(CurrentVerticalPos, 0, 0)
 		})
 
 		TurretAimBaseJoint_2:Play()
 		TurretAimPivot:Play()
+		
+		TurretIdleTimer = task.delay(TurretAimSpeed / 2, function()
+			TurretAimBaseJoint_2 = game.TweenService:Create(TurretInfo.Model.BaseJoint_2, TweenInfo.new(TurretAimSpeed / 2, Enum.EasingStyle.Linear), {
+				C1 = CFrame.new(-0.02, 0, 0) * CFrame.Angles(0, CurrentHorisontalPos, 0)
+			})
+			TurretAimPivot = game.TweenService:Create(TurretInfo.Model.Pivot, TweenInfo.new(TurretAimSpeed / 2, Enum.EasingStyle.Linear), {
+				C1 = CFrame.new(0.5, 0.5, 0.75) * CFrame.Angles(CurrentVerticalPos, 0, 0)
+			})
 
-		task.wait(Turret:GetAttribute("SearchSpeedTime"))
+			TurretAimBaseJoint_2:Play()
+			TurretAimPivot:Play()
+		end)
 
-		if v1 ~= v1 or v2 ~= v2 then
-			return
-		end
+		task.wait(TurretAimSpeed)
 
 		TurretInfo.Sound.MovingLoop:Stop()
 	end
@@ -1176,6 +1194,10 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 			TurretAimPivot:Pause()
 			TurretAimPivot = nil
 		end
+		if TurretIdleTimer then
+			task.cancel(TurretIdleTimer)
+			TurretIdleTimer = nil
+		end
 
 		PlaySound(TurretInfo.Model.BaseJoint.TurretAlerted)
 
@@ -1253,6 +1275,10 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 				TurretAimPivot:Pause()
 				TurretAimPivot = nil
 			end
+			if TurretIdleTimer then
+				task.cancel(TurretIdleTimer)
+				TurretIdleTimer = nil
+			end
 			
 			TurretInfo.Model.BaseJoint_2.C1 = CFrame.new(-0.02, 0, 0)
 			TurretInfo.Model.Pivot.C1 = CFrame.new(0.5, 0.5, 0.75)
@@ -1280,7 +1306,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 						Horisontal = "max"
 					end
 					
-					TurretDesiredLocationIdle(TurretVertical, TurretHorisontal)
+					TurretDesiredLocationIdle(TurretVertical, TurretHorisontal, Horisontal)
 					
 					local SearchTime = Turret:GetAttribute("SearchSpeedTime") * 10
 					
@@ -1316,6 +1342,10 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 			if TurretAimPivot then
 				TurretAimPivot:Pause()
 				TurretAimPivot = nil
+			end
+			if TurretIdleTimer then
+				task.cancel(TurretIdleTimer)
+				TurretIdleTimer = nil
 			end
 			
 			TurretInfo.Model.BaseJoint_2.C1 = CFrame.new(-0.02, 0, 0)
