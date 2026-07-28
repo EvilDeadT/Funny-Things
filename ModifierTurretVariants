@@ -201,7 +201,8 @@ local TurretCustomRoomPosition = {
 				ClassName = "Part",
 				Parent = "Interactables",
 				Anchored = true,
-				Position = Vector3.new(47.5, 6, -13),
+				
+				Position = Vector3.new(47.474, 6.006, -12.981),
 				Orientation = Vector3.new(0, 90, 0),
 
 				Attributes = {
@@ -210,6 +211,32 @@ local TurretCustomRoomPosition = {
 					["MaxUp"] = 8,
 					["MaxDown"] = 8
 				}
+			},
+			["Meshes/Floor"] = {
+				ClassName = "MeshPart",
+				Parent = "Parts",
+				Anchored = true,
+				Color = Color3.fromRGB(28, 36, 49),
+				Material = Enum.Material.Concrete,
+				MeshId = "rbxassetid://13837116648",
+				RenderFidelity = Enum.RenderFidelity.Precise,
+				
+				Size = Vector3.new(4.587, 8.175, 17.657),
+				Position = Vector3.new(47.438, 15.335, -12.966),
+				Orientation = Vector3.new(-90, 0, 0)
+			},
+			["Meshes/window_Meshesfloor"] = {
+				ClassName = "MeshPart",
+				Parent = "Parts",
+				Anchored = true,
+				Color = Color3.fromRGB(66, 66, 67),
+				Material = Enum.Material.Metal,
+				MeshId = "rbxassetid://13839154307",
+				RenderFidelity = Enum.RenderFidelity.Precise,
+				
+				Size = Vector3.new(4.633, 0.5, 8.264),
+				Position = Vector3.new(47.439, 6.5, -12.943),
+				Orientation = Vector3.new(0, 0, 180)
 			}
 		}
 	},
@@ -219,7 +246,8 @@ local TurretCustomRoomPosition = {
 				ClassName = "Part",
 				Parent = "Interactables",
 				Anchored = true,
-				Position = Vector3.new(47.5, 6, 13),
+
+				Position = Vector3.new(47.474, 6.006, 12.981),
 				Orientation = Vector3.new(0, -90, 0),
 
 				Attributes = {
@@ -228,6 +256,32 @@ local TurretCustomRoomPosition = {
 					["MaxUp"] = 8,
 					["MaxDown"] = 8
 				}
+			},
+			["Meshes/Floor"] = {
+				ClassName = "MeshPart",
+				Parent = "Parts",
+				Anchored = true,
+				Color = Color3.fromRGB(28, 36, 49),
+				Material = Enum.Material.Concrete,
+				MeshId = "rbxassetid://13837116648",
+				RenderFidelity = Enum.RenderFidelity.Precise,
+
+				Size = Vector3.new(4.587, 8.175, 17.657),
+				Position = Vector3.new(47.438, 15.335, 12.966),
+				Orientation = Vector3.new(-90, 180, 0)
+			},
+			["Meshes/window_Meshesfloor"] = {
+				ClassName = "MeshPart",
+				Parent = "Parts",
+				Anchored = true,
+				Color = Color3.fromRGB(66, 66, 67),
+				Material = Enum.Material.Metal,
+				MeshId = "rbxassetid://13839154307",
+				RenderFidelity = Enum.RenderFidelity.Precise,
+
+				Size = Vector3.new(4.633, 0.5, 8.264),
+				Position = Vector3.new(47.439, 6.5, 12.943),
+				Orientation = Vector3.new(0, 180, 180)
 			}
 		}
 	}
@@ -353,10 +407,32 @@ function CreateCustomRoomPosition(Room)
 				CollisionPart.Orientation.Y + Properties.Orientation.Y,
 				CollisionPart.Orientation.Z + Properties.Orientation.Z
 			)
+			
+			if Properties.Size then
+				NewInstance.Size = Properties.Size
+			end
+			
+			if Properties.MeshId then
+				NewInstance:ApplyMesh(game.InsertService:CreateMeshPartAsync(Properties.MeshId,
+					Properties.CollisionFidelity or Enum.CollisionFidelity.Box,
+					Properties.RenderFidelity or Enum.RenderFidelity.Automatic)
+				)
+			end
+			
 			NewInstance:SetAttribute("ObjectCategory", Category)
-
+			
+			local RestrictedProperties = {
+				"ClassName",
+				"Parent",
+				"Position",
+				"Orientation",
+				"MeshId",
+				"CollisionFidelity",
+				"RenderFidelity"
+			}
+			
 			for Property, Value in Properties do
-				if Property ~= "ClassName" and Property ~= "Parent" and Property ~= "Position" and Property ~= "Orientation" then
+				if not table.find(RestrictedProperties, Property) then
 					if Property == "Attributes" then
 						for AttributeName, AttributeValue in Value do
 							NewInstance:SetAttribute(AttributeName, AttributeValue)
@@ -1074,7 +1150,6 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 		LastTurretHorisontaPos = TurretHorisontalPos
 		
 		local TurretAimSpeed = Turret:GetAttribute("SearchSpeedTime") * (math.abs(Turret:GetAttribute("MaxLeft") - Turret:GetAttribute("MaxRight")) / 150)
-		print(TurretAimSpeed)
 		
 		TurretAimBaseJoint_2 = game.TweenService:Create(TurretInfo.Model.BaseJoint_2, TweenInfo.new(TurretAimSpeed / 2, Enum.EasingStyle.Linear), {
 			C1 = CFrame.new(-0.02, 0, 0) * CFrame.Angles(0, CurrectCenterPos, 0)
@@ -1323,7 +1398,17 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 			end)
 
 			while Turret:GetAttribute("Active") do
-				task.wait(math.random(5, 7))
+				local TurretRandomBeepTime = math.random(5, 7) * 10
+				
+				while TurretRandomBeepTime > 0 do
+					task.wait(0.1)
+					
+					if Turret:GetAttribute("Active") then
+						TurretRandomBeepTime -= 1
+					else
+						TurretRandomBeepTime = 0
+					end
+				end
 
 				if not Turret:GetAttribute("Active") then
 					break
