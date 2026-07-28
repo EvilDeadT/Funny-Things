@@ -206,10 +206,10 @@ local TurretCustomRoomPosition = {
 				Orientation = Vector3.new(0, 90, 0),
 
 				Attributes = {
-					["MaxLeft"] = -85,
-					["MaxRight"] = 85,
-					["MaxUp"] = 8,
-					["MaxDown"] = 8
+					["MaxLeft"] = -75,
+					["MaxRight"] = 75,
+					["MaxUp"] = 10,
+					["MaxDown"] = 10
 				}
 			},
 			["Meshes/Floor"] = {
@@ -251,10 +251,10 @@ local TurretCustomRoomPosition = {
 				Orientation = Vector3.new(0, -90, 0),
 
 				Attributes = {
-					["MaxLeft"] = -85,
-					["MaxRight"] = 85,
-					["MaxUp"] = 8,
-					["MaxDown"] = 8
+					["MaxLeft"] = -75,
+					["MaxRight"] = 75,
+					["MaxUp"] = 10,
+					["MaxDown"] = 10
 				}
 			},
 			["Meshes/Floor"] = {
@@ -563,11 +563,12 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 		return print("CreateCustomTurret No Info For Variant: "..TurretInfo.Variant)
 	end
 	
+	local TurretShootEvent = nil
+	
 	if TurretOriginalPart:FindFirstChild("Shoot") then
 		if TurretOriginalPart.Shoot:IsA("UnreliableRemoteEvent") then
-			local ShootReal = TurretOriginalPart.Shoot:Clone()
-			ShootReal.Name = "Shoot"
-			ShootReal.Parent = Turret
+			TurretShootEvent = TurretOriginalPart.Shoot
+			TurretShootEvent.Parent = Turret
 		end
 	end
 	
@@ -844,9 +845,9 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 											MonsterExploded = Monster
 										end
 									end
-									if not MonsterExploded:GetAttribute("Dead") and Turret.ShootReal.Value then
+									if not MonsterExploded:GetAttribute("Dead") and TurretShootEvent then
 										MonsterExploded:SetAttribute("Dead", true)
-										Turret.ShootReal.Value:FireServer(MonsterExploded)
+										TurretShootEvent:FireServer(MonsterExploded)
 									end
 								end
 							end
@@ -953,9 +954,9 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 										end
 									end
 
-									if not DetectedMonster:GetAttribute("Dead") and Turret.ShootReal.Value then
+									if not DetectedMonster:GetAttribute("Dead") and TurretShootEvent then
 										DetectedMonster:SetAttribute("Dead", true)
-										Turret.ShootReal.Value:FireServer(DetectedMonster)
+										TurretShootEvent:FireServer(DetectedMonster)
 									end
 								end
 							else
@@ -1023,9 +1024,9 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 										end
 									end
 
-									if not DetectedMonster:GetAttribute("Dead") and Turret.ShootReal.Value then
+									if not DetectedMonster:GetAttribute("Dead") and TurretShootEvent then
 										DetectedMonster:SetAttribute("Dead", true)
-										Turret.ShootReal.Value:FireServer(DetectedMonster)
+										TurretShootEvent:FireServer(DetectedMonster)
 									end
 								end
 							else
@@ -1075,11 +1076,11 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 		if (Turret:GetAttribute("MagazinesLeft") <= 0 and not game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("TurretUpgrades")) or not Turret:GetAttribute("Active") or Target.Value or Info.Target == nil then
 			return
 		end
-
-		if Info.Target:IsA("Model") then
-			Turret.Target.Value = Info.Target.PrimaryPart or Info.Target
-		elseif Info.Target == game.Players.LocalPlayer and not PlayerMain.PainterDead then
+		
+		if Info.Target == game.Players.LocalPlayer and not PlayerMain.PainterDead then
 			Turret.Target.Value = game.Players.LocalPlayer.Character.HumanoidRootPart
+		elseif Info.Target:IsA("Model") then
+			Turret.Target.Value = Info.Target.PrimaryPart or Info.Target
 		end
 
 		Turret:SetAttribute("Shooting", true)
@@ -1385,11 +1386,13 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 					
 					local SearchTime = Turret:GetAttribute("SearchSpeedTime") * 10
 					
-					while SearchTime > 0 do
-						task.wait(0.1)
-						
+					while SearchTime > 0 do						
 						if Turret:GetAttribute("Active") then
 							SearchTime -= 1
+							
+							if SearchTime > 0 then
+								task.wait(0.1)
+							end
 						else
 							SearchTime = 0
 						end
