@@ -184,19 +184,7 @@ local TurretVariantsInfo = {
 			BulletSpread = 0,
 			DamageHit = 75,
 			SearchSpeedTime = 1.5,
-			TrackingTime = 0.3,
-
-			Color = {
-				BaseColor = Color3.fromRGB(108, 0, 0),
-				SecondaryColor = Color3.fromRGB(30, 30, 30),
-				LightColor = Color3.fromRGB(168, 51, 13),
-				BulletColor = Color3.fromRGB(250, 0, 0),
-				ParticleColor = Color3.fromRGB(250, 0, 0),
-				TrailColor = Color3.fromRGB(250, 0, 0),
-				SightColor = Color3.fromRGB(255, 0, 0),
-				BeamColor = Color3.fromRGB(255, 229, 32),
-				BeamLightColor = Color3.fromRGB(255, 140, 0)
-			}
+			TrackingTime = 0.3
 		}
 	}
 }
@@ -313,7 +301,7 @@ local TurretCustomRoomPosition = {
 	}
 }
 
-local ChosenVariants = "VoidTurret and IncendiaryTurret and ExplosiveTurret and DanceTurret"
+local ChosenVariants = "VoidTurret and IncendiaryTurret and ExplosiveTurret and DanceTurret and SniperTurret"
 local ReallyStrongTurretsChance = 0
 
 local TurretVariants = {}
