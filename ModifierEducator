@@ -71,7 +71,7 @@ function EducatorSpawn(Reason)
 			PlayerCatched = false
 		}
 		
-		local EducatorCount = 1
+		local EducatorCount = 0
 		
 		for _, OtherEducator in game.Workspace:GetChildren() do
 			if OtherEducator.Name == "Baldi" then
@@ -137,8 +137,6 @@ function EducatorSpawn(Reason)
 			end
 
 			if Educator then
-				print("EducatorMove"..Educator:GetAttribute("EducatorNumber"))
-				
 				Educator:PivotTo(CFrame.new(EducatorVector3.Value) * Educator.WorldPivot.Rotation)
 
 				if PlayerZone.CurrentRoom then
