@@ -120,8 +120,6 @@ function EducatorSpawn(Reason)
 		EducatorVector3.Value = Educator.WorldPivot.Position
 
 		game.RunService:BindToRenderStep("EducatorMove"..Educator:GetAttribute("EducatorNumber"), 220, function()
-			print("EducatorMove"..Educator:GetAttribute("EducatorNumber"))
-			
 			if EducatorInfo.PlayerCatched then
 				local EducatorGlitch = FindByThread(game.Players.LocalPlayer.PlayerGui, "Main.BaldiTouch")
 
@@ -139,6 +137,8 @@ function EducatorSpawn(Reason)
 			end
 
 			if Educator then
+				print("EducatorMove"..Educator:GetAttribute("EducatorNumber"))
+				
 				Educator:PivotTo(CFrame.new(EducatorVector3.Value) * Educator.WorldPivot.Rotation)
 
 				if PlayerZone.CurrentRoom then
