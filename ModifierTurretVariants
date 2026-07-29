@@ -1,5 +1,6 @@
 local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main"):WaitForChild("Client"):WaitForChild("MainClient"))
 local PlayerZone = PlayerMain.Zones
+local PlayerHealthMode = "Default"
 
 local TurretVariantsInfo = {
 	["Default"] = {
@@ -108,14 +109,16 @@ local TurretVariantsInfo = {
 			PoisonDamage = 1,
 			PoisonSpeed = 1,
 			PoisonDuration = 10,
-			PoisonFatal = true,
-			
-			
+			PoisonFatal = true
 		}
 	},
 	["IncendiaryTurret"] = {
 		Default = {
 			FireRate = 3.5,
+			DamageHit = 5,
+			FireDamage = 5,
+			FireCooldown = 1.7,
+			FireDuration = 15,
 
 			Color = {
 				BaseColor = Color3.fromRGB(108, 0, 0),
@@ -135,6 +138,9 @@ local TurretVariantsInfo = {
 			FireRate = 0.5,
 			MaxMagazines = 1,
 			MaxBullets = 2,
+			ExplosionDamage = 50,
+			ExplosionRagdollTime = 2,
+			
 
 			Color = {
 				BaseColor = Color3.fromRGB(112, 0, 0),
@@ -154,11 +160,7 @@ local TurretVariantsInfo = {
 			FireRate = 0.5,
 			MaxMagazines = 1,
 			MaxBullets = 2,
-			BulletSpeed = 1000,
-			BulletSpread = 0,
-			DamageHit = 75,
-			SearchSpeedTime = 1.5,
-			TrackingTime = 0.3,
+			ExplosionDamage = 5,
 
 			Color = {
 				BaseColor = Color3.fromRGB(255, 104, 153),
@@ -178,6 +180,11 @@ local TurretVariantsInfo = {
 			FireRate = 0.5,
 			MaxMagazines = 10,
 			MaxBullets = 1,
+			BulletSpeed = 1000,
+			BulletSpread = 0,
+			DamageHit = 75,
+			SearchSpeedTime = 1.5,
+			TrackingTime = 0.3,
 
 			Color = {
 				BaseColor = Color3.fromRGB(108, 0, 0),
@@ -282,6 +289,25 @@ local TurretCustomRoomPosition = {
 				Size = Vector3.new(4.633, 0.5, 8.264),
 				Position = Vector3.new(47.439, 6.5, 12.943),
 				Orientation = Vector3.new(0, 180, 180)
+			}
+		}
+	},
+	["TrenchGauntlet"] = {
+		Gauntlet = {
+			["TurretSpawn"] = {
+				ClassName = "Part",
+				Parent = "Interactables",
+				Anchored = true,
+
+				Position = Vector3.new(31.5, -4.5, -18),
+				Orientation = Vector3.new(0, 90, 180),
+
+				Attributes = {
+					["MaxLeft"] = -75,
+					["MaxRight"] = 75,
+					["MaxUp"] = 10,
+					["MaxDown"] = 10
+				}
 			}
 		}
 	}
@@ -761,6 +787,93 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 	
 	
 	
+	local DwellerEatEvent = FindByThread(game.ReplicatedStorage, "Events.DwellerEat")
+	if DwellerEatEvent then
+		DwellerEatEvent.OnClientEvent:Connect(function()
+			PlayerHealthMode = "Regen"
+		end)
+	end
+	
+	local function TurretPlayerDamage(DamageType)
+		local DamageEvent = FindByThread(game.ReplicatedStorage, "Events.LocalDamage")
+		
+		if not DamageEvent then
+			return
+		end
+		
+		if DamageType == "BulletHit" then
+			DamageEvent:FireServer(Turret:GetAttribute("DamageHit"), "DefenseSystem", 1)
+			
+			if Turret:GetAttribute("PoisonDamage") and Turret:GetAttribute("PoisonSpeed") and Turret:GetAttribute("PoisonDuration") then
+				local HealthMode = FindByThread(game.Players.LocalPlayer, "PlayerFolder.HealthMode")
+				
+				if HealthMode then
+					if HealthMode.Value ~= "Poison" then
+						PlayerHealthMode = HealthMode.Value
+						
+						HealthMode.Value = "Poison"
+					end
+				end
+				
+				game.Players.LocalPlayer:SetAttribute("PoisonDamage", Turret:GetAttribute("PoisonDamage"))
+				game.Players.LocalPlayer:SetAttribute("PoisonDuration", math.clamp(
+					(game.Players.LocalPlayer:GetAttribute("PoisonDuration") or 0) + Turret:GetAttribute("PoisonDuration"),
+					0,
+					50
+					))
+
+				if game.Players.LocalPlayer:GetAttribute("PoisonTimer") == nil then
+					game.Players.LocalPlayer:SetAttribute("PoisonTimer", 4 / Turret:GetAttribute("PoisonSpeed"))
+				end
+
+				task.spawn(function()
+					while game.Players.LocalPlayer:GetAttribute("PoisonDuration") > 0 do
+						task.wait(0.01)
+
+						game.Players.LocalPlayer:SetAttribute("PoisonDuration", ((game.Players.LocalPlayer:GetAttribute("PoisonDuration") * 100) - 1) / 100)
+						game.Players.LocalPlayer:SetAttribute("PoisonTimer", ((game.Players.LocalPlayer:GetAttribute("PoisonTimer") * 100) - 1) / 100)
+
+						if game.Players.LocalPlayer:SetAttribute("PoisonTimer") <= 0 then
+							TurretPlayerDamage("Poison")
+
+							game.Players.LocalPlayer:SetAttribute("PoisonDamageTimer", 4 / Turret:GetAttribute("PoisonSpeed"))
+						end
+					end
+					
+					if HealthMode then
+						HealthMode.Value = PlayerHealthMode
+					end
+
+					game.Players.LocalPlayer:SetAttribute("PoisonDamage", nil)
+					game.Players.LocalPlayer:SetAttribute("PoisonDuration", nil)
+					game.Players.LocalPlayer:SetAttribute("PoisonTimer", nil)
+				end)
+			end
+		elseif DamageType == "Poison" then
+			if not Turret:GetAttribute("PoisonFatal") then
+				if PlayerMain.Health.CurrentHealth - Turret:GetAttribute("PoisonDamage") > 0 then
+					DamageEvent:FireServer(Turret:GetAttribute("PoisonDamage"), "DefenseSystem", 1)
+				end
+			else
+				DamageEvent:FireServer(Turret:GetAttribute("PoisonDamage"), "DefenseSystem", 1)
+			end
+		elseif DamageType == "Explosion" then
+			DamageEvent:FireServer(Turret:GetAttribute("ExplosionDamage"), "DefenseSystem", 1)
+			
+			if Turret:GetAttribute("ExplosionRagdollTime") then
+				local RagdollEvent = FindByThread(game.ReplicatedStorage, "Events.Rag")
+				
+				if RagdollEvent then
+					RagdollEvent:FireServer(true)
+					
+					task.delay(Turret:GetAttribute("ExplosionRagdollTime"), function()
+						RagdollEvent:FireServer(false)
+					end)
+				end
+			end
+		end
+	end
+	
 	local function ParticleEmit(ParticleParent)
 		for _, ParticleToEmit in ParticleParent do
 			ParticleToEmit:Emit(ParticleToEmit:GetAttribute("Emit") or 1)
@@ -832,24 +945,20 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 					if TurretInfo.Variant == "ExplosiveTurret" or TurretInfo.Variant == "DanceTurret" then
 						local ExplosionEffect = TurretInfo.Effect.ExplosionImpact:Clone()
 						ExplosionEffect.CFrame = CFrame.new(ObjectRaycast.Position, ObjectRaycast.Position + ObjectRaycast.Normal)
+						ExplosionEffect.Decal.Transparency = 1
+						ExplosionEffect.Decal2.Transparency = 1
 						ExplosionEffect.Parent = game.Workspace.GameplayFolder.Debris
 
-						if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Characters) or ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
-							ExplosionEffect.Decal.Transparency = 1
-							ExplosionEffect.Decal2.Transparency = 1
-							if PlayerMain.LockerState or not ObjectRaycast.Instance:IsDescendantOf(game.Players.LocalPlayer.Character) then
-								if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
-									local MonsterExploded = nil
-									for _, Monster in game.Workspace.GameplayFolder.Monsters:GetChildren() do
-										if ObjectRaycast.Instance:IsDescendantOf(Monster) then
-											MonsterExploded = Monster
-										end
-									end
-									if not MonsterExploded:GetAttribute("Dead") and TurretShootEvent then
-										MonsterExploded:SetAttribute("Dead", true)
-										TurretShootEvent:FireServer(MonsterExploded)
-									end
+						if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
+							local MonsterExploded = nil
+							for _, Monster in game.Workspace.GameplayFolder.Monsters:GetChildren() do
+								if ObjectRaycast.Instance:IsDescendantOf(Monster) then
+									MonsterExploded = Monster
 								end
+							end
+							if not MonsterExploded:GetAttribute("Dead") and TurretShootEvent then
+								MonsterExploded:SetAttribute("Dead", true)
+								TurretShootEvent:FireServer(MonsterExploded)
 							end
 						end
 
@@ -857,8 +966,6 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 
 						if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - ExplosionEffect.Position).Magnitude <= 8 and not (PlayerMain.IsGhost or PlayerMain.PlayerDead) then
 							if TurretInfo.Variant == "ExplosiveTurret" then
-								game.ReplicatedStorage.Events.LocalDamage:FireServer(40, "DefenseSystem", 1, nil, nil, nil)
-
 								local Part = Instance.new("Part")
 								Part.Anchored = true
 								Part.Transparency = 1
@@ -873,14 +980,11 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 								game:GetService("Debris"):AddItem(Part, 5)
 
 								PlayerMain.SpecialLocalEffects.Effects.ApplyForceRelative(Attachment.WorldCFrame, 250)
-								game.ReplicatedStorage.Events.Rag:FireServer(true)
-
-								task.delay(2, function()
-									game.ReplicatedStorage.Events.Rag:FireServer(false)
-								end)
+								
+								TurretPlayerDamage("Explosion")
 							elseif TurretInfo.Variant == "DanceTurret" then
-								game.ReplicatedStorage.Events.LocalDamage:FireServer(5, "DefenseSystem", 1, nil, nil, nil)
-
+								TurretPlayerDamage("Explosion")
+								
 								if not PlayerMain.DanceMode then
 									PlayerMain.DanceMode = true
 									PlayerMain.Dancing = true
@@ -943,24 +1047,24 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 					elseif TurretInfo.Variant == "IncendiaryTurret" then
 						if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Characters) or ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
 							local HitSound = LoadSound(TurretInfo.Sound.ImpactSoundsPlayer, ObjectRaycast.Instance, true)
+							
+							if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
+								local DetectedMonster = nil
 
-							if PlayerMain.LockerState or not ObjectRaycast.Instance:IsDescendantOf(game.Players.LocalPlayer.Character) then
-								if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
-									local DetectedMonster = nil
-
-									for _, Monster in game.Workspace.GameplayFolder.Monsters:GetChildren() do
-										if ObjectRaycast.Instance:IsDescendantOf(Monster) then
-											DetectedMonster = Monster
-										end
-									end
-
-									if not DetectedMonster:GetAttribute("Dead") and TurretShootEvent then
-										DetectedMonster:SetAttribute("Dead", true)
-										TurretShootEvent:FireServer(DetectedMonster)
+								for _, Monster in game.Workspace.GameplayFolder.Monsters:GetChildren() do
+									if ObjectRaycast.Instance:IsDescendantOf(Monster) then
+										DetectedMonster = Monster
 									end
 								end
-							else
-								game.ReplicatedStorage.Events.LocalDamage:FireServer(5, "DefenseSystem", 1, nil, nil, nil)
+
+								if not DetectedMonster:GetAttribute("Dead") and TurretShootEvent then
+									DetectedMonster:SetAttribute("Dead", true)
+									TurretShootEvent:FireServer(DetectedMonster)
+								end
+							end
+							
+							if not PlayerMain.LockerState and ObjectRaycast.Instance:IsDescendantOf(game.Players.LocalPlayer.Character) then
+								TurretPlayerDamage("BulletHit")
 							end
 
 							PlaySound(HitSound)
@@ -970,6 +1074,9 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 							local FireEffect = TurretInfo.Effect.FireImpact:Clone()
 							FireEffect.CFrame = CFrame.new(ObjectRaycast.Position, ObjectRaycast.Position + ObjectRaycast.Normal)
 							FireEffect.Parent = game.Workspace.GameplayFolder.Debris
+							
+							FireEffect.Fire:SetAttribute("Damage", Turret:GetAttribute("FireDamage"))
+							FireEffect.Fire:SetAttribute("CoolDown", Turret:GetAttribute("FireCooldown"))
 
 							local HitSound = LoadSound(TurretInfo.Sound.ImpactSoundsGeneral, FireEffect, true)
 							if ObjectRaycast.Material == Enum.Material.Metal then
@@ -979,7 +1086,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 							PlaySound(HitSound)
 							PlaySound(FireEffect.Fire.FireLoop)
 
-							task.delay(15, function()
+							task.delay(Turret:GetAttribute("FireDuration"), function()
 								FireEffect.Fire.FireLoop:Stop()
 								FireEffect.Fire.Embers.Enabled = false
 								FireEffect.Fire.Fire.Enabled = false
@@ -1001,7 +1108,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 								}):Play()
 							end)
 
-							game.Debris:AddItem(FireEffect, 22.5)
+							game.Debris:AddItem(FireEffect, Turret:GetAttribute("FireDuration") + 7.5)
 						end
 					else
 						local BulletHit = TurretInfo.Effect.BulletImpact:Clone()
@@ -1014,27 +1121,23 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 							BulletHit.Decal.Transparency = 1
 							HitSound = LoadSound(TurretInfo.Sound.ImpactSoundsPlayer, BulletHit, true)
 
-							if PlayerMain.LockerState or not ObjectRaycast.Instance:IsDescendantOf(game.Players.LocalPlayer.Character) then
-								if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
-									local DetectedMonster = nil
+							if ObjectRaycast.Instance:IsDescendantOf(game.Workspace.GameplayFolder.Monsters) then
+								local DetectedMonster = nil
 
-									for _, Monster in game.Workspace.GameplayFolder.Monsters:GetChildren() do
-										if ObjectRaycast.Instance:IsDescendantOf(Monster) then
-											DetectedMonster = Monster
-										end
-									end
-
-									if not DetectedMonster:GetAttribute("Dead") and TurretShootEvent then
-										DetectedMonster:SetAttribute("Dead", true)
-										TurretShootEvent:FireServer(DetectedMonster)
+								for _, Monster in game.Workspace.GameplayFolder.Monsters:GetChildren() do
+									if ObjectRaycast.Instance:IsDescendantOf(Monster) then
+										DetectedMonster = Monster
 									end
 								end
-							else
-								if TurretInfo.Variant == "Default" then
-									game.ReplicatedStorage.Events.LocalDamage:FireServer(15, "DefenseSystem", 1, nil, nil, nil)
-								elseif TurretInfo.Variant == "VoidTurret" then
-									game.ReplicatedStorage.Events.LocalDamage:FireServer(5, "DefenseSystem", 1, nil, nil, nil, 5)
+
+								if not DetectedMonster:GetAttribute("Dead") and TurretShootEvent then
+									DetectedMonster:SetAttribute("Dead", true)
+									TurretShootEvent:FireServer(DetectedMonster)
 								end
+							end
+							
+							if not PlayerMain.LockerState and ObjectRaycast.Instance:IsDescendantOf(game.Players.LocalPlayer.Character) then
+								TurretPlayerDamage("BulletHit")
 							end
 						elseif ObjectRaycast.Material == Enum.Material.Metal then
 							HitSound = LoadSound(TurretInfo.Sound.ImpactSoundsMetal, BulletHit, true)
