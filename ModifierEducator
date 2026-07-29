@@ -184,7 +184,7 @@ function EducatorSpawn(Reason)
 
 					task.wait(1)
 
-					game.RunService:UnbindFromRenderStep("EducatorMove"..EducatorCount)
+					game.RunService:UnbindFromRenderStep("EducatorMove"..Educator:GetAttribute("EducatorNumber"))
 
 					if EducatorGlitch then
 						EducatorGlitch.BackgroundTransparency = 0
