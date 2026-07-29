@@ -65,168 +65,175 @@ local function PlaySound(Sound)
 end
 
 function EducatorSpawn(Reason)
-	local Educator = game.ReplicatedStorage.Assets.Baldi:Clone()
-	Educator.Parent = game.Workspace
-	
-	local EducatorInfo = {
-		PlayerCatched = false
-	}
-	
-	EducatorCount += 1
-	
-	Educator:SetAttribute("EducatorNumber", EducatorCount)
-	Educator:SetAttribute("MovementCooldown", 3.5)
-	Educator:SetAttribute("MovementSpeed", 1)
-	
-	Educator:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.fromOrientation(0, math.rad(math.random(-60, 60)), 0))
-	Educator:PivotTo(Educator.WorldPivot * CFrame.new(1, 1, -200) * CFrame.Angles(0, math.pi, 0))
-	
-	local EducatorSpawnSound = Educator.Baldi.BaldiSpawn
-	
-	if Reason == "Revive" then
-		EducatorSpawnSound = Educator.Baldi.BaldiDespawn
-	elseif Reason == "First Schoolhouse" then
-		EducatorSpawnSound = Educator.Baldi.BaldiSchoolhouseStart
-	elseif Reason == "Crystal" then
-		EducatorSpawnSound = Educator.Baldi.BaldiCrystal
-	elseif Reason == "Second Schoolhouse" then
-		EducatorSpawnSound = Educator.Baldi.BaldiEnterFinale
-	end
-	
-	PlaySound(EducatorSpawnSound)
-	
-	local Waiting = 50
+	task.spawn(function()
+		local Educator = game.ReplicatedStorage.Assets.Baldi:Clone()
+		Educator.Parent = game.Workspace
 
-	repeat
-		Waiting -= 1
+		local EducatorInfo = {
+			PlayerCatched = false
+		}
 
-		task.wait(0.1)
-	until Waiting <= 0 or EducatorSpawnSound.TimeLength > 0
-	
-	task.wait(EducatorSpawnSound.TimeLength + 1)
-	
-	if PlayerMain.PlayerDead or PlayerMain.IsGhost then
-		Educator:Destroy()
-		
-		return
-	end
-	
-	local EducatorVector3 = Instance.new("Vector3Value")
-	EducatorVector3.Value = Educator.WorldPivot.Position
-	
-	game.RunService:BindToRenderStep("EducatorMove"..EducatorCount, 220, function()
-		if EducatorInfo.PlayerCatched then
-			local EducatorGlitch = FindByThread(game.Players.LocalPlayer.PlayerGui, "Main.BaldiTouch")
+		EducatorCount += 1
 
-			if EducatorGlitch then
-				EducatorGlitch.Position = UDim2.new(0.5, math.random(-20, 20), 0.5, math.random(-20, 20))
-			end
-			
-			if game.Workspace:FindFirstChild("BaldiTouch") then
-				game.Workspace.BaldiTouch:PivotTo(CFrame.lookAt(CurrentCamera.CFrame.Position + (CurrentCamera.CFrame.LookVector * (1.5 * Educator:GetAttribute("MovementSpeed"))), CurrentCamera.CFrame.Position))
-				game.Workspace.BaldiTouch:PivotTo(CFrame.new(game.Workspace.BaldiTouch.PrimaryPart.CFrame.Position - game.Workspace.BaldiTouch.PrimaryPart.CFrame.UpVector * 5)
-					* game.Workspace.BaldiTouch.PrimaryPart.CFrame.Rotation)
-			end
-			
+		Educator:SetAttribute("EducatorNumber", EducatorCount)
+		Educator:SetAttribute("MovementCooldown", 3.5)
+		Educator:SetAttribute("MovementSpeed", 1)
+
+		Educator:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.fromOrientation(0, math.rad(math.random(-60, 60)), 0))
+		Educator:PivotTo(Educator.WorldPivot * CFrame.new(1, 1, -200) * CFrame.Angles(0, math.pi, 0))
+
+		local EducatorSpawnSound = Educator.Baldi.BaldiSpawn
+
+		if Reason == "Revive" then
+			EducatorSpawnSound = Educator.Baldi.BaldiDespawn
+		elseif Reason == "First Schoolhouse" then
+			EducatorSpawnSound = Educator.Baldi.BaldiSchoolhouseStart
+		elseif Reason == "Crystal" then
+			EducatorSpawnSound = Educator.Baldi.BaldiCrystal
+		elseif Reason == "Second Schoolhouse" then
+			EducatorSpawnSound = Educator.Baldi.BaldiEnterFinale
+		end
+
+		PlaySound(EducatorSpawnSound)
+
+		local Waiting = 50
+
+		repeat
+			Waiting -= 1
+
+			task.wait(0.1)
+		until Waiting <= 0 or EducatorSpawnSound.TimeLength > 0
+
+		task.wait(EducatorSpawnSound.TimeLength + 1)
+
+		if PlayerMain.PlayerDead or PlayerMain.IsGhost then
+			Educator:Destroy()
+
 			return
 		end
-		
-		if Educator then
-			Educator:PivotTo(CFrame.new(EducatorVector3.Value) * Educator.WorldPivot.Rotation)
-			
-			if PlayerZone.CurrentRoom then
-				if PlayerZone.CurrentRoom.Name == "Room100" then
-					EducatorDespawn("Room100")
-				elseif PlayerZone.CurrentRoom.Name == "RidgeEnd" or PlayerZone.CurrentRoom.Name == "RidgeEnding" then
-					EducatorDespawn("RidgeEnd")
-				elseif PlayerZone.CurrentRoom.Name == "ModifierEnding" then
-					EducatorDespawn("ModifierEnding")
-				end
-			end
-			
-			if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Educator.PrimaryPart.Position).Magnitude < 2 and not PlayerMain.PlayerDead and not PlayerMain.IsGhost and not game.Workspace:HasTag("TemporaryImmunity") and not game.Players.LocalPlayer:HasTag("GodMode") then
-				Educator:Destroy()
-				Educator = nil
 
-				EducatorInfo.PlayerCatched = true
+		local EducatorVector3 = Instance.new("Vector3Value")
+		EducatorVector3.Value = Educator.WorldPivot.Position
 
-				local EducatorTouch = game.ReplicatedStorage.Assets.BaldiTouch:Clone()
-				EducatorTouch.PrimaryPart.PivotOffset = CFrame.new(0, 0, 0) * CFrame.fromOrientation(0, 0, 0)
-				EducatorTouch:PivotTo(CFrame.lookAt(CurrentCamera.CFrame.Position + (CurrentCamera.CFrame.LookVector * 1.5), CurrentCamera.CFrame.Position))
-				EducatorTouch:PivotTo(CFrame.new(EducatorTouch.PrimaryPart.CFrame.Position - EducatorTouch.PrimaryPart.CFrame.UpVector * 5)
-					* EducatorTouch.PrimaryPart.CFrame.Rotation)
-				EducatorTouch.Parent = game.Workspace
-
-				game.Lighting.BaldiColour.Enabled = true
-				
+		game.RunService:BindToRenderStep("EducatorMove"..EducatorCount, 220, function()
+			if EducatorInfo.PlayerCatched then
 				local EducatorGlitch = FindByThread(game.Players.LocalPlayer.PlayerGui, "Main.BaldiTouch")
 
 				if EducatorGlitch then
-					EducatorGlitch.Visible = true
+					EducatorGlitch.Position = UDim2.new(0.5, math.random(-20, 20), 0.5, math.random(-20, 20))
 				end
 
-				PlayerMain.CameraModule.Switch("HeadFollow")
-				game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 0
+				if game.Workspace:FindFirstChild("BaldiTouch") then
+					game.Workspace.BaldiTouch:PivotTo(CFrame.lookAt(CurrentCamera.CFrame.Position + (CurrentCamera.CFrame.LookVector * (1.5 * Educator:GetAttribute("MovementSpeed"))), CurrentCamera.CFrame.Position))
+					game.Workspace.BaldiTouch:PivotTo(CFrame.new(game.Workspace.BaldiTouch.PrimaryPart.CFrame.Position - game.Workspace.BaldiTouch.PrimaryPart.CFrame.UpVector * 5)
+						* game.Workspace.BaldiTouch.PrimaryPart.CFrame.Rotation)
+				end
 
-				PlaySound(EducatorTouch.PrimaryPart.LopeeTouch)
+				return
+			end
 
-				task.wait(1)
-				
-				game.RunService:UnbindFromRenderStep("EducatorMove"..EducatorCount)
-				
-				if EducatorGlitch then
-					EducatorGlitch.BackgroundTransparency = 0
-					EducatorGlitch.ImageTransparency = 1
+			if Educator then
+				Educator:PivotTo(CFrame.new(EducatorVector3.Value) * Educator.WorldPivot.Rotation)
+
+				if PlayerZone.CurrentRoom then
+					if PlayerZone.CurrentRoom.Name == "Room100" then
+						EducatorDespawn("Room100")
+						Educator = nil
+					elseif PlayerZone.CurrentRoom.Name == "RidgeEnd" or PlayerZone.CurrentRoom.Name == "RidgeEnding" then
+						EducatorDespawn("RidgeEnd")
+						Educator = nil
+					elseif PlayerZone.CurrentRoom.Name == "ModifierEnding" then
+						EducatorDespawn("ModifierEnding")
+						Educator = nil
+					end
 				end
-				
-				game.ReplicatedStorage.Settings.SFX.Volume = 0
-				game.ReplicatedStorage.Settings.Music.Volume = 0
-				game.Lighting.BaldiColour.Enabled = false
-				
-				PlayerMain.DeathScreen.LopeeDeath = true
-				PlayerMain.DeathScreen.BaldiDeath = true
-				
-				local DamageEvent = FindByThread(game.ReplicatedStorage, "Events.LocalDamage")
-				
-				if DamageEvent then
-					DamageEvent:FireServer(1000, nil, nil, "TheEducator", true)
+
+				if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Educator.PrimaryPart.Position).Magnitude < 2 and not PlayerMain.PlayerDead and not PlayerMain.IsGhost and not game.Workspace:HasTag("TemporaryImmunity") and not game.Players.LocalPlayer:HasTag("GodMode") then
+					Educator:Destroy()
+					Educator = nil
+
+					EducatorInfo.PlayerCatched = true
+
+					local EducatorTouch = game.ReplicatedStorage.Assets.BaldiTouch:Clone()
+					EducatorTouch.PrimaryPart.PivotOffset = CFrame.new(0, 0, 0) * CFrame.fromOrientation(0, 0, 0)
+					EducatorTouch:PivotTo(CFrame.lookAt(CurrentCamera.CFrame.Position + (CurrentCamera.CFrame.LookVector * 1.5), CurrentCamera.CFrame.Position))
+					EducatorTouch:PivotTo(CFrame.new(EducatorTouch.PrimaryPart.CFrame.Position - EducatorTouch.PrimaryPart.CFrame.UpVector * 5)
+						* EducatorTouch.PrimaryPart.CFrame.Rotation)
+					EducatorTouch.Parent = game.Workspace
+
+					game.Lighting.BaldiColour.Enabled = true
+
+					local EducatorGlitch = FindByThread(game.Players.LocalPlayer.PlayerGui, "Main.BaldiTouch")
+
+					if EducatorGlitch then
+						EducatorGlitch.Visible = true
+					end
+
+					PlayerMain.CameraModule.Switch("HeadFollow")
+					game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 0
+
+					PlaySound(EducatorTouch.PrimaryPart.LopeeTouch)
+
+					task.wait(1)
+
+					game.RunService:UnbindFromRenderStep("EducatorMove"..EducatorCount)
+
+					if EducatorGlitch then
+						EducatorGlitch.BackgroundTransparency = 0
+						EducatorGlitch.ImageTransparency = 1
+					end
+
+					game.ReplicatedStorage.Settings.SFX.Volume = 0
+					game.ReplicatedStorage.Settings.Music.Volume = 0
+					game.Lighting.BaldiColour.Enabled = false
+
+					PlayerMain.DeathScreen.LopeeDeath = true
+					PlayerMain.DeathScreen.BaldiDeath = true
+
+					local DamageEvent = FindByThread(game.ReplicatedStorage, "Events.LocalDamage")
+
+					if DamageEvent then
+						DamageEvent:FireServer(1000, nil, nil, "TheEducator", true)
+					end
+
+					task.wait(2)
+
+
+					if EducatorGlitch then
+						EducatorGlitch.Visible = false
+						EducatorGlitch.BackgroundTransparency = 1
+						EducatorGlitch.ImageTransparency = 0.75
+					end
+
+					EducatorTouch:Destroy()
+
+					EducatorInfo.PlayerCatched = false
 				end
-				
-				task.wait(2)
-				
-				
-				if EducatorGlitch then
-					EducatorGlitch.Visible = false
-					EducatorGlitch.BackgroundTransparency = 1
-					EducatorGlitch.ImageTransparency = 0.75
-				end
-				
-				EducatorTouch:Destroy()
-				
-				EducatorInfo.PlayerCatched = false
+			end
+		end)
+
+		while Educator and not EducatorInfo.PlayerCatched do
+			if Educator:FindFirstChild("Baldi") then
+				PlaySound(Educator.Baldi.RulerSound)
+
+				Educator:PivotTo(CFrame.lookAt(Educator.PrimaryPart.Position, CurrentCamera.CFrame.Position))
+
+				game.TweenService:Create(EducatorVector3, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {
+					Value = EducatorVector3.Value + (Educator.PrimaryPart.CFrame.LookVector * 25)
+				}):Play()
+
+				task.wait(Educator:GetAttribute("MovementCooldown"))
 			end
 		end
 	end)
-	
-	while Educator and not EducatorInfo.PlayerCatched do
-		if Educator:FindFirstChild("Baldi") then
-			PlaySound(Educator.Baldi.RulerSound)
-
-			Educator:PivotTo(CFrame.lookAt(Educator.PrimaryPart.Position, CurrentCamera.CFrame.Position))
-
-			game.TweenService:Create(EducatorVector3, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {
-				Value = EducatorVector3.Value + (Educator.PrimaryPart.CFrame.LookVector * 25)
-			}):Play()
-
-			task.wait(Educator:GetAttribute("MovementCooldown"))
-		end
-	end
 end
 
 function EducatorDespawn(Reason, EducatorNumber)
 	for _, Educator in game.Workspace:GetChildren() do
 		if Educator.Name == "Baldi" then
 			if EducatorNumber == nil or (Educator:GetAttribute("EducatorNumber") == EducatorNumber) then
+				game.RunService:UnbindFromRenderStep("EducatorMove"..Educator:GetAttribute("EducatorNumber"))
+				
 				task.spawn(function()
 					Educator.PrimaryPart.Transparency = 1
 
@@ -255,8 +262,6 @@ function EducatorDespawn(Reason, EducatorNumber)
 					until Waiting <= 0 or EducatorDespawnSound.TimeLength > 0
 
 					task.wait(EducatorDespawnSound.TimeLength)
-
-					game.RunService:UnbindFromRenderStep("EducatorMove"..Educator:GetAttribute("EducatorNumber"))
 
 					Educator:Destroy()
 				end)
