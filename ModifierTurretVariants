@@ -291,8 +291,8 @@ local TurretCustomRoomPosition = {
 				Orientation = Vector3.new(0, 90, 180),
 
 				Attributes = {
-					["MaxLeft"] = -75,
-					["MaxRight"] = 75,
+					["MaxLeft"] = -85.75,
+					["MaxRight"] = 85.75,
 					["MaxUp"] = 10,
 					["MaxDown"] = 10
 				}
@@ -411,6 +411,10 @@ function CreateCustomRoomPosition(Room)
 	
 	local function CreateCustomObject(Category, CategoryObjects)
 		for Name, Properties in CategoryObjects do
+			if not CollisionPart then
+				return print("CreateCustomObject No CollisionPart")
+			end
+			
 			local NewInstance = Instance.new(Properties.ClassName)
 			NewInstance.Name = Name
 			NewInstance.Position = CollisionPart.Position + ((Properties.Position.X * CollisionPart.CFrame.LookVector)
