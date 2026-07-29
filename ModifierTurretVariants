@@ -1412,10 +1412,14 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 			if PlayerMain.Data.GameSettings.DeafMode.Value == 1 then
 				PlayerMain.SubTitles.new("A turret has locked on to me!", 4):Show()
 			end
-		elseif TurretTarget:IsA("Model") then
-			return
 		else
 			TurretAttack = false
+			
+			if TurretTarget then
+				if TurretTarget:IsA("Model") then
+					return
+				end
+			end
 		end
 
 		game.RunService:UnbindFromRenderStep("track"..UniqueTurretTag)
