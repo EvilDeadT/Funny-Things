@@ -76,7 +76,7 @@ function EducatorSpawn(Reason)
 	Educator:SetAttribute("Count", EducatorCount)
 	
 	Educator:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.fromOrientation(0, math.rad(math.random(-60, 60)), 0))
-	Educator:PivotTo(Educator.WorldPivot * CFrame.new(0, 0, -100) * CFrame.Angles(0, math.pi, 0))
+	Educator:PivotTo(Educator.WorldPivot * CFrame.new(0, 0, -200) * CFrame.Angles(0, math.pi, 0))
 	
 	local EducatorSpawnSound = Educator.Baldi.BaldiSpawn
 	
