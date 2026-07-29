@@ -1,0 +1,203 @@
+local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main"):WaitForChild("Client"):WaitForChild("MainClient"))
+local CurrentCamera = game.Workspace.CurrentCamera
+
+local EducatorCount = 0
+
+function FindByThread(PathStart, Thread)
+	if PathStart and Thread then
+		local PickedFolder = PathStart
+
+		for _, Path in string.split(Thread, ".") do
+			local PathInstance = Path
+			local SpecialInstance = nil
+			local SpecialMethod = nil
+
+			if string.find(PathInstance, ":") then
+				PathInstance = string.split(Path, ":")[1]
+				SpecialInstance = string.split(string.split(string.split(Path, ":")[2], "(")[2], ")")[1]
+				SpecialMethod = string.split(string.split(Path, ":")[2], "(")[1]
+			end
+
+			if PathInstance == "LocalPlayer" then
+				PickedFolder = game.Players.LocalPlayer
+			elseif PathInstance == "CFrame" then
+				PickedFolder = PickedFolder.CFrame
+
+				return PickedFolder
+			else
+				local IsProperty = pcall(function()
+					PickedFolder[PathInstance] = PickedFolder[PathInstance]
+				end)
+
+				if PickedFolder:FindFirstChild(PathInstance) or IsProperty then
+					PickedFolder = PickedFolder[PathInstance]
+				else
+					print("FindByThread not found: "..PathInstance)
+
+					return
+				end
+			end
+
+			if SpecialInstance then
+				if SpecialMethod == "FindFirstChildWhichIsA" then
+					PickedFolder = PickedFolder:FindFirstChildWhichIsA(SpecialInstance)
+				elseif SpecialMethod == "GetChildren" then
+					PickedFolder = PickedFolder:GetChildren()
+				end
+			end
+		end
+
+		return PickedFolder
+	end
+
+	return
+end
+
+local function PlaySound(Sound)
+	if Sound then
+		if Sound:GetAttribute("ID") then
+			Sound.SoundId = Sound:GetAttribute("ID")
+		end
+
+		Sound:Play()
+	end
+end
+
+function EducatorSpawn(Reason)
+	local Educator = game.ReplicatedStorage.Assets.Baldi:Clone()
+	Educator.Parent = game.Workspace
+	
+	local EducatorInfo = {
+		PlayerCatched = false
+	}
+	
+	EducatorCount += 1
+	
+	Educator:SetAttribute("Count", EducatorCount)
+	
+	Educator:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.fromOrientation(0, math.rad(math.random(-60, 60)), 0))
+	Educator:PivotTo(Educator.WorldPivot * CFrame.new(0, 0, -100) * CFrame.Angles(0, math.pi, 0))
+	
+	local EducatorSpawnSound = Educator.Baldi.BaldiSpawn
+	
+	if Reason == "First Schoolhouse" then
+		EducatorSpawnSound = Educator.Baldi.BaldiSchoolhouseStart
+	end
+	
+	PlaySound(EducatorSpawnSound)
+	
+	task.wait(EducatorSpawnSound.TimeLength + 1)
+	
+	if PlayerMain.PlayerDead or PlayerMain.IsGhost then
+		Educator:Destroy()
+		
+		return
+	end
+	
+	local EducatorVector3 = Instance.new("Vector3Value")
+	EducatorVector3.Value = Educator.WorldPivot.Position
+	
+	game.RunService:BindToRenderStep("EducatorMove"..EducatorCount, 220, function()
+		if EducatorInfo.PlayerCatched then
+			local EducatorGlitch = FindByThread(game.Players.LocalPlayer.PlayerGui, "Main.BaldiTouch")
+
+			if EducatorGlitch then
+				EducatorGlitch.Position = UDim2.new(0.5, math.random(-20, 20), 0.5, math.random(-20, 20))
+			end
+			
+			if game.Workspace:FindFirstChild("BaldiTouch") then
+				game.Workspace.BaldiTouch:PivotTo(CFrame.lookAt(CurrentCamera.CFrame.Position + (CurrentCamera.CFrame.LookVector * 1.5), CurrentCamera.CFrame.Position))
+				game.Workspace.BaldiTouch:PivotTo(CFrame.new(game.Workspace.BaldiTouch.PrimaryPart.CFrame.Position - game.Workspace.BaldiTouch.PrimaryPart.CFrame.UpVector * 5)
+					* game.Workspace.BaldiTouch.PrimaryPart.CFrame.Rotation)
+			end
+			
+			return
+		end
+		
+		if Educator then
+			Educator:PivotTo(CFrame.new(EducatorVector3.Value) * Educator.WorldPivot.Rotation)
+			
+			if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Educator.PrimaryPart.Position).Magnitude < 2 and not PlayerMain.PlayerDead and not PlayerMain.IsGhost and not game.Workspace:HasTag("TemporaryImmunity") and not game.Players.LocalPlayer:HasTag("GodMode") then
+				Educator:Destroy()
+				Educator = nil
+
+				EducatorInfo.PlayerCatched = true
+
+				local EducatorTouch = game.ReplicatedStorage.Assets.BaldiTouch:Clone()
+				EducatorTouch.PrimaryPart.PivotOffset = CFrame.new(0, 0, 0) * CFrame.fromOrientation(0, 0, 0)
+				EducatorTouch:PivotTo(CFrame.lookAt(CurrentCamera.CFrame.Position + (CurrentCamera.CFrame.LookVector * 1.5), CurrentCamera.CFrame.Position))
+				EducatorTouch:PivotTo(CFrame.new(EducatorTouch.PrimaryPart.CFrame.Position - EducatorTouch.PrimaryPart.CFrame.UpVector * 5)
+					* EducatorTouch.PrimaryPart.CFrame.Rotation)
+				EducatorTouch.Parent = game.Workspace
+
+				game.Lighting.BaldiColour.Enabled = true
+				
+				local EducatorGlitch = FindByThread(game.Players.LocalPlayer.PlayerGui, "Main.BaldiTouch")
+
+				if EducatorGlitch then
+					EducatorGlitch.Visible = true
+				end
+
+				PlayerMain.CameraModule.Switch("HeadFollow")
+				game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 0
+
+				PlaySound(EducatorTouch.PrimaryPart.LopeeTouch)
+
+				task.wait(1)
+				
+				game.RunService:UnbindFromRenderStep("EducatorMove"..EducatorCount)
+				
+				if EducatorGlitch then
+					EducatorGlitch.BackgroundTransparency = 0
+					EducatorGlitch.ImageTransparency = 1
+				end
+				
+				game.ReplicatedStorage.Settings.SFX.Volume = 0
+				game.ReplicatedStorage.Settings.Music.Volume = 0
+				game.Lighting.BaldiColour.Enabled = false
+				
+				PlayerMain.DeathScreen.LopeeDeath = true
+				PlayerMain.DeathScreen.BaldiDeath = true
+				
+				local DamageEvent = FindByThread(game.ReplicatedStorage, "Events.LocalDamage")
+				
+				if DamageEvent then
+					DamageEvent:FireServer(1000, nil, nil, "TheEducator", true)
+				end
+				
+				task.wait(2)
+				
+				
+				if EducatorGlitch then
+					EducatorGlitch.Visible = false
+					EducatorGlitch.BackgroundTransparency = 1
+					EducatorGlitch.ImageTransparency = 0.75
+				end
+				
+				EducatorTouch:Destroy()
+				
+				EducatorInfo.PlayerCatched = false
+			end
+		end
+	end)
+	
+	while Educator and not EducatorInfo.PlayerCatched do
+		PlaySound(Educator.Baldi.RulerSound)
+		
+		Educator:PivotTo(CFrame.lookAt(Educator.PrimaryPart.Position, CurrentCamera.CFrame.Position))
+		
+		game.TweenService:Create(EducatorVector3, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {
+			Value = EducatorVector3.Value + (Educator.PrimaryPart.CFrame.LookVector * 25)
+		}):Play()
+		
+		task.wait(3.5)
+	end
+end
+
+function EducatorDespawn(Reason)
+	
+end
+
+task.wait(5)
+
+EducatorSpawn()
