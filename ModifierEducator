@@ -1,4 +1,5 @@
 local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main"):WaitForChild("Client"):WaitForChild("MainClient"))
+local PlayerZone = PlayerMain.Zones
 local CurrentCamera = game.Workspace.CurrentCamera
 
 local EducatorCount = 0
@@ -73,18 +74,32 @@ function EducatorSpawn(Reason)
 	
 	EducatorCount += 1
 	
-	Educator:SetAttribute("Count", EducatorCount)
+	Educator:SetAttribute("EducatorNumber", EducatorCount)
 	
 	Educator:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.fromOrientation(0, math.rad(math.random(-60, 60)), 0))
 	Educator:PivotTo(Educator.WorldPivot * CFrame.new(0, 0, -200) * CFrame.Angles(0, math.pi, 0))
 	
 	local EducatorSpawnSound = Educator.Baldi.BaldiSpawn
 	
-	if Reason == "First Schoolhouse" then
+	if Reason == "Revive" then
+		EducatorSpawnSound = Educator.Baldi.BaldiDespawn
+	elseif Reason == "First Schoolhouse" then
 		EducatorSpawnSound = Educator.Baldi.BaldiSchoolhouseStart
+	elseif Reason == "Crystal" then
+		EducatorSpawnSound = Educator.Baldi.BaldiCrystal
+	elseif Reason == "Second Schoolhouse" then
+		EducatorSpawnSound = Educator.Baldi.BaldiEnterFinale
 	end
 	
 	PlaySound(EducatorSpawnSound)
+	
+	local Waiting = 50
+
+	repeat
+		Waiting -= 1
+
+		task.wait(0.1)
+	until Waiting <= 0 or EducatorSpawnSound.TimeLength > 0
 	
 	task.wait(EducatorSpawnSound.TimeLength + 1)
 	
@@ -116,6 +131,14 @@ function EducatorSpawn(Reason)
 		
 		if Educator then
 			Educator:PivotTo(CFrame.new(EducatorVector3.Value) * Educator.WorldPivot.Rotation)
+			
+			if PlayerZone.CurrentRoom == "Room100" then
+				EducatorDespawn("Room100")
+			elseif PlayerZone.CurrentRoom == "RidgeEnd" or PlayerZone.CurrentRoom == "RidgeEnding" then
+				EducatorDespawn("RidgeEnd")
+			elseif PlayerZone.CurrentRoom == "ModifierEnding" then
+				EducatorDespawn("ModifierEnding")
+			end
 			
 			if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Educator.PrimaryPart.Position).Magnitude < 2 and not PlayerMain.PlayerDead and not PlayerMain.IsGhost and not game.Workspace:HasTag("TemporaryImmunity") and not game.Players.LocalPlayer:HasTag("GodMode") then
 				Educator:Destroy()
@@ -195,7 +218,43 @@ function EducatorSpawn(Reason)
 end
 
 function EducatorDespawn(Reason, EducatorNumber)
-	
+	for _, Educator in game.Workspace:GetChildren() do
+		if Educator.Name == "Baldi" then
+			if EducatorNumber == nil or (Educator:GetAttribute("EducatorNumber") == EducatorNumber) then
+				Educator.PrimaryPart.Transparency = 1
+				
+				local EducatorDespawnSound = Educator.Baldi.BaldiSchoolhousePrep
+
+				if Reason == "First Schoolhouse" then
+					EducatorDespawnSound = Educator.Baldi.BaldiSchoolhousePrep
+				elseif Reason == "First Schoolhouse Complete" then
+					EducatorDespawnSound = Educator.Baldi.BaldiSchoolhouseComplete
+				elseif Reason == "Room100" then
+					EducatorDespawnSound = Educator.Baldi.BaldiRoom100
+				elseif Reason == "RidgeEnd" then
+					EducatorDespawnSound = Educator.Baldi.BaldiDespawn
+				elseif Reason == "Second Schoolhouse Complete" or Reason == "ModifierEnding" then
+					EducatorDespawnSound = Educator.Baldi.BaldiFinaleWin
+				end
+
+				PlaySound(EducatorDespawnSound)
+
+				local Waiting = 50
+				
+				repeat
+					Waiting -= 1
+					
+					task.wait(0.1)
+				until Waiting <= 0 or EducatorDespawnSound.TimeLength > 0
+
+				task.wait(EducatorDespawnSound.TimeLength)
+				
+				game.RunService:UnbindFromRenderStep("EducatorMove"..Educator:GetAttribute("EducatorNumber"))
+				
+				Educator:Destroy()
+			end
+		end
+	end
 end
 
 EducatorSpawn()
