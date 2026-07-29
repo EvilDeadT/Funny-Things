@@ -194,10 +194,8 @@ function EducatorSpawn(Reason)
 	end
 end
 
-function EducatorDespawn(Reason)
+function EducatorDespawn(Reason, EducatorNumber)
 	
 end
-
-task.wait(5)
 
 EducatorSpawn()
