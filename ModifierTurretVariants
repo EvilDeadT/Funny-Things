@@ -1241,7 +1241,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 		LastTurretVerticalPos = TurretVerticalPos
 		LastTurretHorisontaPos = TurretHorisontalPos
 		
-		local TurretAimSpeed = Turret:GetAttribute("SearchSpeedTime") * (math.abs(Turret:GetAttribute("MaxLeft") - Turret:GetAttribute("MaxRight")) / 150)
+		local TurretAimSpeed = Turret:GetAttribute("SearchSpeedTime") * (math.abs(Turret:GetAttribute("MaxLeft") - Turret:GetAttribute("MaxRight")) / 100)
 		
 		TurretAimBaseJoint_2 = game.TweenService:Create(TurretInfo.Model.BaseJoint_2, TweenInfo.new(TurretAimSpeed / 2, Enum.EasingStyle.Linear), {
 			C1 = CFrame.new(-0.02, 0, 0) * CFrame.Angles(0, CurrectCenterPos, 0)
