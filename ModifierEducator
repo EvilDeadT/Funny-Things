@@ -2,8 +2,6 @@ local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main
 local PlayerZone = PlayerMain.Zones
 local CurrentCamera = game.Workspace.CurrentCamera
 
-local EducatorCount = 0
-
 function FindByThread(PathStart, Thread)
 	if PathStart and Thread then
 		local PickedFolder = PathStart
@@ -72,9 +70,15 @@ function EducatorSpawn(Reason)
 		local EducatorInfo = {
 			PlayerCatched = false
 		}
-
-		EducatorCount += 1
-
+		
+		local EducatorCount = 1
+		
+		for _, OtherEducator in game.Workspace:GetChildren() do
+			if OtherEducator.Name == "Baldi" then
+				EducatorCount += 1
+			end
+		end
+		
 		Educator:SetAttribute("EducatorNumber", EducatorCount)
 		Educator:SetAttribute("MovementCooldown", 3.5)
 		Educator:SetAttribute("MovementSpeed", 1)
