@@ -844,7 +844,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 		elseif DamageType == "Poison" then
 			print(PlayerMain.Health.CurrentHealth)
 			if not Turret:GetAttribute("PoisonFatal") then
-				if PlayerMain.Health.CurrentHealth - Turret:GetAttribute("PoisonDamage") > 0 then
+				if math.round(PlayerMain.Health.CurrentHealth) - Turret:GetAttribute("PoisonDamage") > 0 then
 					DamageEvent:FireServer(Turret:GetAttribute("PoisonDamage"), "DefenseSystem", 1)
 				end
 			else
