@@ -1407,13 +1407,13 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 	end
 
 	Target:GetPropertyChangedSignal("Value"):Connect(function()
-		print("New Target")
-
 		local TurretTarget = Target.Value
 		if TurretTarget == game.Players.LocalPlayer.Character.HumanoidRootPart then
 			if PlayerMain.Data.GameSettings.DeafMode.Value == 1 then
 				PlayerMain.SubTitles.new("A turret has locked on to me!", 4):Show()
 			end
+		elseif TurretTarget:IsA("Model") then
+			return
 		else
 			TurretAttack = false
 		end
@@ -1421,7 +1421,6 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 		game.RunService:UnbindFromRenderStep("track"..UniqueTurretTag)
 
 		if TurretTarget then
-			print("Target: "..TurretTarget.Name)
 			game.RunService:BindToRenderStep("track"..UniqueTurretTag, 251, function()
 				local OrienX, OrienY, OrienZ = TurretInfo.Model.Root.CFrame:ToObjectSpace((CFrame.lookAt(TurretInfo.Model.BaseJoint.Position, TurretTarget.Position))):ToOrientation()
 				local sum = OrienY + math.pi
