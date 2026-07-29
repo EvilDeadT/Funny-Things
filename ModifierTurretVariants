@@ -828,7 +828,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 						if game.Players.LocalPlayer:GetAttribute("PoisonTimer") <= 0 then
 							TurretPlayerDamage("Poison")
 
-							game.Players.LocalPlayer:SetAttribute("PoisonDamageTimer", 4 / Turret:GetAttribute("PoisonSpeed"))
+							game.Players.LocalPlayer:SetAttribute("PoisonTimer", 4 / Turret:GetAttribute("PoisonSpeed"))
 						end
 					end
 					
@@ -842,6 +842,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 				end)
 			end
 		elseif DamageType == "Poison" then
+			print(PlayerMain.Health.CurrentHealth)
 			if not Turret:GetAttribute("PoisonFatal") then
 				if PlayerMain.Health.CurrentHealth - Turret:GetAttribute("PoisonDamage") > 0 then
 					DamageEvent:FireServer(Turret:GetAttribute("PoisonDamage"), "DefenseSystem", 1)
