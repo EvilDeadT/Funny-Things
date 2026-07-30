@@ -156,18 +156,12 @@ function EducatorSpawn(Reason)
 				if PlayerZone.CurrentRoom then
 					if PlayerZone.CurrentRoom.Name == "Room100" then
 						EducatorDespawn("Room100")
-						Educator = nil
-						
 						return
 					elseif PlayerZone.CurrentRoom.Name == "RidgeEnd" or PlayerZone.CurrentRoom.Name == "RidgeEnding" then
 						EducatorDespawn("RidgeEnd")
-						Educator = nil
-						
 						return
 					elseif PlayerZone.CurrentRoom.Name == "ModifierEnding" then
 						EducatorDespawn("ModifierEnding")
-						Educator = nil
-						
 						return
 					end
 				end
@@ -257,6 +251,8 @@ function EducatorSpawn(Reason)
 				}):Play()
 
 				task.wait(Educator:GetAttribute("MovementCooldown"))
+			else
+				break
 			end
 		end
 	end)
@@ -312,6 +308,17 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function()
 			end
 			
 			game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", 0)
+		end
+	end
+end)
+
+
+game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Died:Connect(function()
+	for _, Educator in game.Workspace:GetChildren() do
+		if Educator.Name == "Baldi" then
+			game.RunService:UnbindFromRenderStep("EducatorMove"..Educator:GetAttribute("EducatorNumber"))
+			
+			Educator:Destroy()
 		end
 	end
 end)
