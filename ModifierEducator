@@ -294,19 +294,17 @@ function EducatorSpawn(Info)
 				
 				if Educator:GetAttribute("Speed"..Educator:GetAttribute("CurrentMode")) <= 0 then
 					task.wait(Educator:GetAttribute("Cooldown"..Educator:GetAttribute("CurrentMode")))
-					
-					return
+				else
+					PlaySound(Educator.Baldi.RulerSound)
+
+					Educator:PivotTo(CFrame.lookAt(Educator.PrimaryPart.Position, CurrentCamera.CFrame.Position))
+
+					game.TweenService:Create(EducatorVector3, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {
+						Value = EducatorVector3.Value + (Educator.PrimaryPart.CFrame.LookVector * (25 * Educator:GetAttribute("Speed"..Educator:GetAttribute("CurrentMode"))))
+					}):Play()
+
+					task.wait(Educator:GetAttribute("Cooldown"..Educator:GetAttribute("CurrentMode")))
 				end
-				
-				PlaySound(Educator.Baldi.RulerSound)
-
-				Educator:PivotTo(CFrame.lookAt(Educator.PrimaryPart.Position, CurrentCamera.CFrame.Position))
-
-				game.TweenService:Create(EducatorVector3, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {
-					Value = EducatorVector3.Value + (Educator.PrimaryPart.CFrame.LookVector * (25 * Educator:GetAttribute("Speed"..Educator:GetAttribute("CurrentMode"))))
-				}):Play()
-
-				task.wait(Educator:GetAttribute("Cooldown"..Educator:GetAttribute("CurrentMode")))
 			else
 				break
 			end
