@@ -159,6 +159,8 @@ function EducatorSpawn(Reason)
 				end
 
 				if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Educator.PrimaryPart.Position).Magnitude < 2 and not PlayerMain.PlayerDead and not PlayerMain.IsGhost and not game.Workspace:HasTag("TemporaryImmunity") and not game.Players.LocalPlayer:HasTag("GodMode") then
+					local EducatorNumber = Educator:GetAttribute("EducatorNumber")
+					
 					Educator:Destroy()
 					Educator = nil
 
@@ -186,7 +188,7 @@ function EducatorSpawn(Reason)
 
 					task.wait(1)
 
-					game.RunService:UnbindFromRenderStep("EducatorMove"..Educator:GetAttribute("EducatorNumber"))
+					game.RunService:UnbindFromRenderStep("EducatorMove"..EducatorNumber)
 
 					if EducatorGlitch then
 						EducatorGlitch.BackgroundTransparency = 0
