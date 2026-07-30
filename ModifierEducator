@@ -5,19 +5,23 @@ local CurrentCamera = game.Workspace.CurrentCamera
 local EducatorStats = {
 	["Freedom"] = {
 		Cooldown = 1.5,
-		Speed = 0.5
+		Speed = 0.5,
+		Hitbox = 1
 	},
 	["Schoolhouse"] = {
 		Cooldown = 3.5,
-		Speed = 1
+		Speed = 1,
+		Hitbox = 1
 	},
 	["Locker"] = {
 		Cooldown = 3.5,
-		Speed = 0.5
+		Speed = 0.5,
+		Hitbox = 2
 	},
 	["PandeMinigame"] = {
 		Cooldown = 3.5,
-		Speed = 0
+		Speed = 0,
+		Hitbox = 0
 	}
 }
 
@@ -102,9 +106,10 @@ function EducatorSpawn(Info)
 		Educator:SetAttribute("DefaultMode", "Schoolhouse")
 		Educator:SetAttribute("CurrentMode", Educator:GetAttribute("DefaultMode"))
 		
-		for ModeName, ModeStat in EducatorStats do
-			Educator:SetAttribute("Cooldown"..ModeName, ModeStat.Cooldown)
-			Educator:SetAttribute("Speed"..ModeName, ModeStat.Speed)
+		for ModeName, ModeStats in EducatorStats do
+			for _, StatName, Value in ModeStats do
+				Educator:SetAttribute(StatName..ModeName, Value)
+			end
 		end
 		
 		local Waiting = 50
@@ -211,7 +216,7 @@ function EducatorSpawn(Info)
 						Educator:SetAttribute("CurrentMode", Educator:GetAttribute("DefaultMode"))
 					end
 
-					if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Educator.PrimaryPart.Position).Magnitude < 2.5 and not PlayerMain.PlayerDead and not PlayerMain.IsGhost and not game.Workspace:HasTag("TemporaryImmunity") and not game.Players.LocalPlayer:HasTag("GodMode") then
+					if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Educator.PrimaryPart.Position).Magnitude < (2.5 * Educator:GetAttribute("Hitbox"..Educator:GetAttribute("CurrentMode"))) and not PlayerMain.PlayerDead and not PlayerMain.IsGhost and not game.Workspace:HasTag("TemporaryImmunity") and not game.Players.LocalPlayer:HasTag("GodMode") then
 						local EducatorNumber = Educator:GetAttribute("EducatorNumber")
 
 						for _, OtherEducator in game.Workspace:GetChildren() do
