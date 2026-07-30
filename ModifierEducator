@@ -297,7 +297,7 @@ function EducatorDespawn(Reason, EducatorNumber)
 						EducatorDespawnSound = Educator.Baldi.BaldiSchoolhousePrep
 					elseif Reason == "First Schoolhouse Complete" then
 						EducatorDespawnSound = Educator.Baldi.BaldiSchoolhouseComplete
-					elseif Reason == "Room100" then
+					elseif Reason == "Room100" and not game.Players.LocalPlayer:GetAttribute("EducatorRoom100Access") then
 						EducatorDespawnSound = Educator.Baldi.BaldiRoom100
 					elseif Reason == "RidgeEnd" then
 						EducatorDespawnSound = Educator.Baldi.BaldiDespawn
@@ -352,6 +352,8 @@ local RidgeCutsceneEvent = FindByThread(game.ReplicatedStorage, "Events.RidgeCut
 
 if RidgeCutsceneEvent then
 	RidgeCutsceneEvent.OnClientEvent:Connect(function()
+		game.Players.LocalPlayer:SetAttribute("EducatorRoom100Access", true)
+		
 		if PlayerMain.PlayerDead or PlayerMain.IsGhost or not game.Players.LocalPlayer:GetAttribute("EducatorChase") then
 			return
 		end
