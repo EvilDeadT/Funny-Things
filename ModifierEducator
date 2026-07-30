@@ -388,9 +388,13 @@ if RidgeCutsceneEvent then
 			return
 		end
 		
+		if not PlayerZone.CurrentRoom then
+			return
+		end
+		
 		EducatorSpawn({
 			Reason = "Crystal",
-			Spawnpoint = FindByThread(game.Workspace.GameplayFolder.Rooms, "Room100.BaldiSpawner")
+			Spawnpoint = PlayerZone.CurrentRoom:FindFirstChild("BaldiSpawner")
 		})
 	end)
 end
