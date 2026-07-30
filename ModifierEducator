@@ -271,7 +271,7 @@ function EducatorSpawn(Info)
 						local DamageEvent = FindByThread(game.ReplicatedStorage, "Events.LocalDamage")
 
 						if DamageEvent then
-							DamageEvent:FireServer(1000, nil, nil, "TheEducator", true)
+							DamageEvent:FireServer(1000, "TheEducator", nil, "TheEducator", true)
 						end
 
 						task.wait(2)
