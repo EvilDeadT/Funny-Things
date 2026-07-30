@@ -170,7 +170,7 @@ function EducatorSpawn(Info)
 				Educator:PivotTo(CFrame.new(EducatorVector3.Value) * Educator.WorldPivot.Rotation)
 
 				if PlayerZone.CurrentRoom then
-					if PlayerZone.CurrentRoom.Name == "Room100" then
+					if PlayerZone.CurrentRoom.Name == "Room100" and not game.Players.LocalPlayer:GetAttribute("EducatorRoom100Access") then
 						EducatorDespawn({
 							Reason = "Room100"
 						})
@@ -264,6 +264,10 @@ function EducatorSpawn(Info)
 
 		while Educator and not EducatorInfo.PlayerCatched do
 			if Educator:FindFirstChild("Baldi") then
+				if Educator.PrimaryPart.Transparency == 1 then
+					break
+				end
+				
 				PlaySound(Educator.Baldi.RulerSound)
 
 				Educator:PivotTo(CFrame.lookAt(Educator.PrimaryPart.Position, CurrentCamera.CFrame.Position))
@@ -297,7 +301,7 @@ function EducatorDespawn(Reason, EducatorNumber)
 						EducatorDespawnSound = Educator.Baldi.BaldiSchoolhousePrep
 					elseif Reason == "First Schoolhouse Complete" then
 						EducatorDespawnSound = Educator.Baldi.BaldiSchoolhouseComplete
-					elseif Reason == "Room100" and not game.Players.LocalPlayer:GetAttribute("EducatorRoom100Access") then
+					elseif Reason == "Room100" then
 						EducatorDespawnSound = Educator.Baldi.BaldiRoom100
 					elseif Reason == "RidgeEnd" then
 						EducatorDespawnSound = Educator.Baldi.BaldiDespawn
