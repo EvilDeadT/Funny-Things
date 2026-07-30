@@ -201,7 +201,7 @@ function EducatorSpawn(Info)
 								Reason = "RidgeEnd"
 							})
 							return
-						elseif PlayerZone.CurrentRoom.Name == "ModifierEnding" then
+						elseif PlayerZone.CurrentRoom.Name == "SearchlightsEnding" or PlayerZone.CurrentRoom.Name == "ModifierEnding" then
 							EducatorDespawn({
 								Reason = "ModifierEnding"
 							})
