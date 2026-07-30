@@ -128,7 +128,7 @@ function EducatorSpawn(Reason)
 				end
 
 				if game.Workspace:FindFirstChild("BaldiTouch") then
-					game.Workspace.BaldiTouch:PivotTo(CFrame.lookAt(CurrentCamera.CFrame.Position + (CurrentCamera.CFrame.LookVector * (1.5 * Educator:GetAttribute("MovementSpeed"))), CurrentCamera.CFrame.Position))
+					game.Workspace.BaldiTouch:PivotTo(CFrame.lookAt(CurrentCamera.CFrame.Position + (CurrentCamera.CFrame.LookVector * 1.5), CurrentCamera.CFrame.Position))
 					game.Workspace.BaldiTouch:PivotTo(CFrame.new(game.Workspace.BaldiTouch.PrimaryPart.CFrame.Position - game.Workspace.BaldiTouch.PrimaryPart.CFrame.UpVector * 5)
 						* game.Workspace.BaldiTouch.PrimaryPart.CFrame.Rotation)
 				end
@@ -229,7 +229,7 @@ function EducatorSpawn(Reason)
 				Educator:PivotTo(CFrame.lookAt(Educator.PrimaryPart.Position, CurrentCamera.CFrame.Position))
 
 				game.TweenService:Create(EducatorVector3, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {
-					Value = EducatorVector3.Value + (Educator.PrimaryPart.CFrame.LookVector * 25)
+					Value = EducatorVector3.Value + (Educator.PrimaryPart.CFrame.LookVector * (25 * Educator:GetAttribute("MovementSpeed")))
 				}):Play()
 
 				task.wait(Educator:GetAttribute("MovementCooldown"))
