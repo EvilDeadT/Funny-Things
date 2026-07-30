@@ -82,6 +82,20 @@ function EducatorSpawn(Reason)
 		Educator:SetAttribute("EducatorNumber", EducatorCount)
 		Educator:SetAttribute("MovementCooldown", 3.5)
 		Educator:SetAttribute("MovementSpeed", 1)
+		
+		local Waiting = 50
+
+		repeat
+			if game.Players.LocalPlayer.Character then
+				if game.Players.LocalPlayer.Character.Parent == game.Workspace.GameplayFolder.Characters then
+					break
+				end
+			end
+			
+			Waiting -= 1
+
+			task.wait(0.1)
+		until Waiting <= 0
 
 		Educator:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.fromOrientation(0, math.rad(math.random(-60, 60)), 0))
 		Educator:PivotTo(Educator.WorldPivot * CFrame.new(1, 1, -200) * CFrame.Angles(0, math.pi, 0))
@@ -160,6 +174,14 @@ function EducatorSpawn(Reason)
 
 				if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Educator.PrimaryPart.Position).Magnitude < 2 and not PlayerMain.PlayerDead and not PlayerMain.IsGhost and not game.Workspace:HasTag("TemporaryImmunity") and not game.Players.LocalPlayer:HasTag("GodMode") then
 					local EducatorNumber = Educator:GetAttribute("EducatorNumber")
+					
+					for _, OtherEducator in game.Workspace:GetChildren() do
+						if OtherEducator.Name == "Baldi" then
+							OtherEducator:Destroy()
+
+							game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 0 + 1)
+						end
+					end
 					
 					Educator:Destroy()
 					Educator = nil
@@ -290,16 +312,6 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function()
 			end
 			
 			game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", 0)
-		end
-	end
-end)
-
-game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Died:Connect(function()
-	for _, OtherEducator in game.Workspace:GetChildren() do
-		if OtherEducator.Name == "Baldi" then
-			OtherEducator:Destroy()
-
-			game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 0 + 1)
 		end
 	end
 end)
