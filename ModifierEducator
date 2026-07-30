@@ -306,15 +306,17 @@ function EducatorSpawn(Info)
 					task.wait(Educator:GetAttribute("Cooldown"..Educator:GetAttribute("CurrentMode")))
 				end
 			else
-				break
-			end
-		end
-		
-		for _, OtherEducator in game.Workspace:GetChildren() do
-			if OtherEducator.Name == "Baldi" then
-				OtherEducator:Destroy()
-
 				game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 0 + 1)
+				
+				for _, OtherEducator in game.Workspace:GetChildren() do
+					if OtherEducator.Name == "Baldi" then
+						OtherEducator:Destroy()
+
+						game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 0 + 1)
+					end
+				end
+				
+				break
 			end
 		end
 	end)
