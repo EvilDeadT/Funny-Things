@@ -282,4 +282,26 @@ function EducatorDespawn(Reason, EducatorNumber)
 	end
 end
 
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+	if type(game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath")) == "number" then
+		if game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") > 0 then
+			for i = 1, game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") do
+				EducatorSpawn("Revive")
+			end
+			
+			game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", 0)
+		end
+	end
+end)
+
+game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Died:Connect(function()
+	for _, OtherEducator in game.Workspace:GetChildren() do
+		if OtherEducator.Name == "Baldi" then
+			OtherEducator:Destroy()
+
+			game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 0 + 1)
+		end
+	end
+end)
+
 EducatorSpawn()
