@@ -363,7 +363,7 @@ end
 game.Players.LocalPlayer.CharacterAdded:Connect(function()
 	if type(game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath")) == "number" and game.Players.LocalPlayer:GetAttribute("EducatorChase") then
 		if game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") > 0 then
-			for i = 1, game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") do
+			for i = 1, game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 1 do
 				EducatorSpawn({
 					Reason = "Revive"
 				})
