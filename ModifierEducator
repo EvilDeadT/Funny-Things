@@ -286,7 +286,7 @@ function EducatorSpawn(Info)
 	end)
 end
 
-function EducatorDespawn(Reason, EducatorNumber)
+function EducatorDespawn(Info, EducatorNumber)
 	for _, Educator in game.Workspace:GetChildren() do
 		if Educator.Name == "Baldi" then
 			if EducatorNumber == nil or (Educator:GetAttribute("EducatorNumber") == EducatorNumber) then
@@ -296,17 +296,19 @@ function EducatorDespawn(Reason, EducatorNumber)
 					Educator.PrimaryPart.Transparency = 1
 
 					local EducatorDespawnSound = Educator.Baldi.BaldiSchoolhousePrep
-
-					if Reason == "First Schoolhouse" then
-						EducatorDespawnSound = Educator.Baldi.BaldiSchoolhousePrep
-					elseif Reason == "First Schoolhouse Complete" then
-						EducatorDespawnSound = Educator.Baldi.BaldiSchoolhouseComplete
-					elseif Reason == "Room100" then
-						EducatorDespawnSound = Educator.Baldi.BaldiRoom100
-					elseif Reason == "RidgeEnd" then
-						EducatorDespawnSound = Educator.Baldi.BaldiDespawn
-					elseif Reason == "Second Schoolhouse Complete" or Reason == "ModifierEnding" then
-						EducatorDespawnSound = Educator.Baldi.BaldiFinaleWin
+					
+					if Info then
+						if Info.Reason == "First Schoolhouse" then
+							EducatorDespawnSound = Educator.Baldi.BaldiSchoolhousePrep
+						elseif Info.Reason == "First Schoolhouse Complete" then
+							EducatorDespawnSound = Educator.Baldi.BaldiSchoolhouseComplete
+						elseif Info.Reason == "Room100" then
+							EducatorDespawnSound = Educator.Baldi.BaldiRoom100
+						elseif Info.Reason == "RidgeEnd" then
+							EducatorDespawnSound = Educator.Baldi.BaldiDespawn
+						elseif Info.Reason == "Second Schoolhouse Complete" or Info.Reason == "ModifierEnding" then
+							EducatorDespawnSound = Educator.Baldi.BaldiFinaleWin
+						end
 					end
 
 					PlaySound(EducatorDespawnSound)
