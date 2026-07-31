@@ -6,22 +6,38 @@ local EducatorStats = {
 	["Freedom"] = {
 		Cooldown = 1.5,
 		Speed = 0.5,
-		Hitbox = 1
+		Hitbox = 1,
+		
+		Modes = {
+			["Locker"] = {
+				Cooldown = 1.5,
+				Speed = 0.25,
+				Hitbox = 2
+			},
+			["PandeMinigame"] = {
+				Cooldown = 1.5,
+				Speed = 0,
+				Hitbox = 0
+			}
+		}
 	},
 	["Schoolhouse"] = {
 		Cooldown = 3.5,
 		Speed = 1,
-		Hitbox = 1
-	},
-	["Locker"] = {
-		Cooldown = 3.5,
-		Speed = 0.5,
-		Hitbox = 2
-	},
-	["PandeMinigame"] = {
-		Cooldown = 3.5,
-		Speed = 0,
-		Hitbox = 0
+		Hitbox = 1,
+		
+		Modes = {
+			["Locker"] = {
+				Cooldown = 3.5,
+				Speed = 0.5,
+				Hitbox = 2
+			},
+			["PandeMinigame"] = {
+				Cooldown = 3.5,
+				Speed = 0,
+				Hitbox = 0
+			}
+		}
 	}
 }
 
@@ -105,12 +121,41 @@ function EducatorSpawn(Info)
 		Educator:SetAttribute("EducatorNumber", EducatorCount)
 		Educator:SetAttribute("DefaultMode", "Schoolhouse")
 		Educator:SetAttribute("CurrentMode", Educator:GetAttribute("DefaultMode"))
+		Educator:SetAttribute("Stunned", false)
+		Educator:SetAttribute("Atomized", false)
 		
-		for ModeName, ModeStats in EducatorStats do
-			for StatName, Value in ModeStats do
-				Educator:SetAttribute(StatName..ModeName, Value)
+		for Name, Properties in EducatorStats do
+			for Property, Value in Properties do
+				if Property ~= "Modes" then
+					Educator:SetAttribute(Property..Name, Value)
+				else
+					for ModeName, ModeProperties in Value do
+						for ModeProperty, ModeValue in ModeProperties do
+							Educator:SetAttribute(ModeProperty..Name..ModeName, ModeValue)
+						end
+					end
+				end
 			end
 		end
+		
+		local function EducatorProperty(Property, PropertyType)
+			if Educator:GetAttribute("CurrentMode") and Educator:GetAttribute("DefaultMode") and Property then
+				if (type(Educator:GetAttribute("CurrentMode")) == "string" or type(Educator:GetAttribute("CurrentMode")) == "number")
+					and (type(Educator:GetAttribute("DefaultMode")) == "string" or type(Educator:GetAttribute("DefaultMode")) == "number")
+					and (type(Property) == "string" or type(Property) == "number") then
+					if type(Educator:GetAttribute(Property..Educator:GetAttribute("CurrentMode"))) == string.lower(PropertyType) then
+						if Educator:GetAttribute("CurrentMode") == Educator:GetAttribute("DefaultMode") then
+							return Educator:GetAttribute(Property..Educator:GetAttribute("CurrentMode"))
+						else
+							return Educator:GetAttribute(Property..Educator:GetAttribute("DefaultMode")..Educator:GetAttribute("CurrentMode"))
+						end
+					end
+				end
+			end
+			
+			return
+		end
+		
 		
 		
 		local Waiting = 50
@@ -118,7 +163,9 @@ function EducatorSpawn(Info)
 		repeat
 			if game.Players.LocalPlayer.Character then
 				if game.Players.LocalPlayer.Character.Parent == game.Workspace.GameplayFolder.Characters then
-					break
+					if game.Players.LocalPlayer:FindFirstChild("Humanoid") and game.Players.LocalPlayer:FindFirstChild("HumanoidRootPart") then
+						break
+					end
 				end
 			end
 			
@@ -146,6 +193,9 @@ function EducatorSpawn(Info)
 				Educator:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.fromOrientation(0, math.rad(math.random(-60, 60)), 0))
 				Educator:PivotTo(Educator.WorldPivot * CFrame.new(0, 0, -200) * CFrame.Angles(0, math.pi, 0))
 			end
+		else
+			Educator:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.fromOrientation(0, math.rad(math.random(-60, 60)), 0))
+			Educator:PivotTo(Educator.WorldPivot * CFrame.new(0, 0, -200) * CFrame.Angles(0, math.pi, 0))
 		end
 
 		PlaySound(EducatorSpawnSound)
@@ -164,6 +214,14 @@ function EducatorSpawn(Info)
 			Educator:Destroy()
 
 			return
+		end
+		
+		local function EducatorFlash()
+			
+		end
+		
+		local function EducatorAtomize()
+			
 		end
 
 		local EducatorVector3 = Instance.new("Vector3Value")
@@ -216,10 +274,29 @@ function EducatorSpawn(Info)
 					else
 						Educator:SetAttribute("CurrentMode", Educator:GetAttribute("DefaultMode"))
 					end
-
-					if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Educator.PrimaryPart.Position).Magnitude < (2.5 * Educator:GetAttribute("Hitbox"..Educator:GetAttribute("CurrentMode"))) and not PlayerMain.PlayerDead and not PlayerMain.IsGhost and not game.Workspace:HasTag("TemporaryImmunity") and not game.Players.LocalPlayer:HasTag("GodMode") then
+					
+					local EducatorHitbox = EducatorProperty("Hitbox", "Number")
+					
+					if not EducatorHitbox then
+						return
+					end
+					
+					if not game.Players.LocalPlayer.Character then
+						return
+					else
+						if not game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+							return
+						end
+					end
+					
+					if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Educator.PrimaryPart.Position).Magnitude < (2.5 * EducatorHitbox) and not PlayerMain.PlayerDead and not PlayerMain.IsGhost and not game.Workspace:HasTag("TemporaryImmunity") and not game.Players.LocalPlayer:HasTag("GodMode") then
 						local EducatorNumber = Educator:GetAttribute("EducatorNumber")
 
+						Educator:Destroy()
+						Educator = nil
+						
+						game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 0 + 1)
+						
 						for _, OtherEducator in game.Workspace:GetChildren() do
 							if OtherEducator.Name == "Baldi" then
 								OtherEducator:Destroy()
@@ -227,9 +304,6 @@ function EducatorSpawn(Info)
 								game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 0 + 1)
 							end
 						end
-
-						Educator:Destroy()
-						Educator = nil
 
 						EducatorInfo.PlayerCatched = true
 
@@ -265,8 +339,7 @@ function EducatorSpawn(Info)
 						game.ReplicatedStorage.Settings.SFX.Volume = 0
 						game.ReplicatedStorage.Settings.Music.Volume = 0
 						game.Lighting.BaldiColour.Enabled = false
-
-						PlayerMain.DeathScreen.LopeeDeath = true
+						
 						PlayerMain.DeathScreen.BaldiDeath = true
 
 						local DamageEvent = FindByThread(game.ReplicatedStorage, "Events.LocalDamage")
@@ -287,6 +360,32 @@ function EducatorSpawn(Info)
 						EducatorTouch:Destroy()
 
 						EducatorInfo.PlayerCatched = false
+						
+						if not game.Players.LocalPlayer:GetAttribute("Dead") then
+							PlayerMain.CameraModule.Switch("PlayerControl")
+							
+							if game.Players.LocalPlayer.Character then
+								if game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+									game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = PlayerMain.CameraModule.GetWalkSpeed()
+								end
+							end
+						end
+						
+						local EducatorModelDeath = FindByThread(game.Workspace, "NewDeathCutsceneModel.deathModel.Baldi")
+						
+						repeat
+							EducatorModelDeath = FindByThread(game.Workspace, "NewDeathCutsceneModel.deathModel.Baldi")
+							
+							Waiting -= 1
+
+							task.wait(0.1)
+						until Waiting <= 0 or EducatorModelDeath
+						
+						if EducatorModelDeath then
+							EducatorModelDeath.Transparency = 0
+						end
+						
+						PlayerMain.DeathScreen.BaldiDeath = nil
 					end
 				end
 			end
@@ -297,19 +396,24 @@ function EducatorSpawn(Info)
 				if Educator.PrimaryPart.Transparency == 1 then
 					break
 				end
-				
-				if Educator:GetAttribute("Speed"..Educator:GetAttribute("CurrentMode")) <= 0 then
-					task.wait(Educator:GetAttribute("Cooldown"..Educator:GetAttribute("CurrentMode")))
+		
+				local EducatorSpeed = EducatorProperty("Speed", "Number")
+				local EducatorCooldown = EducatorProperty("Cooldown", "Number")
+
+				if EducatorSpeed and EducatorCooldown then
+					if EducatorSpeed > 0 then
+						PlaySound(Educator.Baldi.RulerSound)
+
+						Educator:PivotTo(CFrame.lookAt(Educator.PrimaryPart.Position, CurrentCamera.CFrame.Position))
+
+						game.TweenService:Create(EducatorVector3, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {
+							Value = EducatorVector3.Value + (Educator.PrimaryPart.CFrame.LookVector * (25 * EducatorSpeed))
+						}):Play()
+					end
+					
+					task.wait(EducatorCooldown)
 				else
-					PlaySound(Educator.Baldi.RulerSound)
-
-					Educator:PivotTo(CFrame.lookAt(Educator.PrimaryPart.Position, CurrentCamera.CFrame.Position))
-
-					game.TweenService:Create(EducatorVector3, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {
-						Value = EducatorVector3.Value + (Educator.PrimaryPart.CFrame.LookVector * (25 * Educator:GetAttribute("Speed"..Educator:GetAttribute("CurrentMode"))))
-					}):Play()
-
-					task.wait(Educator:GetAttribute("Cooldown"..Educator:GetAttribute("CurrentMode")))
+					task.wait()
 				end
 			else
 				game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 0 + 1)
@@ -386,12 +490,14 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function()
 	end
 end)
 
-game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Died:Connect(function()
-	for _, Educator in game.Workspace:GetChildren() do
-		if Educator.Name == "Baldi" then
-			game.RunService:UnbindFromRenderStep("EducatorMove"..Educator:GetAttribute("EducatorNumber"))
-			
-			Educator:Destroy()
+game.Players.LocalPlayer:GetAttributeChangedSignal("Dead"):Connect(function()
+	if game.Players.LocalPlayer:GetAttribute("Dead") then
+		for _, Educator in game.Workspace:GetChildren() do
+			if Educator.Name == "Baldi" then
+				game.RunService:UnbindFromRenderStep("EducatorMove"..Educator:GetAttribute("EducatorNumber"))
+
+				Educator:Destroy()
+			end
 		end
 	end
 end)
@@ -410,14 +516,10 @@ if RidgeCutsceneEvent then
 			local Waiting = 50
 			
 			repeat
-				if PlayerMain.InCutscene then
-					break
-				end
-				
 				Waiting -= 1
 				
 				task.wait(0.1)
-			until Waiting <= 0
+			until Waiting <= 0 or not PlayerMain.InCutscene
 		end
 		
 		if PlayerMain.PlayerDead or PlayerMain.IsGhost or not game.Players.LocalPlayer:GetAttribute("EducatorChase") then
@@ -452,7 +554,7 @@ game.Players.LocalPlayer:GetAttributeChangedSignal("EducatorChase"):Connect(func
 		local EducatorExist = false
 		
 		for _, Educator in game.Workspace:GetChildren() do
-			if Educator.Name == "Baldi" then
+			if Educator.Name == "Baldi" and Educator.PrimaryPart.Transparency ~= 1 then
 				EducatorExist = true
 			end
 		end
