@@ -240,12 +240,12 @@ function EducatorSpawn(Info)
 				local Magnitude1 = math.deg((FlashBeacon.handle.LookVector.WorldCFrame.LookVector - LookVector).Magnitude)
 				local Magnitude2 = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Educator.PrimaryPart.Position).Magnitude
 				
-				print("Condition 1: "..Magnitude2 < 80)
-				print("Condition 2: "..Magnitude1 < 85.5)
-				print("Condition 3: "..PlayerMain.Utils.CustomRayCast(
+				print("Condition 1: "..(Magnitude2 < 80))
+				print("Condition 2: "..(Magnitude1 < 85.5))
+				print("Condition 3: "..(PlayerMain.Utils.CustomRayCast(
 					CurrentCamera.CFrame.Position,
 					CFrame.lookAt(game.Workspace.CurrentCamera.CFrame.Position, Educator.PrimaryPart.Position).LookVector * Magnitude2,
-					{Educator}))
+					{Educator})))
 				
 				if Magnitude2 < 80 and Magnitude1 < 85.5 and not PlayerMain.Utils.CustomRayCast(
 					CurrentCamera.CFrame.Position,
