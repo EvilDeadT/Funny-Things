@@ -378,8 +378,12 @@ function EducatorSpawn(Info)
 					end
 					
 					if game.Workspace.GameplayFolder.Debris:FindFirstChild("LaserParticle") then
-						if (game.Workspace.GameplayFolder.Debris.LaserParticle.Position - Educator.PrimaryPart.Position).Magnitude < 5 and not Educator:GetAttribute("Atomized") then
-							EducatorAtomize()
+						for _, LaserParticle in game.Workspace.GameplayFolder.Debris:GetChildren() do
+							if LaserParticle.Name == "LaserParticle" then
+								if (LaserParticle.Position - Educator.PrimaryPart.Position).Magnitude < 5 and not Educator:GetAttribute("Atomized") then
+									EducatorAtomize()
+								end
+							end
 						end
 					end
 
