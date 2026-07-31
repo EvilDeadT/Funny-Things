@@ -101,6 +101,8 @@ local function PlaySound(Sound)
 	end
 end
 
+
+
 function EducatorSpawn(Info)
 	task.spawn(function()
 		local Educator = game.ReplicatedStorage.Assets.Baldi:Clone()
@@ -283,7 +285,110 @@ function EducatorSpawn(Info)
 		end
 		
 		local function EducatorAtomize()
+			local function AtomizePart(Part)
+				task.spawn(function()
+					if not Part:IsA("BasePart") then
+						return
+					end
+					
+					if Part:IsA("MeshPart") then
+						Part.TextureID = ""
+					end
+
+					Part.BrickColor = BrickColor.new("Bright red")
+					Part.Material = Enum.Material.Neon
+					Part.Anchored = true
+
+					game.TweenService:Create(Part, TweenInfo.new(3.5, Enum.EasingStyle.Linear), {
+						Position = Part.Position + Vector3.new(
+							math.random(-100, 100) / 40,
+							math.random(0, 100) / 40,
+							math.random(-100, 100) / 40
+						)
+					}):Play()
+
+					local EducatorAtomizeSizeTween = game.TweenService:Create(Part, TweenInfo.new(10, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+						Size = Vector3.new(0, 0, 0)
+					})
+					
+					EducatorAtomizeSizeTween.Completed:Once(function()
+						if Educator then
+							Educator:Destroy()
+							Educator = nil
+						end
+					end)
+					
+					EducatorAtomizeSizeTween:Play()
+				end)
+			end
 			
+			local DebrisFolder = FindByThread(game.Workspace, "GameplayFolder.Debris")
+			
+			if not DebrisFolder then
+				local Waiting = 50
+				
+				repeat
+					DebrisFolder = FindByThread(game.Workspace, "GameplayFolder.Debris")
+					
+					Waiting -= 1
+					
+					task.wait(0.1)
+				until Waiting <= 0 or DebrisFolder
+			end
+			
+			local function LaserParticleFlight(LaserParticle)
+				task.spawn(function()
+					while LaserParticle and not Educator:GetAttribute("Atomized") do
+						if LaserParticle.Parent == nil then
+							break
+						end
+
+						if (LaserParticle.Position - Educator.PrimaryPart.Position).Magnitude < 3 and not Educator:GetAttribute("Atomized") then
+							Educator:SetAttribute("Atomized", true)
+							
+							AtomizePart(Educator.PrimaryPart)
+
+							if Educator.PrimaryPart then
+								local AtomizeSound = Instance.new("Sound", Educator.PrimaryPart)
+								AtomizeSound.Name = "Atomize"
+								AtomizeSound.SoundId = "rbxassetid://140735995820291"
+								AtomizeSound.RollOffMaxDistance = 250
+								AtomizeSound.RollOffMinDistance = 50
+								AtomizeSound.RollOffMode = Enum.RollOffMode.Linear
+								AtomizeSound.PlaybackSpeed = 0.95
+								AtomizeSound.Volume = 2.5
+								AtomizeSound.SoundGroup = FindByThread(game.ReplicatedStorage, "Settings.SFX")
+
+								local AtomizeReverb = Instance.new("ReverbSoundEffect", AtomizeSound)
+								AtomizeReverb.DecayTime = 3
+								AtomizeReverb.Density = 0
+								AtomizeReverb.Diffusion = 0
+								AtomizeReverb.DryLevel = 3
+
+								PlaySound(AtomizeSound)
+							end
+						end
+						
+						task.wait()
+					end
+				end)
+			end
+			
+			if DebrisFolder then
+				DebrisFolder.ChildAdded:Connect(function(LaserParticle)
+					if LaserParticle.Name == "LaserParticle" then
+						print("Spawned LaserParticle")
+						
+						LaserParticleFlight(LaserParticle)
+					end
+				end)
+				
+				if DebrisFolder:FindFirstChild("LaserParticle") then
+					print("Found LaserParticle")
+					
+					LaserParticleFlight(DebrisFolder.LaserParticle)
+				end
+			end
 		end
 		
 		if game.Players.LocalPlayer.Character then
@@ -292,6 +397,10 @@ function EducatorSpawn(Info)
 					print("Found FlashBeacon in Character")
 					
 					EducatorFlash(FlashBeacon)
+				elseif FlashBeacon.Name == "ThePrototype" then
+					print("Found ThePrototype in Character")
+					
+					EducatorAtomize()
 				end
 			end)
 			
@@ -299,6 +408,12 @@ function EducatorSpawn(Info)
 				print("Found FlashBeacon that already exist")
 				
 				EducatorFlash(game.Players.LocalPlayer.Character.FlashBeacon)
+			end
+			
+			if game.Players.LocalPlayer.Character:FindFirstChild("ThePrototype") then
+				print("Found ThePrototype that already exist")
+				
+				EducatorAtomize()
 			end
 		end
 
@@ -324,7 +439,11 @@ function EducatorSpawn(Info)
 
 			if Educator then
 				if Educator.PrimaryPart then
-					Educator:PivotTo(CFrame.new(EducatorVector3.Value) * Educator.WorldPivot.Rotation)
+					if not Educator:GetAttribute("Atomized") then
+						Educator:PivotTo(CFrame.new(EducatorVector3.Value) * Educator.WorldPivot.Rotation)
+					else
+						game.RunService:UnbindFromRenderStep("EducatorMove"..Educator:GetAttribute("EducatorNumber"))
+					end
 
 					if PlayerZone.CurrentRoom then
 						if PlayerZone.CurrentRoom.Name == "Room100" and not game.Players.LocalPlayer:GetAttribute("EducatorRoom100Access") then
@@ -372,7 +491,8 @@ function EducatorSpawn(Info)
 						and not PlayerMain.IsGhost
 						and not game.Workspace:HasTag("TemporaryImmunity")
 						and not game.Players.LocalPlayer:HasTag("GodMode")
-						and not Educator:GetAttribute("Stunned") then
+						and not Educator:GetAttribute("Stunned")
+						and not Educator:GetAttribute("Atomized") then
 						local EducatorNumber = Educator:GetAttribute("EducatorNumber")
 
 						Educator:Destroy()
@@ -478,14 +598,14 @@ function EducatorSpawn(Info)
 
 		while Educator and not game.Players.LocalPlayer:GetAttribute("EducatorCatched") do
 			if Educator:FindFirstChild("Baldi") then
-				if Educator.PrimaryPart.Transparency == 1 then
+				if Educator.PrimaryPart.Transparency == 1 or Educator:GetAttribute("Atomized") then
 					break
 				end
 		
 				local EducatorSpeed = EducatorProperty("Speed", "Number")
 				local EducatorCooldown = EducatorProperty("Cooldown", "Number")
 
-				if EducatorSpeed and EducatorCooldown and not Educator:GetAttribute("Stunned") then
+				if EducatorSpeed and EducatorCooldown and not Educator:GetAttribute("Stunned") and not Educator:GetAttribute("Atomized") then
 					if EducatorSpeed > 0 then
 						PlaySound(Educator.Baldi.RulerSound)
 
