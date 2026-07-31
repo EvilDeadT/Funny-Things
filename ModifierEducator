@@ -226,9 +226,21 @@ function EducatorSpawn(Info)
 			local UseSound = FlashBeacon:FindFirstChild("FlashBeaconUse", true)
 
 			if not UseSound then
+				local Waiting = 50
+				
+				repeat
+					UseSound = FlashBeacon:FindFirstChild("FlashBeaconUse", true)
+					
+					Waiting -= 1
+					
+					task.wait(0.1)
+				until Waiting <= 0 or UseSound
+			end
+			
+			if not UseSound then
 				return print("EducatorFlash No UseSound")
 			end
-
+			
 			UseSound.Played:Connect(function()
 				print("Flash attempt")
 				
