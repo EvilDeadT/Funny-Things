@@ -241,14 +241,16 @@ function EducatorSpawn(Info)
 					CurrentCamera.CFrame.Position,
 					CFrame.lookAt(game.Workspace.CurrentCamera.CFrame.Position, Educator.PrimaryPart.Position).LookVector * Magnitude2,
 					{Educator})) then
-					print("Educaotor Flashed")
+					print("Educator Flashed")
 					
 					Educator:SetAttribute("Stunned", true)
 					Educator:SetAttribute("CanBeFlashed", false)
 					PlaySound(Educator.Baldi.StunLines:GetChildren()[math.random(1, #Educator.Baldi.StunLines:GetChildren())])
 					
 					task.delay(Educator:GetAttribute("StunCooldownFlash"), function()
-						Educator:SetAttribute("CanBeFlashed", true)
+						if Educator then
+							Educator:SetAttribute("CanBeFlashed", true)
+						end
 					end)
 					
 					task.wait(Educator:GetAttribute("StunTime"))
@@ -265,13 +267,13 @@ function EducatorSpawn(Info)
 		if game.Players.LocalPlayer.Character then
 			game.Players.LocalPlayer.Character.ChildAdded:Connect(function(FlashBeacon)
 				if FlashBeacon.Name == "FlashBeacon" then
-					print("Found Flashlight in Character")
+					print("Found FlashBeacon in Character")
 					EducatorFlash()
 				end
 			end)
 			
 			if game.Players.LocalPlayer.Character:FindFirstChild("FlashBeacon") then
-				print("Found Flashlight that already exist")
+				print("Found FlashBeacon that already exist")
 				EducatorFlash(game.Players.LocalPlayer.Character.FlashBeacon)
 			end
 		end
@@ -423,15 +425,17 @@ function EducatorSpawn(Info)
 							end
 						end
 						
-						local EducatorModelDeath = FindByThread(game.Workspace, "NewDeathCutsceneModel.deathModel.Baldi")
-						
-						repeat
-							EducatorModelDeath = FindByThread(game.Workspace, "NewDeathCutsceneModel.deathModel.Baldi")
+						if not game.Workspace:FindFirstChild("NewDeathCutsceneModel") then
+							local Waiting = 50
 							
-							Waiting -= 1
+							repeat
+								Waiting -= 1
 
-							task.wait(0.1)
-						until Waiting <= 0 or EducatorModelDeath
+								task.wait(0.1)
+							until Waiting <= 0 or game.Workspace:FindFirstChild("NewDeathCutsceneModel")
+						end
+						
+						local EducatorModelDeath = FindByThread(game.Workspace, "NewDeathCutsceneModel.deathModel.Baldi")
 						
 						if EducatorModelDeath then
 							EducatorModelDeath.Transparency = 0
