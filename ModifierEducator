@@ -145,12 +145,14 @@ function EducatorSpawn(Info)
 				if (type(Educator:GetAttribute("CurrentMode")) == "string" or type(Educator:GetAttribute("CurrentMode")) == "number")
 					and (type(Educator:GetAttribute("DefaultMode")) == "string" or type(Educator:GetAttribute("DefaultMode")) == "number")
 					and (type(Property) == "string" or type(Property) == "number") then
-					if type(Educator:GetAttribute(Property..Educator:GetAttribute("CurrentMode"))) == string.lower(PropertyType) then
-						if Educator:GetAttribute("CurrentMode") == Educator:GetAttribute("DefaultMode") then
-							return Educator:GetAttribute(Property..Educator:GetAttribute("CurrentMode"))
-						else
-							return Educator:GetAttribute(Property..Educator:GetAttribute("DefaultMode")..Educator:GetAttribute("CurrentMode"))
-						end
+					local EducatorAttribute = Educator:GetAttribute(Property..Educator:GetAttribute("CurrentMode"))
+					
+					if Educator:GetAttribute("CurrentMode") ~= Educator:GetAttribute("DefaultMode") then
+						EducatorAttribute = Educator:GetAttribute(Property..Educator:GetAttribute("DefaultMode")..Educator:GetAttribute("CurrentMode"))
+					end
+					
+					if type(EducatorAttribute) == string.lower(PropertyType) then
+						return EducatorAttribute
 					end
 				end
 			end
@@ -260,7 +262,12 @@ function EducatorSpawn(Info)
 					
 					Educator:SetAttribute("Stunned", true)
 					Educator:SetAttribute("CanBeFlashed", false)
-					PlaySound(Educator.Baldi.StunLines:GetChildren()[math.random(1, #Educator.Baldi.StunLines:GetChildren())])
+					Educator:SetAttribute("RageRulerSlaps", 3)
+					
+					local EducatorFlashedSound = Educator.Baldi.StunLines:GetChildren()[math.random(1, #Educator.Baldi.StunLines:GetChildren())]
+					EducatorFlashedSound.Volume = 0.75
+					
+					PlaySound(EducatorFlashedSound)
 					
 					task.delay(Educator:GetAttribute("StunCooldownFlash"), function()
 						if Educator then
