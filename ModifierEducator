@@ -121,6 +121,8 @@ function EducatorSpawn(Info)
 		Educator:SetAttribute("EducatorNumber", EducatorCount)
 		Educator:SetAttribute("DefaultMode", "Schoolhouse")
 		Educator:SetAttribute("CurrentMode", Educator:GetAttribute("DefaultMode"))
+		Educator:SetAttribute("RageRulerSlaps", 0)
+		Educator:SetAttribute("StunTime", 8)
 		Educator:SetAttribute("Stunned", false)
 		Educator:SetAttribute("Atomized", false)
 		
@@ -216,12 +218,51 @@ function EducatorSpawn(Info)
 			return
 		end
 		
-		local function EducatorFlash()
+		local function EducatorFlash(FlashBeacon)
+			if not FlashBeacon then
+				return
+			end
 			
+			local UseSound = FlashBeacon:FindFirstChild("FlashBeaconUse", true)
+
+			if not UseSound then
+				return
+			end
+
+			UseSound.Played:Connect(function()
+				local LookVector = CFrame.lookAt(FlashBeacon.handle.LookVector.WorldPosition, Educator.PrimaryPart.Position).LookVector
+				local Magnitude1 = math.deg((FlashBeacon.handle.LookVector.WorldCFrame.LookVector - LookVector).Magnitude)
+				local Magnitude2 = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Educator.PrimaryPart.Position).Magnitude
+				if Magnitude2 < 80 and (Magnitude1 < 85.5 and not PlayerMain.Utils.CustomRayCast(
+					CurrentCamera.CFrame.Position,
+					CFrame.lookAt(game.Workspace.CurrentCamera.CFrame.Position, Educator.PrimaryPart.Position).LookVector * Magnitude2,
+					{Educator})) then
+					
+					Educator:SetAttribute("Stunned", true)
+					Educator:SetAttribute("RageRulerSlaps", 3)
+					PlaySound(Educator.Baldi.StunLines:GetChildren()[math.random(1, #Educator.Baldi.StunLines:GetChildren())])
+					
+					task.wait(Educator:GetAttribute("StunTime"))
+					
+					Educator:SetAttribute("Stunned", false)
+				end
+			end)
 		end
 		
 		local function EducatorAtomize()
 			
+		end
+		
+		if game.Players.LocalPlayer.Character then
+			game.Players.LocalPlayer.Character.ChildAdded:Connect(function(FlashBeacon)
+				if FlashBeacon.Name == "FlashBeacon" then
+					EducatorFlash()
+				end
+			end)
+			
+			if game.Players.LocalPlayer.Character:FindFirstChild("FlashBeacon") then
+				EducatorFlash(game.Players.LocalPlayer.Character.FlashBeacon)
+			end
 		end
 
 		local EducatorVector3 = Instance.new("Vector3Value")
@@ -400,14 +441,24 @@ function EducatorSpawn(Info)
 				local EducatorSpeed = EducatorProperty("Speed", "Number")
 				local EducatorCooldown = EducatorProperty("Cooldown", "Number")
 
-				if EducatorSpeed and EducatorCooldown then
+				if EducatorSpeed and EducatorCooldown and not Educator:GetAttribute("Stunned") then
 					if EducatorSpeed > 0 then
 						PlaySound(Educator.Baldi.RulerSound)
 
 						Educator:PivotTo(CFrame.lookAt(Educator.PrimaryPart.Position, CurrentCamera.CFrame.Position))
+						
+						local EducatorSpeedMultiplier = 25
+						
+						if type(Educator:GetAttribute("RageRulerSlaps")) == "number" then
+							if Educator:GetAttribute("RageRulerSlaps") > 0 then
+								EducatorSpeedMultiplier = 50
+								
+								Educator:SetAttribute("RageRulerSlaps", Educator:GetAttribute("RageRulerSlaps") - 1)
+							end
+						end
 
 						game.TweenService:Create(EducatorVector3, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {
-							Value = EducatorVector3.Value + (Educator.PrimaryPart.CFrame.LookVector * (25 * EducatorSpeed))
+							Value = EducatorVector3.Value + (Educator.PrimaryPart.CFrame.LookVector * (EducatorSpeedMultiplier * EducatorSpeed))
 						}):Play()
 					end
 					
