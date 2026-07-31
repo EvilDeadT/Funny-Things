@@ -106,9 +106,7 @@ function EducatorSpawn(Info)
 		local Educator = game.ReplicatedStorage.Assets.Baldi:Clone()
 		Educator.Parent = game.Workspace
 
-		local EducatorInfo = {
-			PlayerCatched = false
-		}
+		game.Players.LocalPlayer:SetAttribute("EducatorCatched", false)
 		
 		local EducatorCount = 0
 		
@@ -230,6 +228,12 @@ function EducatorSpawn(Info)
 			end
 
 			UseSound.Played:Connect(function()
+				if type(Educator:GetAttribute("RageRulerSlaps")) == "number" then
+					if Educator:GetAttribute("RageRulerSlaps") > 0 then
+						return
+					end
+				end
+				
 				local LookVector = CFrame.lookAt(FlashBeacon.handle.LookVector.WorldPosition, Educator.PrimaryPart.Position).LookVector
 				local Magnitude1 = math.deg((FlashBeacon.handle.LookVector.WorldCFrame.LookVector - LookVector).Magnitude)
 				local Magnitude2 = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Educator.PrimaryPart.Position).Magnitude
@@ -270,7 +274,7 @@ function EducatorSpawn(Info)
 		EducatorVector3.Value = Educator.WorldPivot.Position
 
 		game.RunService:BindToRenderStep("EducatorMove"..Educator:GetAttribute("EducatorNumber"), 220, function()
-			if EducatorInfo.PlayerCatched then
+			if game.Players.LocalPlayer:GetAttribute("EducatorCatched") then
 				local EducatorGlitch = FindByThread(game.Players.LocalPlayer.PlayerGui, "Main.BaldiTouch")
 
 				if EducatorGlitch then
@@ -338,16 +342,16 @@ function EducatorSpawn(Info)
 						Educator = nil
 						
 						game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", 1)
-						
+
 						for _, OtherEducator in game.Workspace:GetChildren() do
 							if OtherEducator.Name == "Baldi" then
 								OtherEducator:Destroy()
 
-								game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", (game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 0) + 1)
+								game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") + 1)
 							end
 						end
 
-						EducatorInfo.PlayerCatched = true
+						game.Players.LocalPlayer:SetAttribute("EducatorCatched", true)
 
 						local EducatorTouch = game.ReplicatedStorage.Assets.BaldiTouch:Clone()
 						EducatorTouch.PrimaryPart.PivotOffset = CFrame.new(0, 0, 0) * CFrame.fromOrientation(0, 0, 0)
@@ -401,7 +405,7 @@ function EducatorSpawn(Info)
 
 						EducatorTouch:Destroy()
 
-						EducatorInfo.PlayerCatched = false
+						game.Players.LocalPlayer:SetAttribute("EducatorCatched", false)
 						
 						if not game.Players.LocalPlayer:GetAttribute("Dead") then
 							PlayerMain.CameraModule.Switch("PlayerControl")
@@ -433,7 +437,7 @@ function EducatorSpawn(Info)
 			end
 		end)
 
-		while Educator and not EducatorInfo.PlayerCatched do
+		while Educator and not game.Players.LocalPlayer:GetAttribute("EducatorCatched") do
 			if Educator:FindFirstChild("Baldi") then
 				if Educator.PrimaryPart.Transparency == 1 then
 					break
@@ -452,13 +456,13 @@ function EducatorSpawn(Info)
 						
 						if type(Educator:GetAttribute("RageRulerSlaps")) == "number" then
 							if Educator:GetAttribute("RageRulerSlaps") > 0 then
-								EducatorSpeedMultiplier = 50
+								EducatorSpeedMultiplier = 40
 								
 								Educator:SetAttribute("RageRulerSlaps", Educator:GetAttribute("RageRulerSlaps") - 1)
 							end
 						end
 
-						game.TweenService:Create(EducatorVector3, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {
+						game.TweenService:Create(EducatorVector3, TweenInfo.new(0.25, Enum.EasingStyle.Linear), {
 							Value = EducatorVector3.Value + (Educator.PrimaryPart.CFrame.LookVector * (EducatorSpeedMultiplier * EducatorSpeed))
 						}):Play()
 					end
@@ -468,15 +472,11 @@ function EducatorSpawn(Info)
 					task.wait()
 				end
 			else
-				game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", 1)
-				
-				for _, OtherEducator in game.Workspace:GetChildren() do
-					if OtherEducator.Name == "Baldi" then
-						OtherEducator:Destroy()
-
-						game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", (game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 0) + 1)
-					end
+				if not game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") then
+					game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", 0)
 				end
+				
+				game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") + 1)
 				
 				break
 			end
@@ -553,6 +553,8 @@ game.Players.LocalPlayer:GetAttributeChangedSignal("Dead"):Connect(function()
 				Educator:Destroy()
 			end
 		end
+		
+		game.Players.LocalPlayer:SetAttribute("EducatorCatched", false)
 	end
 end)
 
