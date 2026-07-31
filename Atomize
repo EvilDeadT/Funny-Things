@@ -122,14 +122,6 @@ function Atomize(Object)
 			game.TweenService:Create(Part, TweenInfo.new(10, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
 				Size = Vector3.new(0, 0, 0)
 			}):Play()
-			
-			task.delay(3.5, function()
-				local DamageEvent = FindByThread(game.ReplicatedStorage, "Events.LocalDamage")
-
-				if DamageEvent then
-					DamageEvent:FireServer(99999, "ShotgunPunishment", 1, "ShotgunPunishment")
-				end
-			end)
 		end)
 	end
 
@@ -189,6 +181,16 @@ function Atomize(Object)
 		end
 	elseif Object:IsA("BasePart") then
 		AtomizePart(Object)
+	end
+	
+	if IsPlayer then
+		task.delay(1.5, function()
+			local DamageEvent = FindByThread(game.ReplicatedStorage, "Events.LocalDamage")
+
+			if DamageEvent then
+				DamageEvent:FireServer(99999, "ShotgunPunishment", 1, "ShotgunPunishment")
+			end
+		end)
 	end
 end
 
