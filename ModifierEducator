@@ -230,7 +230,7 @@ function EducatorSpawn(Info)
 			UseSound.Played:Connect(function()
 				if type(Educator:GetAttribute("RageRulerSlaps")) == "number" then
 					if Educator:GetAttribute("RageRulerSlaps") > 0 then
-						return
+						return print("Educator in Rage. Can't flash")
 					end
 				end
 				
@@ -261,11 +261,13 @@ function EducatorSpawn(Info)
 		if game.Players.LocalPlayer.Character then
 			game.Players.LocalPlayer.Character.ChildAdded:Connect(function(FlashBeacon)
 				if FlashBeacon.Name == "FlashBeacon" then
+					print("Found Flashlight in Character")
 					EducatorFlash()
 				end
 			end)
 			
 			if game.Players.LocalPlayer.Character:FindFirstChild("FlashBeacon") then
+				print("Found Flashlight that already exist")
 				EducatorFlash(game.Players.LocalPlayer.Character.FlashBeacon)
 			end
 		end
@@ -335,7 +337,7 @@ function EducatorSpawn(Info)
 						end
 					end
 					
-					if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Educator.PrimaryPart.Position).Magnitude < (2.5 * EducatorHitbox) and not PlayerMain.PlayerDead and not PlayerMain.IsGhost and not game.Workspace:HasTag("TemporaryImmunity") and not game.Players.LocalPlayer:HasTag("GodMode") then
+					if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Educator.PrimaryPart.Position).Magnitude < (3 * EducatorHitbox) and not PlayerMain.PlayerDead and not PlayerMain.IsGhost and not game.Workspace:HasTag("TemporaryImmunity") and not game.Players.LocalPlayer:HasTag("GodMode") then
 						local EducatorNumber = Educator:GetAttribute("EducatorNumber")
 
 						Educator:Destroy()
