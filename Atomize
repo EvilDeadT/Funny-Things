@@ -1,0 +1,195 @@
+local AtomizeClassNameDelete = {
+	"Shirt",
+	"Pants",
+	"Weld",
+	"WeldConstraint",
+	"AnimationConstraint",
+	"BallSocketConstraint"
+}
+
+local AtomizeSounds = {
+	Player = {
+		"118861764643606",
+		"91684049528315",
+		"115087127431976"
+	},
+	Other = {
+
+	}
+}
+
+function FindByThread(PathStart, Thread)
+	if PathStart and Thread then
+		local PickedFolder = PathStart
+
+		for _, Path in string.split(Thread, ".") do
+			local PathInstance = Path
+			local SpecialInstance = nil
+			local SpecialMethod = nil
+
+			if string.find(PathInstance, ":") then
+				PathInstance = string.split(Path, ":")[1]
+				SpecialInstance = string.split(string.split(string.split(Path, ":")[2], "(")[2], ")")[1]
+				SpecialMethod = string.split(string.split(Path, ":")[2], "(")[1]
+			end
+
+			if PathInstance == "LocalPlayer" then
+				PickedFolder = game.Players.LocalPlayer
+			elseif PathInstance == "CFrame" then
+				PickedFolder = PickedFolder.CFrame
+
+				return PickedFolder
+			else
+				local IsProperty = pcall(function()
+					PickedFolder[PathInstance] = PickedFolder[PathInstance]
+				end)
+
+				if PickedFolder:FindFirstChild(PathInstance) or IsProperty then
+					PickedFolder = PickedFolder[PathInstance]
+				else
+					print("FindByThread not found: "..PathInstance)
+
+					return
+				end
+			end
+
+			if SpecialInstance then
+				if SpecialMethod == "FindFirstChildWhichIsA" then
+					PickedFolder = PickedFolder:FindFirstChildWhichIsA(SpecialInstance)
+				elseif SpecialMethod == "GetChildren" then
+					PickedFolder = PickedFolder:GetChildren()
+				end
+			end
+		end
+
+		return PickedFolder
+	end
+
+	return
+end
+
+local function PlaySound(Sound)
+	if Sound then
+		if Sound:GetAttribute("ID") then
+			Sound.SoundId = Sound:GetAttribute("ID")
+		end
+
+		Sound:Play()
+	end
+end
+
+function Atomize(Object)
+	local IsPlayer = false
+
+	local function AtomizePart(Part)
+		task.spawn(function()
+			if not Part:IsA("BasePart") then
+				return
+			end
+
+			Part.BrickColor = BrickColor.new("Bright red")
+			Part.Material = Enum.Material.Neon
+			Part.Anchored = true
+
+			if Part.Parent.ClassName == "Accessory" then
+				local PartParent = Part.Parent
+
+				if Part:IsA("MeshPart") then
+					Part.TextureID = ""
+				end
+
+				Part.Parent = Object
+
+				if PartParent then
+					PartParent:Destroy()
+				end
+			end
+
+			for _, InstanceToDelete in Part:GetDescendants() do
+				if InstanceToDelete:IsA("Motor6D") then
+					InstanceToDelete.Enabled = false
+				end
+			end
+
+			game.TweenService:Create(Part, TweenInfo.new(3.5, Enum.EasingStyle.Linear), {
+				Position = Part.Position + Vector3.new(
+					math.random(-100, 100) / 40,
+					math.random(0, 100) / 40,
+					math.random(-100, 100) / 40
+				)
+			}):Play()
+
+			game.TweenService:Create(Part, TweenInfo.new(10, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+				Size = Vector3.new(0, 0, 0)
+			}):Play()
+			
+			task.delay(1.5, function()
+				local DamageEvent = FindByThread(game.ReplicatedStorage, "Events.LocalDamage")
+
+				if DamageEvent then
+					DamageEvent:FireServer(99999, "ShotgunPunishment", 1, "ShotgunPunishment")
+				end
+			end)
+		end)
+	end
+
+	if Object:IsA("Model") then
+		if game.Players:GetPlayerFromCharacter(Object) then
+			IsPlayer = true
+		end
+
+		if Object:FindFirstChild("Head") and IsPlayer then
+			local HeadToDelete = Object.Head
+
+			local Part = Instance.new("MeshPart", Object)
+			Part.Name = "OldHead"
+			Part:ApplyMesh(game.InsertService:CreateMeshPartAsync("rbxassetid://5524104700",
+				Enum.CollisionFidelity.Default,
+				Enum.RenderFidelity.Automatic
+				))
+			Part.CFrame = HeadToDelete.CFrame
+			Part.Size = Vector3.new(1.2, 1.2, 1.2)
+			Part.CanCollide = false
+
+			HeadToDelete:Destroy()
+		end
+
+		for _, Part in Object:GetDescendants() do
+			if table.find(AtomizeClassNameDelete, Part.ClassName) then
+				Part:Destroy()
+			end
+
+			if Part:IsA("BasePart") then
+				AtomizePart(Part)
+			end
+		end
+
+		if Object.PrimaryPart then
+			local AtomizeSound = Instance.new("Sound", Object.PrimaryPart)
+			AtomizeSound.Name = "Atomize"
+			if IsPlayer then
+				AtomizeSound.SoundId = "rbxassetid://"..AtomizeSounds.Player[math.random(1, #AtomizeSounds.Player)]
+			else
+				AtomizeSound.SoundId = "rbxassetid://"..AtomizeSounds.Other[math.random(1, #AtomizeSounds.Other)]
+			end
+			AtomizeSound.RollOffMaxDistance = 250
+			AtomizeSound.RollOffMinDistance = 50
+			AtomizeSound.RollOffMode = Enum.RollOffMode.Linear
+			AtomizeSound.PlaybackSpeed = 0.95
+			AtomizeSound.Volume = 2.5
+			AtomizeSound.SoundGroup = FindByThread(game.ReplicatedStorage, "Settings.SFX")
+
+			local AtomizeReverb = Instance.new("ReverbSoundEffect", AtomizeSound)
+			AtomizeReverb.DecayTime = 3
+			AtomizeReverb.Density = 0
+			AtomizeReverb.Diffusion = 0
+			AtomizeReverb.DryLevel = 3
+
+			PlaySound(AtomizeSound)
+		end
+	elseif Object:IsA("BasePart") then
+		AtomizePart(Object)
+	end
+end
+
+Atomize(game.Players.LocalPlayer.Character)
