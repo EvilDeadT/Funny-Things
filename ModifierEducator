@@ -122,6 +122,8 @@ function EducatorSpawn(Info)
 		Educator:SetAttribute("RageRulerSlaps", 0)
 		Educator:SetAttribute("StunTime", 8)
 		Educator:SetAttribute("Stunned", false)
+		Educator:SetAttribute("CanBeFlashed", true)
+		Educator:SetAttribute("StunCooldownFlash", 18)
 		Educator:SetAttribute("Atomized", false)
 		
 		for Name, Properties in EducatorStats do
@@ -228,10 +230,8 @@ function EducatorSpawn(Info)
 			end
 
 			UseSound.Played:Connect(function()
-				if type(Educator:GetAttribute("RageRulerSlaps")) == "number" then
-					if Educator:GetAttribute("RageRulerSlaps") > 0 then
-						return print("Educator in Rage. Can't flash")
-					end
+				if not Educator:GetAttribute("CanBeFlashed") then
+					return print("Educator can't be Flashed")
 				end
 				
 				local LookVector = CFrame.lookAt(FlashBeacon.handle.LookVector.WorldPosition, Educator.PrimaryPart.Position).LookVector
@@ -244,8 +244,12 @@ function EducatorSpawn(Info)
 					print("Educaotor Flashed")
 					
 					Educator:SetAttribute("Stunned", true)
-					Educator:SetAttribute("RageRulerSlaps", 3)
+					Educator:SetAttribute("CanBeFlashed", false)
 					PlaySound(Educator.Baldi.StunLines:GetChildren()[math.random(1, #Educator.Baldi.StunLines:GetChildren())])
+					
+					task.delay(Educator:GetAttribute("StunCooldownFlash"), function()
+						Educator:SetAttribute("CanBeFlashed", true)
+					end)
 					
 					task.wait(Educator:GetAttribute("StunTime"))
 					
