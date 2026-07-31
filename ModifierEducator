@@ -245,10 +245,28 @@ function EducatorSpawn(Info)
 				return print("EducatorFlash No UseSound")
 			end
 			
-			FlashBeacon:SetAttribute("EducatorOccupied", true)
+			
+			if Educator then
+				local FlashBeaconValue = Educator:FindFirstChild("FlashBeacon")
+				
+				if not FlashBeaconValue then
+					FlashBeaconValue = Instance.new("ObjectValue", Educator)
+					FlashBeaconValue.Name = "FlashBeacon"
+				end
+				
+				FlashBeaconValue.Value = FlashBeacon
+			end
 			
 			UseSound.Played:Connect(function()
 				print("Flash attempt")
+				
+				if not Educator then
+					return
+				else
+					if not Educator.PrimaryPart then
+						return
+					end
+				end
 				
 				if not Educator:GetAttribute("CanBeFlashed") then
 					return print("Educator can't be Flashed")
@@ -337,7 +355,15 @@ function EducatorSpawn(Info)
 		
 		if game.Players.LocalPlayer.Character then
 			game.Players.LocalPlayer.Character.ChildAdded:Connect(function(FlashBeacon)
-				if FlashBeacon.Name == "FlashBeacon" and not FlashBeacon:GetAttribute("EducatorOccupied") then
+				if Educator then
+					if Educator:FindFirstChild("FlashBeacon") then
+						if Educator.FlashBeacon.Value == FlashBeacon then
+							return
+						end
+					end
+				end
+				
+				if FlashBeacon.Name == "FlashBeacon" then
 					EducatorFlash(FlashBeacon)
 				end
 			end)
