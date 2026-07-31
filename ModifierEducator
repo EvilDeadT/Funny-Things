@@ -237,6 +237,7 @@ function EducatorSpawn(Info)
 					CurrentCamera.CFrame.Position,
 					CFrame.lookAt(game.Workspace.CurrentCamera.CFrame.Position, Educator.PrimaryPart.Position).LookVector * Magnitude2,
 					{Educator})) then
+					print("Educaotor Flashed")
 					
 					Educator:SetAttribute("Stunned", true)
 					Educator:SetAttribute("RageRulerSlaps", 3)
@@ -531,6 +532,8 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function()
 	if type(game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath")) == "number" and game.Players.LocalPlayer:GetAttribute("EducatorChase") then
 		if game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") > 0 then
 			for i = 1, game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") do
+				print("Educator Respawn After Revive")
+				
 				EducatorSpawn({
 					Reason = "Revive"
 				})
