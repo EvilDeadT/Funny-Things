@@ -295,13 +295,13 @@ function EducatorSpawn(Info)
 						Educator:Destroy()
 						Educator = nil
 						
-						game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 0 + 1)
+						game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", 1)
 						
 						for _, OtherEducator in game.Workspace:GetChildren() do
 							if OtherEducator.Name == "Baldi" then
 								OtherEducator:Destroy()
 
-								game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 0 + 1)
+								game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", (game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 0) + 1)
 							end
 						end
 
@@ -416,13 +416,13 @@ function EducatorSpawn(Info)
 					task.wait()
 				end
 			else
-				game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 0 + 1)
+				game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", 1)
 				
 				for _, OtherEducator in game.Workspace:GetChildren() do
 					if OtherEducator.Name == "Baldi" then
 						OtherEducator:Destroy()
 
-						game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 0 + 1)
+						game.Players.LocalPlayer:SetAttribute("EducatorsBeforeDeath", (game.Players.LocalPlayer:GetAttribute("EducatorsBeforeDeath") or 0) + 1)
 					end
 				end
 				
