@@ -220,16 +220,18 @@ function EducatorSpawn(Info)
 		
 		local function EducatorFlash(FlashBeacon)
 			if not FlashBeacon then
-				return
+				return print("EducatorFlash Not FlashBeacon")
 			end
 			
 			local UseSound = FlashBeacon:FindFirstChild("FlashBeaconUse", true)
 
 			if not UseSound then
-				return
+				return print("EducatorFlash No UseSound")
 			end
 
 			UseSound.Played:Connect(function()
+				print("Flash attempt")
+				
 				if not Educator:GetAttribute("CanBeFlashed") then
 					return print("Educator can't be Flashed")
 				end
