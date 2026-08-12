@@ -716,30 +716,26 @@ function ChangePipes(Room, Info)
 															Pressed = true
 														end)
 
-														task.spawn(function()
-															while not Pressed do
-																local Solved = ChangePipes(Room, {
-																	CheckOnly = true
-																})
-
-																print("Solved:")
-																print(Solved)
-
-																if Solved then
-																	print("Solved")
-																	Pressed = true
-																else
-																	print("Not Solved")
-																	task.wait(0.5)
-																end
-
-																print("Check. Not Pressed")
-															end
-														end)
-
 														while not Pressed do
 															PromptInFrontOfCamera(PipePart.Parent.Highlight, 3)
 															task.wait()
+															
+															local Solved = ChangePipes(Room, {
+																CheckOnly = true
+															})
+
+															print("Solved:")
+															print(Solved)
+
+															if Solved then
+																print("Solved")
+																Pressed = true
+															else
+																print("Not Solved")
+																task.wait(0.5)
+															end
+
+															print("Check. Not Pressed")
 														end
 													end
 												end
