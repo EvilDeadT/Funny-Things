@@ -729,12 +729,16 @@ function ChangePipes(Room, Info)
 																	else
 																		task.wait(0.5)
 																	end
+																	
+																	print("Check. Not Pressed")
 																end
 															end)
 
 															while not Pressed do
 																PromptInFrontOfCamera(PipePart.Parent.Highlight, 3)
 																task.wait()
+																
+																print("Prompt. Not Pressed")
 															end
 														end
 													end
