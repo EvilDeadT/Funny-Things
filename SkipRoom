@@ -707,49 +707,43 @@ function ChangePipes(Room, Info)
 													end
 												end
 											end
+											if NeedRotate then
+												if PipePart.Parent:FindFirstChild("Highlight") and not CheckOnly then
+													if PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then						
+														local Pressed = false
 
-											if not CheckOnly then
-												if NeedRotate then
-													if PipePart.Parent:FindFirstChild("Highlight") then
-														if PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then						
-															local Pressed = false
+														PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Triggered:Once(function()
+															Pressed = true
+														end)
 
-															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Triggered:Once(function()
-																Pressed = true
-															end)
-
-															task.spawn(function()
-																while not Pressed do
-																	local Solved = ChangePipes(Room, {
-																		CheckOnly = true
-																	})
-																	
-																	print("Solved:")
-																	print(Solved)
-
-																	if Solved then
-																		print("Solved")
-																		Pressed = true
-																	else
-																		print("Not Solved")
-																		task.wait(0.5)
-																	end
-																	
-																	print("Check. Not Pressed")
-																end
-															end)
-
+														task.spawn(function()
 															while not Pressed do
-																PromptInFrontOfCamera(PipePart.Parent.Highlight, 3)
-																task.wait()
+																local Solved = ChangePipes(Room, {
+																	CheckOnly = true
+																})
+
+																print("Solved:")
+																print(Solved)
+
+																if Solved then
+																	print("Solved")
+																	Pressed = true
+																else
+																	print("Not Solved")
+																	task.wait(0.5)
+																end
+
+																print("Check. Not Pressed")
 															end
+														end)
+
+														while not Pressed do
+															PromptInFrontOfCamera(PipePart.Parent.Highlight, 3)
+															task.wait()
 														end
 													end
-													Finished = false	
 												end
-											else
-												print("Return Value")
-												return not NeedRotate
+												Finished = false	
 											end
 										end
 									end
