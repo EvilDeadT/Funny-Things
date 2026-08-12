@@ -759,9 +759,7 @@ function ChangePipes(Room, Info)
 			game.Workspace.BoardPuzzlePipeFindPart:Destroy()
 		end
 	else
-		if Script.Action.Value == "Solving BoardPuzzle" then
-			Script.Action.Value = "NotFinished BoardPuzzle"
-		end
+		
 	end
 
 	return Finished
