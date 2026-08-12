@@ -723,6 +723,9 @@ function ChangePipes(Room, Info)
 																	local Solved = ChangePipes(Room, {
 																		CheckOnly = true
 																	})
+																	
+																	print("Solved:")
+																	print(Solved)
 
 																	if Solved then
 																		print("Solved")
@@ -739,14 +742,13 @@ function ChangePipes(Room, Info)
 															while not Pressed do
 																PromptInFrontOfCamera(PipePart.Parent.Highlight, 3)
 																task.wait()
-																
-																print("Prompt. Not Pressed")
 															end
 														end
 													end
 													Finished = false	
 												end
 											else
+												print("Return Value")
 												return not NeedRotate
 											end
 										end
