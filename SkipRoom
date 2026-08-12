@@ -725,8 +725,10 @@ function ChangePipes(Room, Info)
 																	})
 
 																	if Solved then
+																		print("Solved")
 																		Pressed = true
 																	else
+																		print("Not Solved")
 																		task.wait(0.5)
 																	end
 																	
