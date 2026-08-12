@@ -761,8 +761,6 @@ function ChangePipes(Room, Info)
 	else
 		if Script.Action.Value == "Solving BoardPuzzle" then
 			Script.Action.Value = "NotFinished BoardPuzzle"
-
-			OpenNextDoor()
 		end
 	end
 
