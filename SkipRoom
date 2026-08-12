@@ -1,7 +1,7 @@
 local SkipRoom = {
 	OpenedRooms = {},
 	NextUngeneratedRoom = nil,
-	
+
 	Door = nil,
 	DoorRootPrompt = nil,
 	DoorCollisionPartCFrame = nil,
@@ -39,7 +39,7 @@ local SkipRoom = {
 		["DoubleDoor"] = {
 			DoubleDoor = true,
 			DoorOfDoubleDoor = "NormalDoor",
-			
+
 			RootPrompt = "Root",
 			CollisionPart = "CollisionPart",
 			LockPrompt = "Lock.Main",
@@ -48,7 +48,7 @@ local SkipRoom = {
 		["DoubleDoorSewer"] = {
 			DoubleDoor = true,
 			DoorOfDoubleDoor = "NormalDoor",
-			
+
 			RootPrompt = "Root",
 			CollisionPart = "CollisionPart",
 			LockPrompt = "Lock.Main",
@@ -370,24 +370,23 @@ local Main = {
 	Player = game.Players.LocalPlayer,
 	Character = game.Players.LocalPlayer.Character,
 	CharacterRoot = if game.Players.LocalPlayer.Character then
-						if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-							game.Players.LocalPlayer.Character.HumanoidRootPart
-						else warn("No HumanoidRootPart")
-					else nil,
-	CurrentCamera = game.Workspace.CurrentCamera,
+		if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+			game.Players.LocalPlayer.Character.HumanoidRootPart
+		else warn("No HumanoidRootPart")
+	else nil,
+		CurrentCamera = game.Workspace.CurrentCamera,
 
-	GameplayFolder = if game.Workspace:FindFirstChild("GameplayFolder") then
-						game.Workspace.GameplayFolder
-					else warn("No GameplayFolder. Expect MUCH bugs"),
-	RoomsFolder = if game.Workspace:FindFirstChild("GameplayFolder") then
-					if game.Workspace.GameplayFolder:FindFirstChild("Rooms") then
-						game.Workspace.GameplayFolder.Rooms
-					else warn("No RoomsFolder. Expect MUCH bugs")
-				else warn("No GameplayFolder for RoomsFolder. Expect MUCH bugs"),
+		GameplayFolder = if game.Workspace:FindFirstChild("GameplayFolder") then
+				game.Workspace.GameplayFolder
+			else warn("No GameplayFolder. Expect MUCH bugs"),
+		RoomsFolder = if game.Workspace:FindFirstChild("GameplayFolder") then
+			if game.Workspace.GameplayFolder:FindFirstChild("Rooms") then
+				game.Workspace.GameplayFolder.Rooms
+			else warn("No RoomsFolder. Expect MUCH bugs")
+		else warn("No GameplayFolder for RoomsFolder. Expect MUCH bugs"),
 
-	UnCollisionBoxCollisionParts = {},
-	AutoPrompt = {},
-	HiddenPrompts = {}
+			UnCollisionBoxCollisionParts = {},
+			AutoPrompt = {}
 }
 
 game.Players.LocalPlayer.CharacterAdded:Connect(function(Character)
@@ -439,23 +438,6 @@ function FindByThread(PathStart, Thread)
 	return
 end
 
-function ReturnPrompts()
-	for _, Prompt in Main.HiddenPrompts do
-		if Prompt:IsA("ProximityPrompt") then
-			if Prompt.Enabled == false then
-				Prompt.Enabled = true
-				table.remove(Main.HiddenPrompts, table.find(Main.HiddenPrompts, Prompt))
-			end
-		end
-	end
-	
-	PromptClearPrompts()
-	
-	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
-		game.Workspace.PartInFrontOfCamera:Destroy()
-	end
-end
-
 function PromptClearPrompts()
 	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
 		for _, UsedPrompt in game.Workspace.PartInFrontOfCamera:GetChildren() do
@@ -464,7 +446,7 @@ function PromptClearPrompts()
 				if string.find(Info.Name, "Prompt") then
 					UsedPrompt[string.split(Info.Name, "Prompt")[2]] = Info.Value
 				end
-				
+
 				Info:Destroy()
 			end
 		end
@@ -475,7 +457,7 @@ function PromptSetInfo(Prompt)
 	if Prompt then
 		for _, Info in {"MaxActivationDistance", "RequiresLineOfSight", "HoldDuration", "Enabled", "Parent"} do
 			local PromptInfo = nil
-			
+
 			if Info == "RequiresLineOfSight" or Info == "Enabled" then
 				PromptInfo = Instance.new("BoolValue")
 			elseif Info == "MaxActivationDistance" or Info == "HoldDuration" then
@@ -483,7 +465,7 @@ function PromptSetInfo(Prompt)
 			elseif Info == "Parent" then
 				PromptInfo = Instance.new("ObjectValue")
 			end
-			
+
 			PromptInfo.Name = "Prompt"..Info
 			PromptInfo.Value = Prompt[Info]
 			PromptInfo.Parent = Prompt
@@ -494,13 +476,13 @@ end
 function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 	if PromptPart == nil then
 		print("PromptInFrontOfCamera No Prompt")
-		
+
 		return
 	end
-	
+
 	local Prompt = PromptPart:FindFirstChildWhichIsA("ProximityPrompt")
 	local PartOffset = LookVectorOffset or 7
-	
+
 	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
 		if game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt") then
 			if game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt"):FindFirstChild("PromptParent") then
@@ -518,20 +500,11 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 	else
 		PromptSetInfo(Prompt)
 	end
-	
+
 	if Prompt == nil then
 		return
 	end
-	
-	for _, PromptToHide in game.Workspace:GetDescendants() do
-		if PromptToHide:IsA("ProximityPrompt") and PromptToHide ~= Prompt then
-			if PromptToHide.Enabled then
-				PromptToHide.Enabled = false
-				table.insert(Main.HiddenPrompts, PromptToHide)
-			end
-		end
-	end
-	
+
 	local PartInFrontOfCamera = game.Workspace:FindFirstChild("PartInFrontOfCamera")
 	if not PartInFrontOfCamera then
 		PartInFrontOfCamera = Instance.new("Part", game.Workspace)
@@ -542,11 +515,11 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 		PartInFrontOfCamera.CastShadow = false
 		PartInFrontOfCamera.Size = Vector3.new(0.5, 0.5, 0.5)
 	end
-	
+
 	PartInFrontOfCamera.CFrame = CFrame.new(
 		Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * PartOffset
 	) * CFrame.fromOrientation(0, 0, 0)
-	
+
 	if Prompt.Parent ~= PartInFrontOfCamera then
 		PromptClearPrompts()
 	end
@@ -559,15 +532,6 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 	Prompt.Parent = PartInFrontOfCamera
 	Prompt:InputHoldBegin()
 	Prompt:InputHoldEnd()
-	
-	for _, PromptHidden in Main.HiddenPrompts do
-		if PromptHidden:IsA("ProximityPrompt") then
-			if PromptHidden.Enabled == false then
-				PromptHidden.Enabled = true
-				table.remove(Main.HiddenPrompts, table.find(Main.HiddenPrompts, PromptHidden))
-			end
-		end
-	end
 end
 
 function ReturnCollision()
@@ -653,7 +617,7 @@ function ClearAllStats(Info)
 			end
 		end
 	end
-	
+
 	for _, Stat in {
 		"Door",
 		"DoorRoot",
@@ -676,22 +640,22 @@ function ClearAllStats(Info)
 		if Info then
 			if Info.PrintStats == true and SkipRoom[Stat] ~= nil then
 				local PrintMessage = Stat
-				
+
 				if Stat == "PasswordCode" then
 					PrintMessage = Stat..": "..SkipRoom[Stat]
 				end
-				
+
 				print(PrintMessage)
 			end
 		end
-		
+
 		SkipRoom[Stat] = nil
 	end
 end
 
 function ChangePipes(Room, Info)
 	local Finished = true
-	
+
 	local CheckOnly = false
 	if Info then
 		if Info.CheckOnly then
@@ -726,7 +690,7 @@ function ChangePipes(Room, Info)
 
 							PipeFindPart.Position = PowerPipe.Position - (BoardPuzzleMain.CFrame.UpVector * (1.5 * (Column - 1)) + BoardPuzzleMain.CFrame.RightVector * (1.5 * Row))
 							PipeFindPart.Orientation = PowerPipe.Orientation
-							
+
 							for _, PipePart in game.Workspace:GetPartsInPart(PipeFindPart) do
 								if PipePart.Name == "Part" and PipePart.Parent ~= nil then
 									if PipePart.Parent.Parent ~= nil then
@@ -743,7 +707,7 @@ function ChangePipes(Room, Info)
 													end
 												end
 											end
-											
+
 											if not CheckOnly then
 												if NeedRotate then
 													if PipePart.Parent:FindFirstChild("Highlight") then
@@ -753,7 +717,7 @@ function ChangePipes(Room, Info)
 															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Triggered:Once(function()
 																Pressed = true
 															end)
-															
+
 															task.spawn(function()
 																while not Pressed do
 																	local Solved = ChangePipes(Room, {
@@ -767,7 +731,7 @@ function ChangePipes(Room, Info)
 																	end
 																end
 															end)
-															
+
 															while not Pressed do
 																PromptInFrontOfCamera(PipePart.Parent.Highlight, 3)
 																task.wait()
@@ -801,7 +765,7 @@ function ChangePipes(Room, Info)
 			OpenNextDoor()
 		end
 	end
-	
+
 	return Finished
 end
 
@@ -852,7 +816,7 @@ function GetRoom(Info)
 				end
 			end
 		end
-		
+
 		if Info.GetRoom then
 			return PickedRoom
 		else
@@ -902,7 +866,7 @@ function RoomStats()
 									if OpenValue.Value == true and Script.Action.Value ~= "Start Open" then
 										Script.Action.Value = "Idle"
 										ClearAllStats()
-										
+
 										if Script.AutoSkipRoom.Value == true then
 											task.wait(UI.Settings.SkipRoomAutoCooldown.Value)
 											OpenNextDoor()
@@ -944,14 +908,14 @@ function RoomStats()
 							SkipRoom.LockPrompt = FindByThread(Door, PressureDoor.LockPrompt)
 							SkipRoom.LockRemoteFunction = FindByThread(Door, PressureDoor.LockRemoteFunction)
 						end
-						
+
 						SkipRoom.Door = OriginalDoor
 						SkipRoom.DoorRootPrompt = FindByThread(Door, PressureDoor.RootPrompt)
 						SkipRoom.DoorCollisionPartCFrame = FindByThread(Door, PressureDoor.CollisionPart..".CFrame")
 						SkipRoom.DoorTouchPart = FindByThread(Door, PressureDoor.Touch)
 						SkipRoom.Enter = OriginalDoor:FindFirstChild("Enter")
 						SkipRoom.Exit = OriginalDoor:FindFirstChild("Exit")
-						
+
 						if SkipRoom.Exit ~= nil then
 							if SkipRoom.Exit.Value.Name == "ModifierEnding" then
 								if SkipRoom.Exit.Value:FindFirstChild("Interactables") then
@@ -987,7 +951,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 					if SkipRoom.ElevatorHighlightCFrame == nil then
 						SkipRoom.ElevatorHighlightCFrame = game.Workspace.Elevator.ElevatorKey.Highlight.CFrame
 					end
-					
+
 					Script.Action.Value = "Press ElevatorPrompt"
 					PromptInFrontOfCamera(game.Workspace.Elevator.ElevatorKey.Highlight)
 
@@ -1000,7 +964,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 					print("Waiting After Elevator")
 					Script.Action.Value = "After Elevator"
 					SkipRoom.ElevatorHighlightCFrame = nil
-					
+
 					if SkipRoom.NextUngeneratedRoom then
 						if SkipRoom.NextUngeneratedRoom.Parent ~= Main.RoomsFolder then
 							print("New Room Need")
@@ -1064,7 +1028,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 				if SkipRoom.DoorTouchPart ~= nil then
 					Script.Action.Value = "Open ProgressDoor TouchPart"
 					TeleportPlayer(SkipRoom.DoorTouchPart.CFrame)
-					
+
 					game.ReplicatedStorage.Events.ZoneChange:FireServer(SkipRoom.NextUngeneratedRoom)
 				end
 				if string.find(Script.Action.Value, "Open ProgressDoor") and not string.find(Script.Action.Value, "TouchPart") and SkipRoom.DoorCollisionPartCFrame ~= nil then
@@ -1076,9 +1040,9 @@ game:GetService("RunService").RenderStepped:Connect(function()
 							Offset = -12
 						end
 					end
-					
+
 					TeleportPlayer(SkipRoom.DoorCollisionPartCFrame + Vector3.new(0, Offset, 0))
-					
+
 					game.ReplicatedStorage.Events.ZoneChange:FireServer(SkipRoom.NextUngeneratedRoom)
 				end
 			end
@@ -1088,13 +1052,13 @@ end)
 
 UI.Events.SkipRoom.Event:Connect(function(Info)
 	Script.AutoSkipRoom.Value = false
-	
+
 	if Info then
 		if Info.Status == "Ignore" then
 			print("Ignore")
 		end
 	end
-	
+
 	if Script.Action.Value == "Idle" then
 		OpenNextDoor()
 	end
@@ -1103,17 +1067,18 @@ end)
 UI.Events.CancelAll.Event:Connect(function()
 	Script.Action.Value = "Cancel"
 	Script.AutoSkipRoom.Value = false
-	
+
 	ClearAllStats({
 		PrintStats = true
 	})
-	
+	PromptClearPrompts()
+
 	Script.Action.Value = "Idle"
 end)
 
 UI.Events.TeleportToRoom.Event:Connect(function(Info)
 	ReturnCollision()
-	ReturnPrompts()
+	PromptClearPrompts()
 end)
 
 Script.AutoSkipRoom:GetPropertyChangedSignal("Value"):Connect(function()
