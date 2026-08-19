@@ -1150,10 +1150,6 @@ game:GetService("RunService").RenderStepped:Connect(function()
 						UnCollisionAll(TeleportCFrame)
 						Main.CharacterRoot.CFrame = TeleportCFrame
 						game.ReplicatedStorage.Events.ZoneChange:FireServer(RoomSkip.NextUngeneratedRoom)
-
-						if RoomSkip.DoorTouchPart.Parent:FindFirstChild("RemoteEvent") then
-							RoomSkip.DoorTouchPart.Parent.RemoteEvent:FireServer()
-						end
 					end
 					if string.find(ScriptActionNow, "Open ProgressDoor") and Main.CharacterRoot ~= nil and RoomSkip.DoorCollisionPartCFrame ~= nil then
 						local Offset = -10
