@@ -1208,5 +1208,13 @@ game.UserInputService.InputBegan:Connect(function(Input)
 				TeleportToDoor()
 			end
 		end
+		if Input.KeyCode == Enum.KeyCode.V then
+			if RoomSkip.NextUngeneratedRoom then
+				RoomSkip.NextUngeneratedRoom.Entrances.LargeRoundDoor.RemoteEvent:FireServer()
+			end
+		end
+		if Input.KeyCode == Enum.KeyCode.M then
+			game.ReplicatedStorage.Events.LocalDamage:FireServer(100, "TheEducator", 1, "TheEducator", true)
+		end
 	end
 end)
