@@ -14,10 +14,9 @@ for _, ScriptStatus in UI.ScriptStatuses:GetChildren() do
 	end
 end
 
-for _, Button in UI.Main.Tabs.Actions:GetDescendants() do
+for _, Button in UI.Main.Tabs:GetDescendants() do
 	if string.find(string.lower(Button.ClassName), "button") then
 		Button.MouseButton1Click:Connect(function()
-			Button:HasTag("Toggle")
 			if UI.Events:FindFirstChild(Button.Name) then
 				local Status = nil
 				
@@ -30,9 +29,12 @@ for _, Button in UI.Main.Tabs.Actions:GetDescendants() do
 				if UI.ScriptStatuses[Button.Name]:IsA("BoolValue") then
 					UI.ScriptStatuses[Button.Name].Value = not UI.ScriptStatuses[Button.Name].Value
 				end
+			elseif Button.Name == "Lancer" then
+				local LancerSound = game.ReplicatedStorage.CustomAssets.Sounds.UI.Joke.Lancer:Clone()
+				LancerSound.Parent = UI
+				LancerSound:Play()
+				game.Debris:AddItem(LancerSound, 1)
 			end
 		end)
 	end
 end
-
-print("UIActionButtons loaded")
