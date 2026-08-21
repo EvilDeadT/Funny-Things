@@ -113,11 +113,45 @@ function UI.Events.ItemActivate.OnInvoke(Item, Anim)
 		return
 	end
 	
+	local Pet = "rbxassetid://12895906881"
+
+	game.ReplicatedStorage.CustomAssets.Items.TheDemon.Animations.Pet.AnimationId = Pet
+	
 	CanActivate = false
+	
+	local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item)
+
+	if ItemModel then
+		if ItemModel.Handle then
+			game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+				C1 = CFrame.new(Vector3.new(0.7, 0, 0)) * CFrame.fromOrientation(
+					math.rad(ItemModel.Handle.C1.Orientation.X),
+					math.rad(ItemModel.Handle.C1.Orientation.Y),
+					math.rad(ItemModel.Handle.C1.Orientation.Z)
+				)
+			}):Play()
+		end
+	end
 	
 	if Anim then
 		if Anim.Pet then
 			Anim.Pet:Play()
+			
+			Anim.Pet.Stopped:Once(function()
+				local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item)
+				
+				if ItemModel then
+					if ItemModel.Handle then
+						game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+							C1 = CFrame.new(Vector3.new(0, 0, 0)) * CFrame.fromOrientation(
+								math.rad(ItemModel.Handle.C1.Orientation.X),
+								math.rad(ItemModel.Handle.C1.Orientation.Y),
+								math.rad(ItemModel.Handle.C1.Orientation.Z)
+							)
+						}):Play()
+					end
+				end
+			end)
 		end
 	end
 	
