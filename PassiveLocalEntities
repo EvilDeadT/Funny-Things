@@ -40,7 +40,7 @@ local LocalEntities = {
 		DisableMethod = "Delete"
 	},
 	["GOM"] = {
-		Folder = "Players.LocalPlayer.PlayerGui.Main",
+		Folder = "Players.LocalPlayer.PlayerGui:FindFirstChildWhichIsA(Folder)",
 		Variants = {
 			"GOMFrame"
 		},
@@ -58,26 +58,47 @@ if not UI then
 	Instance.new("Folder", UI).Name = "Settings"
 end
 
-function FindByThreadText(PathStart, Thread)
+function FindByThread(PathStart, Thread)
 	if PathStart and Thread then
 		local PickedFolder = PathStart
-		
+
 		for _, Path in string.split(Thread, ".") do
-			if Path == "LocalPlayer" then
+			local PathInstance = Path
+			local SpecialInstance = nil
+			local SpecialMethod = nil
+
+			if string.find(PathInstance, ":") then
+				PathInstance = string.split(Path, ":")[1]
+				SpecialInstance = string.split(string.split(string.split(Path, ":")[2], "(")[2], ")")[1]
+				SpecialMethod = string.split(string.split(Path, ":")[2], "(")[1]
+			end
+
+			if PathInstance == "LocalPlayer" then
 				PickedFolder = game.Players.LocalPlayer
+			elseif PathInstance == "CFrame" then
+				PickedFolder = PickedFolder.CFrame
+
+				return PickedFolder
 			else
-				if PickedFolder:FindFirstChild(Path) then
-					PickedFolder = PickedFolder:FindFirstChild(Path)
+				if PickedFolder:FindFirstChild(PathInstance) then
+					PickedFolder = PickedFolder:FindFirstChild(PathInstance)
 				else
-					print(Path)
+					print("FindByThread not found: "..PathInstance)
+
 					return
 				end
 			end
+
+			if SpecialInstance then
+				if SpecialMethod == "FindFirstChildWhichIsA" then
+					PickedFolder = PickedFolder:FindFirstChildWhichIsA(SpecialInstance)
+				end
+			end
 		end
-		
+
 		return PickedFolder
 	end
-	
+
 	return
 end
 
@@ -102,7 +123,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			DisabledFiles.Name = "DisabledFiles"
 		end
 		
-		local EntityFolder = FindByThreadText(game, Info.Folder)
+		local EntityFolder = FindByThread(game, Info.Folder)
 		
 		if EntityFolder then
 			if Info.Variants then
@@ -162,5 +183,3 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		end
 	end
 end)
-
-print("PassiveLocalEntities loaded")
