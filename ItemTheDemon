@@ -124,11 +124,7 @@ function UI.Events.ItemActivate.OnInvoke(Item, Anim)
 	if ItemModel then
 		if ItemModel.Handle then
 			game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-				C1 = CFrame.new(Vector3.new(0.7, 0, 0)) * CFrame.fromOrientation(
-					math.rad(ItemModel.Handle.C1.Rotation.X),
-					math.rad(ItemModel.Handle.C1.Rotation.Y),
-					math.rad(ItemModel.Handle.C1.Rotation.Z)
-				)
+				C1 = CFrame.new(Vector3.new(0.7, 0, 0)) * ItemModel.Handle.C1.Rotation
 			}):Play()
 		end
 	end
@@ -143,11 +139,7 @@ function UI.Events.ItemActivate.OnInvoke(Item, Anim)
 				if ItemModel then
 					if ItemModel.Handle then
 						game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-							C1 = CFrame.new(Vector3.new(0, 0, 0)) * CFrame.fromOrientation(
-								math.rad(ItemModel.Handle.C1.Rotation.X),
-								math.rad(ItemModel.Handle.C1.Rotation.Y),
-								math.rad(ItemModel.Handle.C1.Rotation.Z)
-							)
+							C1 = CFrame.new(Vector3.new(0, 0, 0)) * ItemModel.Handle.C1.Rotation
 						}):Play()
 					end
 				end
