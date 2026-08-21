@@ -88,5 +88,3 @@ game.UserInputService.InputEnded:Connect(function(Input)
 		PressedCombination[string.split(tostring(Input.KeyCode), ".")[3]] = false
 	end
 end)
-
-print("KeyBinds loaded")
