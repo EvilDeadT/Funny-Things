@@ -1,3 +1,4 @@
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
 local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main"):WaitForChild("Client"):WaitForChild("MainClient"))
 local PlayerZone = PlayerMain.Zones
 local CurrentCamera = game.Workspace.CurrentCamera
@@ -40,66 +41,6 @@ local EducatorStats = {
 		}
 	}
 }
-
-function FindByThread(PathStart, Thread)
-	if PathStart and Thread then
-		local PickedFolder = PathStart
-
-		for _, Path in string.split(Thread, ".") do
-			local PathInstance = Path
-			local SpecialInstance = nil
-			local SpecialMethod = nil
-
-			if string.find(PathInstance, ":") then
-				PathInstance = string.split(Path, ":")[1]
-				SpecialInstance = string.split(string.split(string.split(Path, ":")[2], "(")[2], ")")[1]
-				SpecialMethod = string.split(string.split(Path, ":")[2], "(")[1]
-			end
-
-			if PathInstance == "LocalPlayer" then
-				PickedFolder = game.Players.LocalPlayer
-			elseif PathInstance == "CFrame" then
-				PickedFolder = PickedFolder.CFrame
-
-				return PickedFolder
-			else
-				local IsProperty = pcall(function()
-					PickedFolder[PathInstance] = PickedFolder[PathInstance]
-				end)
-
-				if PickedFolder:FindFirstChild(PathInstance) or IsProperty then
-					PickedFolder = PickedFolder[PathInstance]
-				else
-					print("FindByThread not found: "..PathInstance)
-
-					return
-				end
-			end
-
-			if SpecialInstance then
-				if SpecialMethod == "FindFirstChildWhichIsA" then
-					PickedFolder = PickedFolder:FindFirstChildWhichIsA(SpecialInstance)
-				elseif SpecialMethod == "GetChildren" then
-					PickedFolder = PickedFolder:GetChildren()
-				end
-			end
-		end
-
-		return PickedFolder
-	end
-
-	return
-end
-
-local function PlaySound(Sound)
-	if Sound then
-		if Sound:GetAttribute("ID") then
-			Sound.SoundId = Sound:GetAttribute("ID")
-		end
-
-		Sound:Play()
-	end
-end
 
 
 
@@ -183,7 +124,7 @@ function EducatorSpawn(Info)
 		local EducatorSpawnSound = Educator.Baldi.BaldiSpawn
 
 		if Info then
-			if Info.Reason == "Revive" then
+			if Info.Reason == "Revive" or Info.Reason == "Timer" then
 				EducatorSpawnSound = Educator.Baldi.BaldiDespawn
 			elseif Info.Reason == "First Schoolhouse" then
 				EducatorSpawnSound = Educator.Baldi.BaldiSchoolhouseStart
@@ -204,7 +145,7 @@ function EducatorSpawn(Info)
 			Educator:PivotTo(Educator.WorldPivot * CFrame.new(0, 0, -200) * CFrame.Angles(0, math.pi, 0))
 		end
 
-		PlaySound(EducatorSpawnSound)
+		UI.Events.UIModule:Invoke("PlaySound", EducatorSpawnSound)
 
 		local Waiting = 50
 
@@ -214,7 +155,7 @@ function EducatorSpawn(Info)
 			task.wait(0.1)
 		until Waiting <= 0 or EducatorSpawnSound.TimeLength > 0
 
-		task.wait(EducatorSpawnSound.TimeLength + 1)
+		task.wait(EducatorSpawnSound.TimeLength + 3)
 
 		if PlayerMain.PlayerDead or PlayerMain.IsGhost then
 			Educator:Destroy()
@@ -224,7 +165,7 @@ function EducatorSpawn(Info)
 		
 		local function EducatorFlash(FlashBeacon)
 			if not FlashBeacon then
-				return print("EducatorFlash Not FlashBeacon")
+				return print("EducatorFlash No FlashBeacon")
 			end
 			
 			local UseSound = FlashBeacon:FindFirstChild("FlashBeaconUse", true)
@@ -289,7 +230,7 @@ function EducatorSpawn(Info)
 					local EducatorFlashedSound = Educator.Baldi.StunLines:GetChildren()[math.random(1, #Educator.Baldi.StunLines:GetChildren())]
 					EducatorFlashedSound.Volume = 0.75
 					
-					PlaySound(EducatorFlashedSound)
+					UI.Events.UIModule:Invoke("PlaySound", EducatorFlashedSound)
 					
 					task.delay(Educator:GetAttribute("StunCooldownFlash"), function()
 						if Educator then
@@ -316,7 +257,7 @@ function EducatorSpawn(Info)
 				AtomizeSound.RollOffMode = Enum.RollOffMode.Linear
 				AtomizeSound.PlaybackSpeed = 0.95
 				AtomizeSound.Volume = 2.5
-				AtomizeSound.SoundGroup = FindByThread(game.ReplicatedStorage, "Settings.SFX")
+				AtomizeSound.SoundGroup = UI.Events.UIModule:Invoke("FindByThread", game.ReplicatedStorage, "Settings.SFX")
 
 				local AtomizeReverb = Instance.new("ReverbSoundEffect", AtomizeSound)
 				AtomizeReverb.DecayTime = 3
@@ -324,7 +265,7 @@ function EducatorSpawn(Info)
 				AtomizeReverb.Diffusion = 0
 				AtomizeReverb.DryLevel = 3
 
-				PlaySound(AtomizeSound)
+				UI.Events.UIModule:Invoke("PlaySound", AtomizeSound)
 			end
 
 			Educator.PrimaryPart.TextureID = ""
@@ -378,7 +319,7 @@ function EducatorSpawn(Info)
 
 		game.RunService:BindToRenderStep("EducatorMove"..Educator:GetAttribute("EducatorNumber"), 220, function()
 			if game.Players.LocalPlayer:GetAttribute("EducatorCatched") then
-				local EducatorGlitch = FindByThread(game.Players.LocalPlayer.PlayerGui, "Main.BaldiTouch")
+				local EducatorGlitch = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main.BaldiTouch")
 
 				if EducatorGlitch then
 					EducatorGlitch.Position = UDim2.new(0.5, math.random(-20, 20), 0.5, math.random(-20, 20))
@@ -487,7 +428,7 @@ function EducatorSpawn(Info)
 
 						game.Lighting.BaldiColour.Enabled = true
 
-						local EducatorGlitch = FindByThread(game.Players.LocalPlayer.PlayerGui, "Main.BaldiTouch")
+						local EducatorGlitch = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main.BaldiTouch")
 
 						if EducatorGlitch then
 							EducatorGlitch.Visible = true
@@ -496,7 +437,7 @@ function EducatorSpawn(Info)
 						PlayerMain.CameraModule.Switch("HeadFollow")
 						game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 0
 
-						PlaySound(EducatorTouch.PrimaryPart.LopeeTouch)
+						UI.Events.UIModule:Invoke("PlaySound", EducatorTouch.PrimaryPart.LopeeTouch)
 
 						task.wait(1)
 
@@ -513,7 +454,7 @@ function EducatorSpawn(Info)
 						
 						PlayerMain.DeathScreen.BaldiDeath = true
 
-						local DamageEvent = FindByThread(game.ReplicatedStorage, "Events.LocalDamage")
+						local DamageEvent = UI.Events.UIModule:Invoke("FindByThread", game.ReplicatedStorage, "Events.LocalDamage")
 
 						if DamageEvent then
 							DamageEvent:FireServer(1000, "TheEducator", nil, "TheEducator", true)
@@ -552,7 +493,7 @@ function EducatorSpawn(Info)
 							until Waiting <= 0 or game.Workspace:FindFirstChild("NewDeathCutsceneModel")
 						end
 						
-						local EducatorModelDeath = FindByThread(game.Workspace, "NewDeathCutsceneModel.deathModel.Baldi")
+						local EducatorModelDeath = UI.Events.UIModule:Invoke("FindByThread", game.Workspace, "NewDeathCutsceneModel.deathModel.Baldi")
 						
 						if EducatorModelDeath then
 							EducatorModelDeath.Transparency = 0
@@ -575,7 +516,7 @@ function EducatorSpawn(Info)
 
 				if EducatorSpeed and EducatorCooldown and not Educator:GetAttribute("Stunned") and not Educator:GetAttribute("Atomized") then
 					if EducatorSpeed > 0 then
-						PlaySound(Educator.Baldi.RulerSound)
+						UI.Events.UIModule:Invoke("PlaySound", Educator.Baldi.RulerSound)
 
 						Educator:PivotTo(CFrame.lookAt(Educator.PrimaryPart.Position, CurrentCamera.CFrame.Position))
 						
@@ -623,7 +564,7 @@ function EducatorDespawn(Info, EducatorNumber)
 					local EducatorDespawnSound = Educator.Baldi.BaldiSchoolhousePrep
 					
 					if Info then
-						if Info.Reason == "First Schoolhouse" then
+						if Info.Reason == "First Schoolhouse" or Info.Reason == "Timer" then
 							EducatorDespawnSound = Educator.Baldi.BaldiSchoolhousePrep
 						elseif Info.Reason == "First Schoolhouse Complete" then
 							EducatorDespawnSound = Educator.Baldi.BaldiSchoolhouseComplete
@@ -636,7 +577,7 @@ function EducatorDespawn(Info, EducatorNumber)
 						end
 					end
 
-					PlaySound(EducatorDespawnSound)
+					UI.Events.UIModule:Invoke("PlaySound", EducatorDespawnSound)
 
 					local Waiting = 50
 
@@ -685,7 +626,7 @@ game.Players.LocalPlayer:GetAttributeChangedSignal("Dead"):Connect(function()
 	end
 end)
 
-local RidgeCutsceneEvent = FindByThread(game.ReplicatedStorage, "Events.RidgeCutscene")
+local RidgeCutsceneEvent = UI.Events.UIModule:Invoke("FindByThread", game.ReplicatedStorage, "Events.RidgeCutscene")
 
 if RidgeCutsceneEvent then
 	RidgeCutsceneEvent.OnClientEvent:Connect(function()
@@ -732,22 +673,52 @@ if RidgeCutsceneEvent then
 	end)
 end
 
-game.Players.LocalPlayer:GetAttributeChangedSignal("EducatorChase"):Connect(function()
-	if game.Players.LocalPlayer:GetAttribute("EducatorChase") then
+UI.Events.Summon.Event:Connect(function(Entity, EventReason)
+	if Entity ~= "Educator" then
+		return
+	end
+	
+	if EventReason == "Modifier" then
 		local EducatorExist = false
-		
+
 		for _, Educator in game.Workspace:GetChildren() do
 			if Educator.Name == "Baldi" and Educator.PrimaryPart.Transparency ~= 1 then
 				EducatorExist = true
 			end
 		end
-		
+
 		if not EducatorExist then
-			EducatorSpawn()
+			EducatorSpawn({Reason = EventReason})
 		end
-	else
-		EducatorDespawn()
+	elseif type(EventReason) == "string" then
+		if string.find(EventReason, "Timer:") then
+			if tonumber(string.split(EventReason, " ")[2]) then
+				EducatorSpawn({
+					Reason = EventReason
+				})
+
+				task.delay(tonumber(string.split(EventReason, " ")[2]), function()
+					EducatorDespawn({
+						Reason = EventReason
+					})
+				end)
+			end
+		end
 	end
 end)
 
-game.Players.LocalPlayer:SetAttribute("EducatorChase", true)
+UI.Events.Despawn.Event:Connect(function(Entity, EventReason)
+	if Entity ~= "Educator" then
+		return
+	end
+	
+	EducatorDespawn({Reason = EventReason})
+end)
+
+UI.Modifiers.Educator:GetPropertyChangedSignal("Value"):Connect(function()
+	if UI.Modifiers.Educator.Value then
+		UI.Events.Summon:Fire("Educator", "Modifier")
+	else
+		UI.Events.Despawn:Fire("Educator", "Modifier")
+	end
+end)
