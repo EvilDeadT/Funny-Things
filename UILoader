@@ -1,457 +1,273 @@
-print("Script First Line")
-
-local UIContent = {
-	["FunnyMenu"] = {
-		ClassName = "ScreenGui",
-		DisplayOrder = 999999,
-		IgnoreGuiInset = true,
-		
-		Files = {
-			["Colors"] = {
-				ClassName = "Folder",
-				
-				Files = {
-					["ButtonOn"] = {
-						ClassName = "Color3Value",
-						Value = Color3.fromRGB(96, 115, 143)
-					},
-					["ButtonOff"] = {
-						ClassName = "Color3Value",
-						Value = Color3.fromRGB(0, 55, 75)
-					},
-					["TabPick"] = {
-						ClassName = "Color3Value",
-						Value = Color3.fromRGB(96, 115, 143)
-					},
-					["TabUnpick"] = {
-						ClassName = "Color3Value",
-						Value = Color3.fromRGB(0, 55, 75)
-					}
-				}
+local Assets = {
+	Test = {
+		Folder = {
+			Folder = {
+				Instance = {Name='Baseplate',ClassName='Part',Color=Color3.new(0.357,0.357,0.357),Anchored=true,Locked=true,Size=Vector3.new(2048,16,2048),Position=Vector3.new(0,-8,0),Attributes={Bool=true,String='Poison',CFrame=CFrame.new(0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1),Vector3=Vector3.new(0,0,0),BrickColor=BrickColor.new('Medium stone grey'),Vector2=Vector2.new(0,0),UDim2=UDim2.new(0,0,0,0),Color3=Color3.new(1,1,1),Number=15,UDim=UDim.new(0.2,10)},Tags={'Jopa','L','CompileInstance2 2'},Files={[1]={Name='Decal',ClassName='Decal',ColorMapContent=''},[2]={Name='Value',ClassName='ObjectValue',Tags={'CompilePrimaryObject 1'}},[3]={Name='TextLabel',ClassName='TextLabel',Active=false,BorderSizePixel=0,BackgroundColor3=Color3.new(1,1,1),Size=UDim2.new(0,200,0,50),BorderColor3=Color3.new(0,0,0),TextSize=14,Font=Enum.Font.SourceSans,TextColor3=Color3.new(0,0,0)},[4]={Name='Anapa2009',ClassName='Folder',Files={[1]={Name='Weld',ClassName='Weld',Tags={'CompileWeld 2'}}}},[5]={Name='Texture',ClassName='Texture',ColorMapContent='6372755229',Face=Enum.NormalId.Top,StudsPerTileU=8,Transparency=0.8,Color3=Color3.new(0,0,0),StudsPerTileV=8,Tags={'CompilePrimaryValue 1'}},[6]={Name='RopeConstraint',ClassName='RopeConstraint',Thickness=0.1,Color=BrickColor.new('Earth orange')},[7]={Name='Beam',ClassName='Beam',LightInfluence=1},[8]={Name='Model',ClassName='Model',Tags={'CompilePrimaryObject 3'},Files={[1]={Name='Part',ClassName='Part',Size=Vector3.new(4,1,2),Position=Vector3.new(0,-8,0),Tags={'CompileInstance1 2','CompilePrimaryValue 3'}}}}}}
+			}
+		}
+	},
+	Player = {
+		UI = {
+			Main = {
+				FunnyMenu = {Name='FunnyMenu',ClassName='ScreenGui',ResetOnSpawn=false,IgnoreGuiInset=true,ZIndexBehavior=Enum.ZIndexBehavior.Sibling,DisplayOrder=999999,ScreenInsets=Enum.ScreenInsets.DeviceSafeInsets,Files={[1]={Name='MouseUnlock',ClassName='TextButton',Interactable=false,BorderSizePixel=0,Modal=true,BackgroundColor3=Color3.new(1,1,1),FontFace=Font.fromName('SourceSansPro',Enum.FontWeight.Regular,Enum.FontStyle.Normal),BorderColor3=Color3.new(0,0,0),Text='',TextSize=14,TextColor3=Color3.new(0,0,0),BackgroundTransparency=1,Style=Enum.ButtonStyle.Custom},[2]={Name='Main',ClassName='Frame',Size=UDim2.new(0.65,0,0.75,0),BorderColor3=Color3.new(0,0,0),Position=UDim2.new(0.1734,0,0.1216,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0,0.2157,0.2941),Files={[1]={Name='TabChoice',ClassName='ScrollingFrame',Active=true,BorderSizePixel=0,CanvasSize=UDim2.new(2,0,0,0),BackgroundColor3=Color3.new(1,1,1),Size=UDim2.new(1,0,0.23,0),ScrollBarImageColor3=Color3.new(0,0,0),ClipsDescendants=true,BorderColor3=Color3.new(0,0,0),ScrollBarThickness=0,Selectable=true,ScrollBarImageTransparency=1,BackgroundTransparency=1,SelectionGroup=true,Files={[1]={Name='Actions',ClassName='TextButton',LayoutOrder=2,TextWrapped=true,BorderSizePixel=0,AutoButtonColor=false,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.125,0,1,0),BorderColor3=Color3.new(0,0,0),Text='Actions',TextSize=14,TextColor3=Color3.new(1,1,1),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[2]={Name='AdminPanel',ClassName='TextButton',LayoutOrder=3,TextWrapped=true,BorderSizePixel=0,AutoButtonColor=false,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.125,0,1,0),BorderColor3=Color3.new(0,0,0),Text='Admin Panel',TextSize=14,TextColor3=Color3.new(1,1,1),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[3]={Name='Modifiers',ClassName='TextButton',LayoutOrder=1,TextWrapped=true,BorderSizePixel=0,AutoButtonColor=false,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.125,0,1,0),BorderColor3=Color3.new(0,0,0),Text='Modifiers',TextSize=14,TextColor3=Color3.new(1,1,1),Style=Enum.ButtonStyle.Custom,Attributes={NoTab=true,ActType='ModifiersFrame',Act='Open'},Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[4]={Name='UIListLayout',ClassName='UIListLayout',FillDirection=Enum.FillDirection.Horizontal,SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0.005,0)}}},[2]={Name='DecorBar',ClassName='Frame',Size=UDim2.new(1,0,0.02,0),BorderColor3=Color3.new(0,0,0),Position=UDim2.new(0,0,0.2304,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0.5294,0.6314,0.7843)},[3]={Name='TabChoiceSpecial',ClassName='Frame',Size=UDim2.new(0.175,0,1,0),BorderColor3=Color3.new(0,0,0),BackgroundTransparency=1,Position=UDim2.new(-0.1825,0,0,0),BorderSizePixel=0,BackgroundColor3=Color3.new(1,1,1),Files={[1]={Name='KeyBinds',ClassName='TextButton',TextWrapped=true,BorderSizePixel=0,AutoButtonColor=false,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(1,0,0.23,0),BorderColor3=Color3.new(0,0,0),Text='Key Binds',TextSize=14,TextColor3=Color3.new(1,1,1),Position=UDim2.new(0,0,0.525,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[2]={Name='Settings',ClassName='TextButton',TextWrapped=true,BorderSizePixel=0,AutoButtonColor=false,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(1,0,0.23,0),BorderColor3=Color3.new(0,0,0),Text='Settings',TextSize=14,TextColor3=Color3.new(1,1,1),Position=UDim2.new(0,0,0.25,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}}}},[4]={Name='Tabs',ClassName='Frame',Size=UDim2.new(1,0,1,0),BorderColor3=Color3.new(0,0,0),BackgroundTransparency=1,BorderSizePixel=0,BackgroundColor3=Color3.new(1,1,1),Files={[1]={Name='Actions',ClassName='ScrollingFrame',Active=true,BorderSizePixel=0,CanvasSize=UDim2.new(0,0,10,0),BackgroundColor3=Color3.new(1,1,1),Size=UDim2.new(1,0,0.75,0),ScrollBarImageColor3=Color3.new(0,0,0),ClipsDescendants=true,BorderColor3=Color3.new(0,0,0),ScrollBarThickness=0,Selectable=true,ScrollBarImageTransparency=1,BackgroundTransparency=1,Position=UDim2.new(0,0,0.25,0),SelectionGroup=true,Files={[1]={Name='Rooms',ClassName='Frame',LayoutOrder=1,Size=UDim2.new(1,0,0.15,0),BorderColor3=Color3.new(0,0,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0,0.7922,0.4235),Files={[1]={Name='SkipRoom',ClassName='TextButton',TextWrapped=true,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.25,0,0.15,0),BorderColor3=Color3.new(0,0,0),Text='Skip Room',TextSize=14,TextColor3=Color3.new(1,1,1),Position=UDim2.new(0.062,0,0.2,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[2]={Name='CollectMoney',ClassName='TextButton',TextWrapped=true,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.25,0,0.15,0),BorderColor3=Color3.new(0,0,0),Text='Collect Money',TextSize=14,TextColor3=Color3.new(1,1,1),Position=UDim2.new(0.688,0,0.2,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[3]={Name='SkipRoomAuto',ClassName='TextButton',TextWrapped=true,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.25,0,0.15,0),BorderColor3=Color3.new(0,0,0),Text='Skip Room AUTO',TextSize=14,TextColor3=Color3.new(1,1,1),Position=UDim2.new(0.382,0,0.2,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[4]={Name='Title',ClassName='TextLabel',TextWrapped=true,Active=false,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.0706,0.0941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.5,0,0.125,0),BorderColor3=Color3.new(0,0,0),Text='Rooms',TextSize=14,Position=UDim2.new(0.25,0,0.012,0),TextColor3=Color3.new(1,1,1),Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[5]={Name='SkipRoomIgnoreConditions',ClassName='TextButton',TextWrapped=true,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.25,0,0.15,0),BorderColor3=Color3.new(0,0,0),Text='Skip Room Ignore Conditions',TextSize=14,TextColor3=Color3.new(1,1,1),Position=UDim2.new(0.062,0,0.425,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}}}},[2]={Name='Other',ClassName='Frame',LayoutOrder=1,Size=UDim2.new(1,0,0.15,0),BorderColor3=Color3.new(0,0,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0.0275,0,0.3882),Files={[1]={Name='Lancer',ClassName='TextButton',TextWrapped=true,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.25,0,0.15,0),BorderColor3=Color3.new(0,0,0),Text='Lancer',TextSize=14,TextColor3=Color3.new(1,1,1),Position=UDim2.new(0.062,0,0.2,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[2]={Name='Title',ClassName='TextLabel',TextWrapped=true,Active=false,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.0706,0.0941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.5,0,0.125,0),BorderColor3=Color3.new(0,0,0),Text='Other',TextSize=14,Position=UDim2.new(0.25,0,0.012,0),TextColor3=Color3.new(1,1,1),Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}}}},[3]={Name='UIListLayout',ClassName='UIListLayout',SortOrder=Enum.SortOrder.LayoutOrder}}},[2]={Name='AdminPanel',ClassName='ScrollingFrame',Active=true,BorderSizePixel=0,CanvasSize=UDim2.new(0,0,10,0),BackgroundColor3=Color3.new(1,1,1),Size=UDim2.new(1,0,0.75,0),ScrollBarImageColor3=Color3.new(0,0,0),ClipsDescendants=true,BorderColor3=Color3.new(0,0,0),ScrollBarThickness=0,Selectable=true,ScrollBarImageTransparency=1,BackgroundTransparency=1,Position=UDim2.new(0,0,0.25,0),SelectionGroup=true,Visible=false,Files={[1]={Name='NextRoom',ClassName='Frame',LayoutOrder=2,Size=UDim2.new(1,0,0.02,0),BorderColor3=Color3.new(0,0,0),Position=UDim2.new(-0,0,0,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0,0.7922,0.4235),Files={[1]={Name='NextRoomPicked',ClassName='TextLabel',TextWrapped=true,Active=false,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.0706,0.0941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.5,0,0.75,0),BorderColor3=Color3.new(0,0,0),Text='---',TextSize=14,Position=UDim2.new(0.02,0,0.12,0),TextColor3=Color3.new(1,1,1),Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[2]={Name='Button',ClassName='TextButton',TextWrapped=true,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.4231,0,0.75,0),BorderColor3=Color3.new(0,0,0),Text='Next Room',TextSize=14,TextColor3=Color3.new(1,1,1),Position=UDim2.new(0.5603,0,0.12,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}}}},[2]={Name='Items',ClassName='Frame',LayoutOrder=3,Size=UDim2.new(1,0,0.02,0),BorderColor3=Color3.new(0,0,0),Position=UDim2.new(-0,0,0,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0,0.4039,0.898),Files={[1]={Name='Button',ClassName='TextButton',TextWrapped=true,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.95,0,0.75,0),BorderColor3=Color3.new(0,0,0),Text='Give Items',TextSize=14,TextColor3=Color3.new(1,1,1),Position=UDim2.new(0.025,0,0.12,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}}}},[3]={Name='Players',ClassName='Frame',LayoutOrder=1,Size=UDim2.new(1,0,0.02,0),BorderColor3=Color3.new(0,0,0),Position=UDim2.new(-0,0,0,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0.7843,0,0),Files={[1]={Name='Button',ClassName='TextButton',TextWrapped=true,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.95,0,0.75,0),BorderColor3=Color3.new(0,0,0),Text='Players',TextSize=14,TextColor3=Color3.new(1,1,1),Position=UDim2.new(0.025,0,0.12,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}}}},[4]={Name='Entitiy',ClassName='Frame',LayoutOrder=3,Size=UDim2.new(1,0,0.02,0),BorderColor3=Color3.new(0,0,0),Position=UDim2.new(-0,0,0,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0.7843,0.7843,0.7843),Files={[1]={Name='Button',ClassName='TextButton',TextWrapped=true,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.95,0,0.75,0),BorderColor3=Color3.new(0,0,0),Text='Entity',TextSize=14,TextColor3=Color3.new(1,1,1),Position=UDim2.new(0.025,0,0.12,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}}}},[5]={Name='UIListLayout',ClassName='UIListLayout',SortOrder=Enum.SortOrder.LayoutOrder}}},[3]={Name='NoFrame',ClassName='Frame',Size=UDim2.new(1,0,0.75,0),BorderColor3=Color3.new(0,0,0),Visible=false,BackgroundTransparency=1,Position=UDim2.new(0,0,0.25,0),BorderSizePixel=0,BackgroundColor3=Color3.new(1,1,1),Files={[1]={Name='Title',ClassName='TextLabel',TextWrapped=true,Active=false,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(1,1,1),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(1,0,1,0),BorderColor3=Color3.new(0,0,0),Text='No Frame',TextSize=14,BackgroundTransparency=1,TextColor3=Color3.new(1,1,1)}}},[4]={Name='Settings',ClassName='ScrollingFrame',Active=true,BorderSizePixel=0,CanvasSize=UDim2.new(0,0,10,0),BackgroundColor3=Color3.new(1,1,1),Size=UDim2.new(1,0,0.75,0),ScrollBarImageColor3=Color3.new(0,0,0),ClipsDescendants=true,BorderColor3=Color3.new(0,0,0),ScrollBarThickness=0,Selectable=true,ScrollBarImageTransparency=1,BackgroundTransparency=1,Position=UDim2.new(0,0,0.25,0),SelectionGroup=true,Visible=false,Files={[1]={Name='UIListLayout',ClassName='UIListLayout',SortOrder=Enum.SortOrder.LayoutOrder}}},[5]={Name='KeyBinds',ClassName='ScrollingFrame',Active=true,BorderSizePixel=0,CanvasSize=UDim2.new(0,0,10,0),BackgroundColor3=Color3.new(1,1,1),Size=UDim2.new(1,0,0.75,0),ScrollBarImageColor3=Color3.new(0,0,0),ClipsDescendants=true,BorderColor3=Color3.new(0,0,0),ScrollBarThickness=0,Selectable=true,ScrollBarImageTransparency=1,BackgroundTransparency=1,Position=UDim2.new(0,0,0.25,0),SelectionGroup=true,Visible=false,Files={[1]={Name='UIListLayout',ClassName='UIListLayout',SortOrder=Enum.SortOrder.LayoutOrder}}},[6]={Name='Modifiers',ClassName='ScrollingFrame',Active=true,BorderSizePixel=0,CanvasSize=UDim2.new(0,0,10,0),BackgroundColor3=Color3.new(1,1,1),Size=UDim2.new(1,0,0.75,0),ScrollBarImageColor3=Color3.new(0,0,0),ClipsDescendants=true,BorderColor3=Color3.new(0,0,0),ScrollBarThickness=0,Selectable=true,ScrollBarImageTransparency=1,BackgroundTransparency=1,Position=UDim2.new(0,0,0.25,0),SelectionGroup=true,Visible=false,Files={[1]={Name='Rooms',ClassName='Frame',LayoutOrder=1,Size=UDim2.new(1,0,0.15,0),BorderColor3=Color3.new(0,0,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0,0.7922,0.4235),Files={[1]={Name='SkipRoom',ClassName='TextButton',TextWrapped=true,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.25,0,0.15,0),BorderColor3=Color3.new(0,0,0),Text='Skip Room',TextSize=14,TextColor3=Color3.new(1,1,1),Position=UDim2.new(0.062,0,0.2,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[2]={Name='CollectMoney',ClassName='TextButton',TextWrapped=true,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.25,0,0.15,0),BorderColor3=Color3.new(0,0,0),Text='Collect Money',TextSize=14,TextColor3=Color3.new(1,1,1),Position=UDim2.new(0.688,0,0.2,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[3]={Name='SkipRoomAuto',ClassName='TextButton',TextWrapped=true,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.25,0,0.15,0),BorderColor3=Color3.new(0,0,0),Text='Skip Room AUTO',TextSize=14,TextColor3=Color3.new(1,1,1),Position=UDim2.new(0.382,0,0.2,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[4]={Name='Title',ClassName='TextLabel',TextWrapped=true,Active=false,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.0706,0.0941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.5,0,0.125,0),BorderColor3=Color3.new(0,0,0),Text='Rooms',TextSize=14,Position=UDim2.new(0.25,0,0.012,0),TextColor3=Color3.new(1,1,1),Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[5]={Name='SkipRoomIgnoreConditions',ClassName='TextButton',TextWrapped=true,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0.2157,0.2941),FontFace=Font.fromName('Sarpanch',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.25,0,0.15,0),BorderColor3=Color3.new(0,0,0),Text='Skip Room Ignore Conditions',TextSize=14,TextColor3=Color3.new(1,1,1),Position=UDim2.new(0.062,0,0.425,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}}}},[2]={Name='UIListLayout',ClassName='UIListLayout',SortOrder=Enum.SortOrder.LayoutOrder}}}}},[5]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(0.5294,0.6314,0.7843),Thickness=0.01,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize},[6]={Name='UIAspectRatioConstraint',ClassName='UIAspectRatioConstraint',AspectRatio=1.85}}},[3]={Name='UIStatus',ClassName='Folder',Files={[1]={Name='VisibleTab',ClassName='StringValue'}}},[4]={Name='Colors',ClassName='Folder',Files={[1]={Name='ButtonOff',ClassName='Color3Value',Value=Color3.new(0,0.2157,0.2941)},[2]={Name='ButtonOn',ClassName='Color3Value',Value=Color3.new(0.3765,0.451,0.5608)},[3]={Name='TabPick',ClassName='Color3Value',Value=Color3.new(0.3765,0.451,0.5608)},[4]={Name='TabUnpick',ClassName='Color3Value',Value=Color3.new(0,0.2157,0.2941)}}},[5]={Name='ScriptStatuses',ClassName='Folder',Files={[1]={Name='SkipRoomAuto',ClassName='BoolValue'},[2]={Name='UIAnim',ClassName='BoolValue'},[3]={Name='SkipRoom',ClassName='StringValue',Value='Idle'},[4]={Name='CollectMoney',ClassName='StringValue',Value='Idle'}}},[6]={Name='Events',ClassName='Folder',Files={[1]={Name='Summon',ClassName='BindableEvent'},[2]={Name='ItemActivate',ClassName='BindableFunction'},[3]={Name='UIAct',ClassName='BindableEvent'},[4]={Name='ItemOnUnequip',ClassName='BindableFunction'},[5]={Name='TeleportToRoom',ClassName='BindableEvent'},[6]={Name='ItemOnEquip',ClassName='BindableFunction'},[7]={Name='Despawn',ClassName='BindableEvent'},[8]={Name='UIModule',ClassName='BindableFunction'},[9]={Name='CollectMoney',ClassName='BindableEvent'},[10]={Name='ItemGive',ClassName='BindableEvent'},[11]={Name='ItemEquip',ClassName='BindableFunction'},[12]={Name='ItemUnequip',ClassName='BindableFunction'},[13]={Name='Atomize',ClassName='BindableEvent'},[14]={Name='ItemRemove',ClassName='BindableEvent'},[15]={Name='SkipRoom',ClassName='BindableEvent'},[16]={Name='CancelAll',ClassName='BindableEvent'},[17]={Name='PanelOpen',ClassName='BindableEvent'}}},[7]={Name='Settings',ClassName='Folder',Files={[1]={Name='LocalEntitiesDisable',ClassName='Folder',Files={[1]={Name='Pipsqueak',ClassName='BoolValue'},[2]={Name='Lopee',ClassName='BoolValue'},[3]={Name='GOM',ClassName='BoolValue'},[4]={Name='A200',ClassName='BoolValue'},[5]={Name='WitchingHour',ClassName='BoolValue'},[6]={Name='Pandemonium',ClassName='BoolValue'}}},[2]={Name='SkipRoomAutoCooldown',ClassName='StringValue'},[3]={Name='CollectMoneyAuto',ClassName='BoolValue'}}},[8]={Name='KeyBinds',ClassName='Folder',Files={[1]={Name='CollectMoneyAuto',ClassName='StringValue',Value='Z and M'},[2]={Name='PanelOpen',ClassName='StringValue',Value='Z'},[3]={Name='SkipRoomAuto',ClassName='StringValue',Value='LeftControl and P'},[4]={Name='CancelAll',ClassName='StringValue',Value='Z and X'},[5]={Name='TeleportToRoom',ClassName='StringValue',Value='Z and One',Attributes={Extra1='Z and Two',Extra5='Z and Six',Extra2='Z and Three',Extra3='Z and Four',Extra4='Z and Five'}},[6]={Name='SkipRoomIgnoreConditions',ClassName='StringValue',Value='O'},[7]={Name='SkipRoom',ClassName='StringValue',Value='P'}}},[9]={Name='Modifiers',ClassName='Folder'},[10]={Name='ModifiersFrame',ClassName='Frame',Size=UDim2.new(1,0,1,0),BorderColor3=Color3.new(0,0,0),Visible=false,BackgroundTransparency=1,BorderSizePixel=0,BackgroundColor3=Color3.new(1,1,1),Files={[1]={Name='ModifierList',ClassName='Frame',AnchorPoint=Vector2.new(0.5,0.5),Size=UDim2.new(0.2819,0,0.8046,0),BorderColor3=Color3.new(0,0,0),BackgroundTransparency=0.3,Position=UDim2.new(0.187,0,0.55,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0,0,0),Files={[1]={Name='List',ClassName='ScrollingFrame',Active=true,ScrollingDirection=Enum.ScrollingDirection.Y,BorderSizePixel=0,CanvasSize=UDim2.new(0,0,0,0),BackgroundColor3=Color3.new(0.1216,0.1608,0.2078),AutomaticCanvasSize=Enum.AutomaticSize.Y,AnchorPoint=Vector2.new(0,0.5),Size=UDim2.new(0.98,0,0.98,0),ClipsDescendants=true,BorderColor3=Color3.new(0,0,0),ScrollBarThickness=7,Selectable=true,BackgroundTransparency=1,Position=UDim2.new(0.01,0,0.498,0),SelectionGroup=true,Files={[1]={Name='UICorner',ClassName='UICorner',TopRightRadius=UDim.new(0.025,0),BottomRightRadius=UDim.new(0.025,0),TopLeftRadius=UDim.new(0.025,0),BottomLeftRadius=UDim.new(0.025,0)},[2]={Name='UIPadding',ClassName='UIPadding',PaddingTop=UDim.new(0,3),PaddingLeft=UDim.new(0,3)},[3]={Name='UIStroke',ClassName='UIStroke',Enabled=false,Color=Color3.new(1,0.0667,0.0667),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=2},[4]={Name='UIListLayout',ClassName='UIListLayout',SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,5)}}},[2]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(1,0.3647,0.3765),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.008,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize},[3]={Name='UICorner',ClassName='UICorner',TopRightRadius=UDim.new(0.025,0),BottomRightRadius=UDim.new(0.025,0),TopLeftRadius=UDim.new(0.025,0),BottomLeftRadius=UDim.new(0.025,0)},[4]={Name='UIAspectRatioConstraint',ClassName='UIAspectRatioConstraint',AspectRatio=0.9}}},[2]={Name='Percent',ClassName='Frame',Size=UDim2.new(0.2345,0,0.0909,0),BorderColor3=Color3.new(0,0,0),BackgroundTransparency=1,Position=UDim2.new(0.3984,0,0.8712,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0.3804,0.1333,0.1333),Files={[1]={Name='UIAspectRatioConstraint',ClassName='UIAspectRatioConstraint',AspectRatio=4.96},[2]={Name='Percentage',ClassName='TextLabel',TextWrapped=true,Active=false,TextStrokeTransparency=0,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(1,1,1),FontFace=Font.fromName('Michroma',Enum.FontWeight.Bold,Enum.FontStyle.Normal),Size=UDim2.new(0.6701,0,0.7235,0),BorderColor3=Color3.new(0,0,0),Text='+0%',TextSize=14,BackgroundTransparency=1,Position=UDim2.new(0.1604,0,0.1383,0),TextColor3=Color3.new(1,1,1)},[3]={Name='Max',ClassName='TextLabel',TextWrapped=true,Active=false,TextStrokeTransparency=0,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(1,1,1),FontFace=Font.fromName('Michroma',Enum.FontWeight.Bold,Enum.FontStyle.Normal),Size=UDim2.new(0.4335,0,0.362,0),BorderColor3=Color3.new(0,0,0),Text='(Max reached)',TextSize=14,BackgroundTransparency=1,Position=UDim2.new(0.2787,0,1,0),TextColor3=Color3.new(1,1,1),Visible=false},[4]={Name='ImageLabel',ClassName='ImageLabel',Image=78556492508769,ZIndex=-5,Size=UDim2.new(1,0,1,0),BorderColor3=Color3.new(0,0,0),ImageColor3=Color3.new(1,0.3647,0.3765),BackgroundTransparency=1,BorderSizePixel=0,BackgroundColor3=Color3.new(1,1,1)},[5]={Name='UICorner',ClassName='UICorner',TopRightRadius=UDim.new(0,12),BottomRightRadius=UDim.new(0,12),TopLeftRadius=UDim.new(0,12),BottomLeftRadius=UDim.new(0,12)}}},[3]={Name='LobbyInfo',ClassName='Frame',AnchorPoint=Vector2.new(0.5,0.5),Size=UDim2.new(0.33,0,0.33,0),BorderColor3=Color3.new(0,0,0),BackgroundTransparency=1,Position=UDim2.new(0.852,0,0.635,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0,0,0),Files={[1]={Name='Buttons',ClassName='Frame',Size=UDim2.new(0.9985,0,0.5171,0),BorderColor3=Color3.new(0,0,0),BackgroundTransparency=1,Position=UDim2.new(0,0,1.0084,0),BorderSizePixel=0,BackgroundColor3=Color3.new(1,1,1),Files={[1]={Name='Apply',ClassName='TextButton',TextWrapped=true,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0,0),FontFace=Font.fromName('Michroma',Enum.FontWeight.Bold,Enum.FontStyle.Normal),AnchorPoint=Vector2.new(0.5,0.5),Size=UDim2.new(1,0,0.45,0),BorderColor3=Color3.new(0,0,0),Text='',TextSize=14,TextColor3=Color3.new(0.7176,0.8431,1),BackgroundTransparency=1,Position=UDim2.new(0.5,0,1.096,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='ImageLabel',ClassName='ImageLabel',AnchorPoint=Vector2.new(0.5,0.5),Image=114259900379908,ZIndex=-2,Size=UDim2.new(1,0,1,0),ScaleType=Enum.ScaleType.Fit,BorderColor3=Color3.new(0,0,0),ImageColor3=Color3.new(0.2157,0.451,0.6588),BackgroundTransparency=1,Position=UDim2.new(0.5,0,0.5,0),BorderSizePixel=0,BackgroundColor3=Color3.new(1,1,1)},[2]={Name='TextLabel',ClassName='TextLabel',TextWrapped=true,Active=false,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(1,1,1),FontFace=Font.fromName('Michroma',Enum.FontWeight.Bold,Enum.FontStyle.Normal),AnchorPoint=Vector2.new(0.5,0.5),Size=UDim2.new(0.82,0,0.803,0),BorderColor3=Color3.new(0,0,0),Text='Apply Changes',TextSize=14,BackgroundTransparency=1,Position=UDim2.new(0.5,0,0.5,0),TextColor3=Color3.new(0.7176,0.8431,1)}}},[2]={Name='Close',ClassName='TextButton',LayoutOrder=1,TextWrapped=true,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(0,0,0),FontFace=Font.fromName('Michroma',Enum.FontWeight.Bold,Enum.FontStyle.Normal),AnchorPoint=Vector2.new(0.5,0.5),Size=UDim2.new(1,0,0.45,0),BorderColor3=Color3.new(0,0,0),Text='',TextSize=14,TextColor3=Color3.new(0.7176,0.8431,1),BackgroundTransparency=1,Position=UDim2.new(0.5,0,0.6994,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='ImageLabel',ClassName='ImageLabel',AnchorPoint=Vector2.new(0.5,0.5),Image=114259900379908,ZIndex=-2,Size=UDim2.new(1,0,1,0),ScaleType=Enum.ScaleType.Fit,BorderColor3=Color3.new(0,0,0),ImageColor3=Color3.new(1,0.0667,0.0667),BackgroundTransparency=1,Position=UDim2.new(0.5,0,0.5,0),BorderSizePixel=0,BackgroundColor3=Color3.new(1,1,1)},[2]={Name='TextLabel',ClassName='TextLabel',TextWrapped=true,Active=false,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(1,1,1),FontFace=Font.fromName('Michroma',Enum.FontWeight.Bold,Enum.FontStyle.Normal),AnchorPoint=Vector2.new(0.5,0.5),Size=UDim2.new(0.8198,0,0.8029,0),BorderColor3=Color3.new(0,0,0),Text='Close',TextSize=14,BackgroundTransparency=1,Position=UDim2.new(0.5,0,0.5,0),TextColor3=Color3.new(1,0.0667,0.0667)}}},[3]={Name='UIListLayout',ClassName='UIListLayout',SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0.04,0)}}},[2]={Name='UIAspectRatioConstraint',ClassName='UIAspectRatioConstraint',AspectRatio=1.94}}},[4]={Name='ModifierBanner',ClassName='Frame',AnchorPoint=Vector2.new(0.5,0.5),Size=UDim2.new(0.2743,0,0.8527,0),BorderColor3=Color3.new(0,0,0),BackgroundTransparency=0.3,Position=UDim2.new(0.8513,0,0.4256,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0,0,0),Files={[1]={Name='ImageLabel',ClassName='ImageLabel',Image=74116745115367,ZIndex=-5,Size=UDim2.new(1,0,1,0),BorderColor3=Color3.new(0,0,0),ImageColor3=Color3.new(1,0.3647,0.3765),BackgroundTransparency=1,BorderSizePixel=0,BackgroundColor3=Color3.new(1,1,1)},[2]={Name='Banner',ClassName='Frame',Size=UDim2.new(0.9426,0,0.5758,0),BorderColor3=Color3.new(0,0,0),BackgroundTransparency=0.5,Position=UDim2.new(0.0287,0,0.0273,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0,0,0),Files={[1]={Name='UICorner',ClassName='UICorner',TopRightRadius=UDim.new(0.02,0),BottomRightRadius=UDim.new(0.02,0),TopLeftRadius=UDim.new(0.02,0),BottomLeftRadius=UDim.new(0.02,0)},[2]={Name='BannerImage',ClassName='ImageLabel',Size=UDim2.new(1,0,1,0),BorderColor3=Color3.new(0,0,0),BackgroundTransparency=1,BorderSizePixel=0,BackgroundColor3=Color3.new(1,1,1),Files={[1]={Name='UICorner',ClassName='UICorner',TopRightRadius=UDim.new(0.02,0),BottomRightRadius=UDim.new(0.02,0),TopLeftRadius=UDim.new(0.02,0),BottomLeftRadius=UDim.new(0.02,0)}}},[3]={Name='BackgroundText',ClassName='TextLabel',TextWrapped=true,Active=false,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(1,1,1),FontFace=Font.fromName('Michroma',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.3514,0,0.1931,0),BorderColor3=Color3.new(0,0,0),Text='No Image',TextSize=14,BackgroundTransparency=1,Position=UDim2.new(0.3243,0,0.3982,0),TextColor3=Color3.new(1,1,1)},[4]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(1,0.3647,0.3765),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.01,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[3]={Name='Percent',ClassName='Frame',Size=UDim2.new(0.3218,0,0.1073,0),BorderColor3=Color3.new(0,0,0),BackgroundTransparency=0.5,Position=UDim2.new(0.646,0,0.632,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0,0,0),Files={[1]={Name='UICorner',ClassName='UICorner',TopRightRadius=UDim.new(0.35,0),BottomRightRadius=UDim.new(0.35,0),TopLeftRadius=UDim.new(0.35,0),BottomLeftRadius=UDim.new(0.35,0)},[2]={Name='Percentage',ClassName='TextLabel',TextWrapped=true,Active=false,TextStrokeTransparency=0,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(1,1,1),FontFace=Font.fromName('Michroma',Enum.FontWeight.Bold,Enum.FontStyle.Normal),Size=UDim2.new(0.829,0,1,0),BorderColor3=Color3.new(0,0,0),Text='+0%',TextSize=14,BackgroundTransparency=1,Position=UDim2.new(0.086,0,0,0),TextColor3=Color3.new(1,1,1)},[3]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(1,0.3647,0.3765),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[4]={Name='Title',ClassName='Frame',Size=UDim2.new(0.5758,0,0.0964,0),BorderColor3=Color3.new(0,0,0),BackgroundTransparency=0.5,Position=UDim2.new(0.029,0,0.638,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0.3804,0.1333,0.1333),Files={[1]={Name='TitleText',ClassName='TextLabel',TextWrapped=true,Active=false,TextStrokeTransparency=0,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(1,1,1),FontFace=Font.fromName('Michroma',Enum.FontWeight.Bold,Enum.FontStyle.Normal),Size=UDim2.new(0.8287,0,1,0),BorderColor3=Color3.new(0,0,0),Text='Modifier Name',TextSize=14,BackgroundTransparency=1,Position=UDim2.new(0.0864,0,0,0),TextColor3=Color3.new(1,1,1)},[2]={Name='UICorner',ClassName='UICorner',TopRightRadius=UDim.new(0,12),BottomRightRadius=UDim.new(0,12),TopLeftRadius=UDim.new(0,12),BottomLeftRadius=UDim.new(0,12)},[3]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(1,0.3647,0.3765),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.05,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[5]={Name='Description',ClassName='Frame',Size=UDim2.new(0.9426,0,0.212,0),BorderColor3=Color3.new(0,0,0),BackgroundTransparency=0.5,Position=UDim2.new(0.0287,0,0.764,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0,0,0),Files={[1]={Name='DescriptionText',ClassName='TextLabel',TextWrapped=true,Active=false,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(1,1,1),FontFace=Font.fromName('Michroma',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(1,0,1,0),BorderColor3=Color3.new(0,0,0),Text='MODIFIER DESC MODIFIER DESC MODIFIER DESC MODIFIER DESC MODIFIER DESC MODIFIER DESC MODIFIER DESC MODIFIER DESC',TextSize=14,BackgroundTransparency=1,Position=UDim2.new(0,0,0,0),TextColor3=Color3.new(1,1,1)},[2]={Name='UICorner',ClassName='UICorner'},[3]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(1,0.3647,0.3765),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.025,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[6]={Name='UIAspectRatioConstraint',ClassName='UIAspectRatioConstraint'},[7]={Name='UICorner',ClassName='UICorner'}}}}},[11]={Name='Assets',ClassName='Frame',Size=UDim2.new(1,0,1,0),BorderColor3=Color3.new(0,0,0),Visible=false,BackgroundTransparency=1,BorderSizePixel=0,BackgroundColor3=Color3.new(1,1,1),Files={[1]={Name='ModifierButton',ClassName='TextButton',LayoutOrder=-1,BorderSizePixel=0,BackgroundColor3=Color3.new(0.1882,0.0706,0.0784),FontFace=Font.fromName('SourceSansPro',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.95,0,0.1,0),ClipsDescendants=true,BorderColor3=Color3.new(0,0,0),Text='',TextSize=14,TextColor3=Color3.new(0,0,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='Title',ClassName='TextLabel',TextWrapped=true,Active=false,TextStrokeTransparency=0,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(1,1,1),FontFace=Font.fromName('Michroma',Enum.FontWeight.Bold,Enum.FontStyle.Normal),AnchorPoint=Vector2.new(0,0.5),Size=UDim2.new(0.7,0,0.8,0),TextXAlignment=Enum.TextXAlignment.Left,BorderColor3=Color3.new(0,0,0),Text='Modifier name',TextSize=14,BackgroundTransparency=1,Position=UDim2.new(0.0624,0,0.4752,0),TextColor3=Color3.new(0.4431,0.4431,0.4431)},[2]={Name='Icon',ClassName='ImageLabel',AnchorPoint=Vector2.new(0.5,0.5),Image=71118995144150,ZIndex=-1,Size=UDim2.new(0.1538,0,2.1532,0),BorderColor3=Color3.new(0,0,0),BackgroundTransparency=1,Position=UDim2.new(0.0225,0,0.4843,0),BorderSizePixel=0,BackgroundColor3=Color3.new(1,1,1),Files={[1]={Name='UIGradient',ClassName='UIGradient',Transparency={NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(0.3501259386539459,0),NumberSequenceKeypoint.new(1,1)}},[2]={Name='UIAspectRatioConstraint',ClassName='UIAspectRatioConstraint'}}},[3]={Name='Percent',ClassName='Frame',AnchorPoint=Vector2.new(0,0.5),Size=UDim2.new(0.1861,0,0.8,0),BorderColor3=Color3.new(0,0,0),Position=UDim2.new(0.8039,0,0.5,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0,0,0),Files={[1]={Name='Percentage',ClassName='TextLabel',TextWrapped=true,Active=false,TextStrokeTransparency=0,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(1,1,1),FontFace=Font.fromName('Michroma',Enum.FontWeight.Bold,Enum.FontStyle.Normal),Size=UDim2.new(0.95,0,1,0),BorderColor3=Color3.new(0,0,0),Text='---',TextSize=14,BackgroundTransparency=1,Position=UDim2.new(0.025,0,0,0),TextColor3=Color3.new(1,1,1)},[2]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(1,0.2275,0.2392),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.1,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize}}},[4]={Name='UIAspectRatioConstraint',ClassName='UIAspectRatioConstraint',AspectRatio=12}}}}},[12]={Name='BlackScreen',ClassName='Frame',Size=UDim2.new(2,0,2,0),BorderColor3=Color3.new(0,0,0),BackgroundTransparency=1,Position=UDim2.new(-0.5,0,-0.5,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0,0,0)}}}
 			},
-			["Events"] = {
-				ClassName = "Folder",
-				
-				Files = {
-					["PanelOpen"] = {
-						ClassName = "BindableEvent"
-					},
-					["SkipRoom"] = {
-						ClassName = "BindableEvent"
-					},
-					["TeleportToRoom"] = {
-						ClassName = "BindableEvent"
-					},
-					["CollectMoney"] = {
-						ClassName = "BindableEvent"
-					},
-					["CancelAll"] = {
-						ClassName = "BindableEvent"
-					}
-				}
+			Modifiers = {
+				ModifierButton = {Name='ModifierButton',ClassName='TextButton',LayoutOrder=-1,BorderSizePixel=0,BackgroundColor3=Color3.new(0.1882,0.0706,0.0784),FontFace=Font.fromName('SourceSansPro',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Size=UDim2.new(0.95,0,0.1,0),ClipsDescendants=true,BorderColor3=Color3.new(0,0,0),Text='',TextSize=14,TextColor3=Color3.new(0,0,0),Style=Enum.ButtonStyle.Custom,Files={[1]={Name='UIAspectRatioConstraint',ClassName='UIAspectRatioConstraint',AspectRatio=12},[2]={Name='Title',ClassName='TextLabel',TextWrapped=true,Active=false,TextStrokeTransparency=0,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(1,1,1),FontFace=Font.fromName('Michroma',Enum.FontWeight.Bold,Enum.FontStyle.Normal),AnchorPoint=Vector2.new(0,0.5),Size=UDim2.new(0.7,0,0.8,0),TextXAlignment=Enum.TextXAlignment.Left,BorderColor3=Color3.new(0,0,0),Text='Modifier name',TextSize=14,BackgroundTransparency=1,Position=UDim2.new(0.0624,0,0.4752,0),TextColor3=Color3.new(0.4431,0.4431,0.4431)},[3]={Name='Icon',ClassName='ImageLabel',AnchorPoint=Vector2.new(0.5,0.5),Image=71118995144150,ZIndex=-1,Size=UDim2.new(0.1538,0,2.1532,0),BorderColor3=Color3.new(0,0,0),BackgroundTransparency=1,Position=UDim2.new(0.0225,0,0.4843,0),BorderSizePixel=0,BackgroundColor3=Color3.new(1,1,1),Files={[1]={Name='UIGradient',ClassName='UIGradient',Transparency={NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(0.3501259386539459,0),NumberSequenceKeypoint.new(1,1)}},[2]={Name='UIAspectRatioConstraint',ClassName='UIAspectRatioConstraint'}}},[4]={Name='Percent',ClassName='Frame',AnchorPoint=Vector2.new(0,0.5),Size=UDim2.new(0.1861,0,0.8,0),BorderColor3=Color3.new(0,0,0),Position=UDim2.new(0.8039,0,0.5,0),BorderSizePixel=0,BackgroundColor3=Color3.new(0,0,0),Files={[1]={Name='UIStroke',ClassName='UIStroke',Color=Color3.new(1,0.2275,0.2392),ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Thickness=0.1,StrokeSizingMode=Enum.StrokeSizingMode.ScaledSize},[2]={Name='Percentage',ClassName='TextLabel',TextWrapped=true,Active=false,TextStrokeTransparency=0,BorderSizePixel=0,TextScaled=true,BackgroundColor3=Color3.new(1,1,1),FontFace=Font.fromName('Michroma',Enum.FontWeight.Bold,Enum.FontStyle.Normal),Size=UDim2.new(0.95,0,1,0),BorderColor3=Color3.new(0,0,0),Text='---',TextSize=14,BackgroundTransparency=1,Position=UDim2.new(0.025,0,0,0),TextColor3=Color3.new(1,1,1)}}}}}
+			}
+		},
+		Sounds = {
+			Atomize = {
+				Atomize1 = {}
+			}
+		}
+	},
+	Sounds = {
+		UI = {
+			Joke = {
+				Lancer = {Name='Lancer',ClassName='Sound',Volume=5,SoundId=7551589091}
+			}
+		}
+	},
+	Rooms = {
+		Elevators = {
+			CustomRoomPrepare = {
+				Main = {}
+			}
+		},
+		GrandEncounters = {
+			Schoolhouse = {
+				Start = {},
+				Main = {},
+				End = {}
 			},
-			["Settings"] = {
-				ClassName = "Folder",
-
-				Files = {
-					["SkipRoomAutoCooldown"] = {
-						ClassName = "StringValue",
-						Value = "0.2"
-					},
-					["CollectMoneyAuto"] = {
-						ClassName = "BoolValue",
-						Value = true
-					}
-				}
+			SchoolhouseFinale = {
+				Start = {},
+				ModifiersStart = {},
+				Main = {},
+				Main_Abandoned = {},
+				End = {},
+				ModifiersEnd = {}
+			}
+		}
+	},
+	RoomAssets = {
+		Interactables = {
+			Furniture = {
+				Locker = {},
+				BaldiLocker = {},
+				OfficeDrawer = {}
 			},
-			["ScriptStatuses"] = {
-				ClassName = "Folder",
-
-				Files = {
-					["SkipRoom"] = {
-						ClassName = "StringValue",
-						Value = "Idle"
-					},
-					["SkipRoomAuto"] = {
-						ClassName = "BoolValue",
-						Value = false
-					},
-					["CollectMoney"] = {
-						ClassName = "StringValue",
-						Value = "Idle"
-					}
-				}
+			Progress = {
+				BaldiNotebook = {}
+			}
+		},
+		Decor = {
+			Furniture = {
+				Chair = {}
+			}
+		}
+	},
+	Items = {
+		TheDemon = {
+			Models = {
+				Equip = {Name='Equip',ClassName='Model',Attributes={Offhandable=false,CustomColor=Color3.new(1,0.4471,0.8706)},Tags={'Item'},Files={[1]={Name='Crumbs',ClassName='Model',Files={[1]={Name='Crumbs1',ClassName='Part',Color=Color3.new(0.7608,0.5686,0.2314),Size=Vector3.new(0.0394,0.0394,0.0394),CanCollide=false,Shape=Enum.PartType.Ball,Massless=true,Transparency=1,Position=Vector3.new(-0.3691,1.7917,-0.1448),CanTouch=false,CanQuery=false},[2]={Name='Crumbs1',ClassName='Part',Color=Color3.new(0.7608,0.5686,0.2314),Size=Vector3.new(0.0596,0.0596,0.0596),CanCollide=false,Shape=Enum.PartType.Ball,Massless=true,Transparency=1,Position=Vector3.new(-0.4858,2.1294,0.1565),CanTouch=false,CanQuery=false},[3]={Name='Crumbs2',ClassName='Part',Color=Color3.new(0.7608,0.5686,0.2314),Size=Vector3.new(0.0288,0.0288,0.0288),CanCollide=false,Shape=Enum.PartType.Ball,Massless=true,Transparency=1,Position=Vector3.new(-0.3638,1.8253,-0.1448),CanTouch=false,CanQuery=false,Tags={'CompileInstance1 1','CompileInstance1 2','CompileInstance1 3','CompileInstance1 4','CompileInstance1 5','CompileInstance1 6','CompileInstance1 7','CompileInstance1 8','CompileInstance1 9','CompileInstance1 10','CompileInstance1 11'},Files={[1]={Name='Part',ClassName='Weld',C0=CFrame.new(-0.106933594, 0.309921861, 0.338867188, 1, 0, 0, 0, 1, 0, 0, 0, 1),Tags={'CompileWeld 1'}},[2]={Name='Part',ClassName='Weld',C0=CFrame.new(-0.0678710938, 0.267852902, 0.338867188, 1, 0, 0, 0, 1, 0, 0, 0, 1),Tags={'CompileWeld 2'}},[3]={Name='Part',ClassName='Weld',C0=CFrame.new(-0.0688476562, 0.297791123, -0.109375, 1, 0, 0, 0, 1, 0, 0, 0, 1),Tags={'CompileWeld 3'}},[4]={Name='Part',ClassName='Weld',C0=CFrame.new(-0.00537109375, -0.0335501432, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1),Tags={'CompileWeld 4'}},[5]={Name='Part',ClassName='Weld',C0=CFrame.new(0, 0.0148195028, 0.314208984, 1, 0, 0, 0, 1, 0, 0, 0, 1),Tags={'CompileWeld 5'}},[6]={Name='Part',ClassName='Weld',C0=CFrame.new(-0.109375, 0.33062923, -0.0708007812, 1, 0, 0, 0, 1, 0, 0, 0, 1),Tags={'CompileWeld 6'}},[7]={Name='Part',ClassName='Weld',C0=CFrame.new(-0.140625, 0.350802064, 0.2734375, 1, 0, 0, 0, 1, 0, 0, 0, 1),Tags={'CompileWeld 7'}},[8]={Name='Base',ClassName='Weld',C0=CFrame.new(0.363769531, 0.409730554, 0.144775391, 0, 0, 1, 0, 1, -0, -1, 0, 0),Tags={'CompileWeld 8'}},[9]={Name='Part',ClassName='Weld',C0=CFrame.new(0, -0.00732910633, -0.0270996094, 1, 0, 0, 0, 1, 0, 0, 0, 1),Tags={'CompileWeld 9'}},[10]={Name='Part',ClassName='Weld',C0=CFrame.new(-0.122070312, 0.304104805, 0.301269531, 1, 0, 0, 0, 1, 0, 0, 0, 1),Tags={'CompileWeld 10'}},[11]={Name='Part',ClassName='Weld',C0=CFrame.new(-0.155273438, 0.365747094, 0.314208984, 1, 0, 0, 0, 1, 0, 0, 0, 1),Tags={'CompileWeld 11'}}}},[4]={Name='Crumbs2',ClassName='Part',Color=Color3.new(0.7608,0.5686,0.2314),Size=Vector3.new(0.0596,0.0596,0.0596),CanCollide=false,Shape=Enum.PartType.Ball,Massless=true,Transparency=1,Position=Vector3.new(-0.4316,2.0931,0.1941),CanTouch=false,CanQuery=false},[5]={Name='Crumbs1',ClassName='Part',Color=Color3.new(0.7608,0.5686,0.2314),Size=Vector3.new(0.0596,0.0596,0.0596),CanCollide=false,Shape=Enum.PartType.Ball,Massless=true,Transparency=1,Position=Vector3.new(-0.4731,2.1559,-0.2156),CanTouch=false,CanQuery=false},[6]={Name='Crumbs1',ClassName='Part',Color=Color3.new(0.7608,0.5686,0.2314),Size=Vector3.new(0.0394,0.0394,0.0394),CanCollide=false,Shape=Enum.PartType.Ball,Massless=true,Transparency=1,Position=Vector3.new(-0.3638,1.8179,-0.1719),CanTouch=false,CanQuery=false},[7]={Name='Crumbs2',ClassName='Part',Color=Color3.new(0.7608,0.5686,0.2314),Size=Vector3.new(0.0596,0.0596,0.0596),CanCollide=false,Shape=Enum.PartType.Ball,Massless=true,Transparency=1,Position=Vector3.new(-0.5044,2.1761,0.1287),CanTouch=false,CanQuery=false},[8]={Name='Crumbs2',ClassName='Part',Color=Color3.new(0.7608,0.5686,0.2314),Size=Vector3.new(0.035,0.035,0.035),CanCollide=false,Shape=Enum.PartType.Ball,Massless=true,Transparency=1,Position=Vector3.new(-0.4326,2.1231,-0.2542),CanTouch=false,CanQuery=false},[9]={Name='Crumbs2',ClassName='Part',Color=Color3.new(0.7608,0.5686,0.2314),Size=Vector3.new(0.0394,0.0394,0.0394),CanCollide=false,Shape=Enum.PartType.Ball,Massless=true,Transparency=1,Position=Vector3.new(-0.3638,1.8401,0.1694),CanTouch=false,CanQuery=false},[10]={Name='Crumbs1',ClassName='Part',Color=Color3.new(0.7608,0.5686,0.2314),Size=Vector3.new(0.0596,0.0596,0.0596),CanCollide=false,Shape=Enum.PartType.Ball,Massless=true,Transparency=1,Position=Vector3.new(-0.4707,2.1352,0.1941),CanTouch=false,CanQuery=false},[11]={Name='Crumbs1',ClassName='Part',Color=Color3.new(0.7608,0.5686,0.2314),Size=Vector3.new(0.0422,0.0422,0.0422),CanCollide=false,Shape=Enum.PartType.Ball,Massless=true,Transparency=1,Position=Vector3.new(-0.519,2.191,0.1694),CanTouch=false,CanQuery=false}}},[2]={Name='Handle',ClassName='Motor6D',C0=CFrame.new(-0.25, -0.25, -0.850000024, 0.0594432354, 0.336835414, 0.939685345, -0.984798789, 0.17369926, 3.35872173e-05, -0.163211375, -0.92540288, 0.3420403),Tags={'CompileWeld 12'}},[3]={Name='Base',ClassName='MeshPart',RenderFidelity=Enum.RenderFidelity.Automatic,Size=Vector3.new(2.481,2.47,1.765),Massless=true,MeshId=90272564580344,CanQuery=false,Orientation=Vector3.new(0,90,0),Position=Vector3.new(0,2.235,0),TextureID=88517258308777,Tags={'CompileInstance2 12'}}}}
 			},
-			["UIStatus"] = {
-				ClassName = "Folder",
-				
-				Files = {
-					["VisibleTab"] = {
-						ClassName = "StringValue",
-						Value = ""
-					}
-				}
-			},
-			["Main"] = {
-				ClassName = "Frame",
-				BackgroundColor3 = Color3.fromRGB(0, 55, 75),
-				Position = UDim2.fromScale(0.173, 0.122),
-				Size = UDim2.fromScale(0.65, 0.75),
-				
-				Files = {
-					["UIAspectRatioConstraint"] = {
-						ClassName = "UIAspectRatioConstraint",
-						AspectRatio = 1.85
-					},
-					["UIStroke"] = {
-						ClassName = "UIStroke",
-						ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
-						Color = Color3.fromRGB(135, 161, 200),
-						Thickness = 0.01
-					},
-					["DecorBar"] = {
-						ClassName = "Frame",
-						BackgroundColor3 = Color3.fromRGB(135, 161, 200),
-						Position = UDim2.fromScale(0, 0.23),
-						Size = UDim2.fromScale(1, 0.02)
-					},
-					["TabChoice"] = {
-						ClassName = "ScrollingFrame",
-						BackgroundTransparency = 1,
-						Position = UDim2.fromScale(0, 0),
-						Size = UDim2.fromScale(1, 0.23),
-						CanvasSize = UDim2.fromScale(2, 0),
-						
-						Files = {
-							["UIListLayout"] = {
-								ClassName = "UIListLayout",
-								Padding = UDim.new(0.005, 0),
-								FillDirection = Enum.FillDirection.Horizontal
-							},
-							["Actions"] = {
-								ClassName = "TextButton",
-								AutoButtonColor = false,
-								LayoutOrder = 1,
-								Size = UDim2.fromScale(0.125, 1),
-								Text = "Actions",
-								
-								Files = {
-									["UIStroke"] = {
-										ClassName = "UIStroke",
-										Color = Color3.fromRGB(135, 161, 200),
-										Thickness = 0.05
-									}
-								}
-							},
-							["AdminPanel"] = {
-								ClassName = "TextButton",
-								AutoButtonColor = false,
-								LayoutOrder = 2,
-								Size = UDim2.fromScale(0.125, 1),
-								Text = "Admin Panel",
-								
-								Files = {
-									["UIStroke"] = {
-										ClassName = "UIStroke",
-										Color = Color3.fromRGB(135, 161, 200),
-										Thickness = 0.05
-									}
-								}
-							}
-						}
-					},
-					["TabChoiceSpecial"] = {
-						ClassName = "Frame",
-						BackgroundTransparency = 1,
-						Position = UDim2.fromScale(-0.183, 0),
-						Size = UDim2.fromScale(0.175, 1),
-						
-						Files = {
-							["KeyBinds"] = {
-								ClassName = "TextButton",
-								AutoButtonColor = false,
-								Position = UDim2.fromScale(0, 0.525),
-								Size = UDim2.fromScale(1, 0.23),
-								Text = "Key Binds",
-
-								Files = {
-									["UIStroke"] = {
-										ClassName = "UIStroke",
-										Color = Color3.fromRGB(135, 161, 200),
-										Thickness = 0.05
-									}
-								}
-							},
-							["Settings"] = {
-								ClassName = "TextButton",
-								AutoButtonColor = false,
-								Position = UDim2.fromScale(0, 0.25),
-								Size = UDim2.fromScale(1, 0.23),
-								Text = "Settings",
-
-								Files = {
-									["UIStroke"] = {
-										ClassName = "UIStroke",
-										Color = Color3.fromRGB(135, 161, 200),
-										Thickness = 0.05
-									}
-								}
-							}
-						}
-					},
-					["Tabs"] = {
-						ClassName = "Frame",
-						BackgroundTransparency = 1,
-						Position = UDim2.fromScale(0, 0),
-						Size = UDim2.fromScale(1, 1),
-						
-						Files = {
-							["Actions"] = {
-								ClassName = "ScrollingFrame",
-								BackgroundTransparency = 1,
-								Position = UDim2.fromScale(0, 0.25),
-								Size = UDim2.fromScale(1, 0.75),
-								CanvasSize = UDim2.fromScale(0, 10),
-								
-								
-								Files = {
-									["UIListLayout"] = {
-										ClassName = "UIListLayout",
-										FillDirection = Enum.FillDirection.Vertical
-									},
-									["Rooms"] = {
-										ClassName = "Frame",
-										BackgroundColor3 = Color3.fromRGB(0, 202, 108),
-										LayoutOrder = 1,
-										Size = UDim2.fromScale(1, 0.15),
-										
-										Files = {
-											["CollectMoney"] = {
-												ClassName = "TextButton",
-												Position = UDim2.fromScale(0.688, 0.2),
-												Size = UDim2.fromScale(0.25, 0.15),
-												Text = "Collect Money",
-												
-												Files = {
-													["UIStroke"] = {
-														ClassName = "UIStroke",
-														Color = Color3.fromRGB(135, 161, 200),
-														Thickness = 0.05
-													}
-												}
-											},
-											["SkipRoom"] = {
-												ClassName = "TextButton",
-												Position = UDim2.fromScale(0.062, 0.2),
-												Size = UDim2.fromScale(0.25, 0.15),
-												Text = "Skip Room",
-
-												Files = {
-													["UIStroke"] = {
-														ClassName = "UIStroke",
-														Color = Color3.fromRGB(135, 161, 200),
-														Thickness = 0.05
-													}
-												}
-											},
-											["SkipRoomAuto"] = {
-												ClassName = "TextButton",
-												Position = UDim2.fromScale(0.382, 0.2),
-												Size = UDim2.fromScale(0.25, 0.15),
-												Text = "Skip Room AUTO",
-												
-												Tags = {
-													"Toggle"
-												},
-
-												Files = {
-													["UIStroke"] = {
-														ClassName = "UIStroke",
-														Color = Color3.fromRGB(135, 161, 200),
-														Thickness = 0.05
-													}
-												}
-											},
-											["SkipRoomIgnoreConditions"] = {
-												ClassName = "TextButton",
-												Position = UDim2.fromScale(0.062, 0.425),
-												Size = UDim2.fromScale(0.25, 0.15),
-												Text = "Skip Room Ignore Conditions",
-
-												Files = {
-													["UIStroke"] = {
-														ClassName = "UIStroke",
-														Color = Color3.fromRGB(135, 161, 200),
-														Thickness = 0.05
-													}
-												}
-											},
-											["Title"] = {
-												ClassName = "TextLabel",
-												BackgroundColor3 = Color3.fromRGB(0, 18, 24),
-												Position = UDim2.fromScale(0.25, 0.012),
-												Size = UDim2.fromScale(0.5, 0.125),
-												Text = "Rooms",
-												
-												Files = {
-													["UIStroke"] = {
-														ClassName = "UIStroke",
-														Color = Color3.fromRGB(135, 161, 200),
-														Thickness = 0.05
-													}
-												}
-											}
-										}
-									}
-								}
-							},
-							["AdminPanel"] = {
-								ClassName = "ScrollingFrame",
-								BackgroundTransparency = 1,
-								Position = UDim2.fromScale(0, 0.25),
-								Size = UDim2.fromScale(1, 0.75),
-								CanvasSize = UDim2.fromScale(0, 10),
-								
-								Files = {
-									["UIListLayout"] = {
-										ClassName = "UIListLayout",
-										FillDirection = Enum.FillDirection.Vertical
-									},
-								}
-							},
-							["KeyBinds"] = {
-								ClassName = "ScrollingFrame",
-								BackgroundTransparency = 1,
-								Position = UDim2.fromScale(0, 0.25),
-								Size = UDim2.fromScale(1, 0.75),
-								CanvasSize = UDim2.fromScale(0, 10),
-
-								Files = {
-									["UIListLayout"] = {
-										ClassName = "UIListLayout",
-										FillDirection = Enum.FillDirection.Vertical
-									},
-								}
-							},
-							["Settings"] = {
-								ClassName = "ScrollingFrame",
-								BackgroundTransparency = 1,
-								Position = UDim2.fromScale(0, 0.25),
-								Size = UDim2.fromScale(1, 0.75),
-								CanvasSize = UDim2.fromScale(0, 10),
-
-								Files = {
-									["UIListLayout"] = {
-										ClassName = "UIListLayout",
-										FillDirection = Enum.FillDirection.Vertical
-									},
-								}
-							},
-							["NoFrame"] = {
-								ClassName = "Frame",
-								BackgroundTransparency = 1,
-								Position = UDim2.fromScale(0, 0.25),
-								Size = UDim2.fromScale(1, 0.75),
-								
-								Files = {
-									["Title"] = {
-										ClassName = "TextLabel",
-										BackgroundTransparency = 1,
-										Position = UDim2.fromScale(0, 0),
-										Size = UDim2.fromScale(1, 1),
-										Text = "No Frame"
-									}
-								}
-							}
-						}
-					}
-				}
-			},
-			["MouseUnlock"] = {
-				ClassName = "TextButton",
-				Interactable = false,
-				Modal = true,
-				BackgroundTransparency = 1,
-				Position = UDim2.new(0, 0, 0, 0),
-				Size = UDim2.new(0, 0, 0, 0),
-				Text = ""
+			Animations = {
+				Equip = {Name='Equip',ClassName='Animation',AnimationId=12895906881},
+				Idle = {Name='Idle',ClassName='Animation',AnimationId=12895911787},
+				Pet = {Name='Pet',ClassName='Animation',AnimationId=79720612831101},
+				Inspect = {Name='Inspect',ClassName='Animation',AnimationId=99511117738499}
 			}
 		}
 	}
 }
 
-local DefaultProperties = {
-	BorderSizePixel = 0,
-	BackgroundColor3 = Color3.fromRGB(0, 55, 75),
-	FontFace = Font.fromName("Sarpanch"),
-	TextColor3 = Color3.fromRGB(255, 255, 255),
-	TextScaled = true,
-	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-	StrokeSizingMode = Enum.StrokeSizingMode.ScaledSize,
-	ScrollBarThickness = 0,
-	ScrollBarImageTransparency = 1,
-	ResetOnSpawn = false
-}
+local LeaveTechnicalAttributesAndTags = true
 
-function LoadInstance(InstanceToLoad, InstanceParent)
-	for Name, Properties in InstanceToLoad do
-		if InstanceParent:FindFirstChild(Name) then
-			InstanceParent[Name]:Destroy()
+function DecompileAssets()
+	local function LoadInstance(InstanceToLoad, InstanceParent, StarterDecompile)
+		for Name, Properties in InstanceToLoad do
+			if not (Properties.Name and Properties.ClassName) then
+				return
+			end
+			
+			local NewInstance = Instance.new(Properties.ClassName)
+			NewInstance.Name = Properties.Name
+
+			if NewInstance.ClassName == "ScreenGui" then
+				NewInstance.Enabled = false
+			elseif NewInstance.ClassName == "Part" or NewInstance.ClassName == "WedgePart" then
+				NewInstance.TopSurface = Enum.SurfaceType.Smooth
+				NewInstance.BottomSurface = Enum.SurfaceType.Smooth
+			end
+
+			for Property, Value in Properties do
+				if Property == "Files" then
+					LoadInstance(Value, NewInstance)
+				elseif Property == "Tags" then
+					for _, TagName in Value do
+						NewInstance:AddTag(TagName)
+					end
+				elseif Property == "Attributes" then
+					for AttributeName, AttributeValue in Value do
+						NewInstance:SetAttribute(AttributeName, AttributeValue)
+					end
+				elseif Property == "ColorMapContent" or Property == "Texture" or Property == "Image" or Property == "SoundId" or Property == "AnimationId" then
+					if Property == "ColorMapContent" then
+						NewInstance.Texture = "rbxassetid://"..Value
+					else
+						NewInstance[Property] = "rbxassetid://"..Value
+					end
+				elseif Property == "MeshId" then
+					NewInstance:ApplyMesh(game.InsertService:CreateMeshPartAsync("rbxassetid://"..Value,
+						Properties.CollisionFidelity or Enum.CollisionFidelity.Box,
+						Properties.RenderFidelity or Enum.RenderFidelity.Automatic)
+					)
+				elseif Property == "Scale" then
+					NewInstance:ScaleTo(Value)
+				elseif Property == "Color" and type(Value) == "table" then
+					NewInstance[Property] = ColorSequence.new(Value)
+				elseif (Property == "Transparency" or Property == "Size") and type(Value) == "table" then
+					NewInstance[Property] = NumberSequence.new(Value)
+				elseif Property == "CFrame" then
+					if NewInstance.ClassName == "Model" then
+						NewInstance:PivotTo(Value)
+					end
+				else
+					if Property ~= "ClassName" and Property ~= "RenderFidelity" and Property ~= "CollisionFidelity" and Property ~= "TextureID" then
+						NewInstance[Property] = Value
+					end
+				end
+			end
+			
+			if Properties.TextureID then
+				NewInstance.TextureID = "rbxassetid://"..Properties.TextureID
+			end
+			
+			if StarterDecompile then
+				local function ObjectPropertySet(InstanceTo)	
+					for _, PropertyInitial in {"Part", "Attachment"} do
+						local Property1 = PropertyInitial.."0"
+						local Property2 = PropertyInitial.."1"
+						
+						local HasProperty1 = pcall(function()
+							return InstanceTo[Property1]
+						end)
+						
+						local HasProperty2 = pcall(function()
+							return InstanceTo[Property2]
+						end)
+						
+						if HasProperty1 and HasProperty2 then
+							for _, Tag in InstanceTo:GetTags() do
+								if string.find(Tag, "CompileWeld") then
+									local WeldNumber = string.split(Tag, " ")[2]
+									
+									for _, CompileInstance in NewInstance:GetDescendants() do
+										if CompileInstance:HasTag("CompileInstance1 "..WeldNumber) then
+											InstanceTo[Property1] = CompileInstance
+										elseif CompileInstance:HasTag("CompileInstance2 "..WeldNumber) then
+											InstanceTo[Property2] = CompileInstance
+										end
+									end
+								end
+							end
+						end
+					end
+					
+					for ClassName, Property in {
+						["Model"] = "PrimaryPart",
+						["ObjectValue"] = "Value",
+						["SurfaceGui"] = "Adornee"
+						} do
+						for _, Tag in InstanceTo:GetTags() do
+							if InstanceTo.ClassName == ClassName and string.find(Tag, "CompilePrimaryObject") then
+								local PrimaryNumber = string.split(Tag, " ")[2]
+
+								for _, PrimaryInstance in NewInstance:GetDescendants() do
+									if PrimaryInstance:HasTag("CompilePrimaryValue "..PrimaryNumber) then
+										InstanceTo[Property] = PrimaryInstance
+									end
+								end
+							end
+						end
+					end
+				end
+				
+				ObjectPropertySet(NewInstance)
+
+				for _, ObjectProperty in NewInstance:GetDescendants() do
+					ObjectPropertySet(ObjectProperty)
+				end
+			end
+			
+			if not LeaveTechnicalAttributesAndTags then
+				for _, ObjectProperty in NewInstance:GetDescendants() do
+					for _, Tag in ObjectProperty:GetTags() do
+						for _, TagName in {"CompileWeld", "CompileInstance1", "CompileInstance2", "CompilePrimaryObject", "CompilePrimaryValue"} do
+							if string.find(Tag, TagName) then
+								ObjectProperty:RemoveTag(Tag)
+							end
+						end
+					end
+				end
+			end
+
+			NewInstance.Parent = InstanceParent
+		end
+	end
+	
+	local AssetsFolder = game.ReplicatedStorage
+	
+	for Category, Value1 in Assets do
+		if not AssetsFolder:FindFirstChild("CustomAssets") then
+			Instance.new("Folder", AssetsFolder).Name = "CustomAssets"
 		end
 		
-		local NewInstance = Instance.new(Properties.ClassName)
-		NewInstance.Name = Name
-		
-		if NewInstance.ClassName == "ScreenGui" then
-			NewInstance.Enabled = false
+		if not AssetsFolder.CustomAssets:FindFirstChild(Category) then
+			Instance.new("Folder", AssetsFolder.CustomAssets).Name = Category
 		end
 		
-		for DefaultProperty, Value in DefaultProperties do
-			local HasProperty, _ = pcall(function()
-				NewInstance[DefaultProperty] = NewInstance[DefaultProperty]
-			end)
-
-			if HasProperty and Properties[DefaultProperty] == nil then
-				if DefaultProperty ~= "BackgroundColor3" or (DefaultProperty == "BackgroundColor3" and NewInstance.BackgroundTransparency < 1) then
-					NewInstance[DefaultProperty] = Value
+		for Folder1, Value2 in Value1 do
+			if not AssetsFolder.CustomAssets[Category]:FindFirstChild(Folder1) then
+				Instance.new("Folder", AssetsFolder.CustomAssets[Category]).Name = Folder1
+			end
+			
+			for Folder2, Value3 in Value2 do
+				if not AssetsFolder.CustomAssets[Category][Folder1]:FindFirstChild(Folder2) then
+					Instance.new("Folder", AssetsFolder.CustomAssets[Category][Folder1]).Name = Folder2
+				end
+				
+				for AssetName, Asset in Value3 do
+					LoadInstance({Asset}, AssetsFolder.CustomAssets[Category][Folder1][Folder2], true)
 				end
 			end
 		end
-		
-		for Property, Value in Properties do
-			if Property == "Files" then
-				LoadInstance(Value, NewInstance)
-			elseif Property == "Tags" then
-				for _, TagName in Value do
-					NewInstance:AddTag(TagName)
-				end
-			elseif Property == "Attributes" then
-				for AttributeName, AttributeValue in Value do
-					NewInstance:SetAttribute(AttributeName, AttributeValue)
-				end
-			else
-				if Property ~= "ClassName" then
-					NewInstance[Property] = Value
-				end
-			end
-		end
-		
-		NewInstance.Parent = InstanceParent
 	end
 end
 
-LoadInstance(UIContent, game.Players.LocalPlayer.PlayerGui)
+print("AssetLoader Start")
+
+DecompileAssets()
+
+print("AssetLoader Finish")
+
+game.Players.LocalPlayer.PlayerGui:WaitForChild("FunnyMenu"):Destroy()
+
+game.ReplicatedStorage.CustomAssets.Player.UI.Main.FunnyMenu:Clone().Parent = game.Players.LocalPlayer.PlayerGui
+game.Players.LocalPlayer.PlayerGui.FunnyMenu.Enabled = false
 
 game.Players.LocalPlayer.PlayerGui.FunnyMenu.Events.PanelOpen.Event:Connect(function()
 	game.Players.LocalPlayer.PlayerGui.FunnyMenu.Enabled = not game.Players.LocalPlayer.PlayerGui.FunnyMenu.Enabled
 	game.UserInputService.MouseIconEnabled = game.Players.LocalPlayer.PlayerGui.FunnyMenu.Enabled
 end)
 
-print("UILoader loaded. Start loading scripts")
-
 for _, ScriptName in {
+	"UIModule",
 	"UITabChange",
 	"UIActionButtons",
+	"UIModifiers",
+	"ItemsBase",
 	"PassiveLocalEntities",
 	"KeyBindsLoader",
 	"KeyBinds",
@@ -460,6 +276,8 @@ for _, ScriptName in {
 	if not game.RunService:IsStudio() then
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/EvilDeadT/Funny-Things/refs/heads/main/"..ScriptName))()
 	else
-		script.Parent.Parent:FindFirstChild(ScriptName, true).Enabled = true
+		game.Players.LocalPlayer.PlayerScripts:FindFirstChild(ScriptName, true).Enabled = true
 	end
+	
+	print(ScriptName.." loaded")
 end
