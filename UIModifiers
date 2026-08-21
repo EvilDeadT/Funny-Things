@@ -62,7 +62,7 @@ local AllModifiers = {
 			Name = "The Demon",
 			Description = "Adds The Demon to your inventory.",
 			Banner = nil,
-			Icon = nil,
+			Icon = 85247045042035,
 			Percent = 25,
 			LayoutOrder = 3
 		},
