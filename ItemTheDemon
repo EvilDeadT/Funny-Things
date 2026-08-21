@@ -10,7 +10,7 @@ local PlushContentTime = 6
 local PlushTimer = nil
 local PlushTimerDelay = nil
 
-function UI.Events.ItemOnEquip.OnInvoke(Item)
+function UI.Events.ItemOnEquip.OnInvoke(Item, Anim)
 	if Item ~= "TheDemon" then
 		return
 	end
@@ -22,6 +22,12 @@ function UI.Events.ItemOnEquip.OnInvoke(Item)
 			"<font family='rbxasset://fonts/families/Cartoon.json'><font color='rgb(255, 107, 164)'><b>"..game.Players.LocalPlayer.Name.." grabbed the plush...</b></font></font>",
 			6
 		):Show()
+	end
+	
+	if Anim then
+		if Anim.Pet then
+			Anim.Pet:Stop()
+		end
 	end
 
 	Equipped = true
@@ -40,7 +46,7 @@ function UI.Events.ItemOnEquip.OnInvoke(Item)
 	end)
 end
 
-function UI.Events.ItemOnUnequip.OnInvoke(Item)
+function UI.Events.ItemOnUnequip.OnInvoke(Item, Anim)
 	if Item ~= "TheDemon" then
 		return
 	end
@@ -52,6 +58,12 @@ function UI.Events.ItemOnUnequip.OnInvoke(Item)
 		ActivateTimer = nil
 		
 		CanActivate = true
+	end
+	
+	if Anim then
+		if Anim.Pet then
+			Anim.Pet:Stop()
+		end
 	end
 
 	task.spawn(function()
