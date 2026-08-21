@@ -119,6 +119,12 @@ game.UserInputService.InputBegan:Connect(function(Input)
 				UI.Events.ItemActivate:Invoke(CustomItem.Name, ItemAnim[CustomItem.Name])
 			end
 		end
+	elseif Input.UserInputType == Enum.UserInputType.MouseButton3 then
+		for _, CustomItem in game.ReplicatedStorage.CustomAssets.Items:GetChildren() do
+			if game.Players.LocalPlayer.Character:FindFirstChild(CustomItem.Name) then
+				UI.Events.ItemInspect:Invoke(CustomItem.Name, ItemAnim[CustomItem.Name])
+			end
+		end
 	end
 end)
 
