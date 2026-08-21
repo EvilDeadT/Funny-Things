@@ -57,5 +57,3 @@ for Action, Keys in KeyBinds[Preset] do
 		end
 	end
 end
-
-print("KeyBindsLoader loaded")
