@@ -1,0 +1,138 @@
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main"):WaitForChild("Client"):WaitForChild("MainClient"))
+
+local Equipped = false
+local ActivateCooldown = 10
+local CanActivate = true
+local ActivateTimer = nil
+local PlushContented = false
+local PlushContentTime = 6
+local PlushTimer = nil
+local PlushTimerDelay = nil
+
+function UI.Events.ItemOnEquip.OnInvoke(Item)
+	if Item ~= "TheDemon" then
+		return
+	end
+	
+	if PlushTimer == nil then
+		PlushTimer = 10
+
+		PlayerMain.SubTitles.new(
+			"<font family='rbxasset://fonts/families/Cartoon.json'><font color='rgb(255, 107, 164)'><b>"..game.Players.LocalPlayer.Name.." grabbed the plush...</b></font></font>",
+			6
+		):Show()
+	end
+
+	Equipped = true
+
+	task.spawn(function()
+		while Equipped and PlushTimer < 10 do
+			if PlushTimer < 10 then
+				PlushTimer = (math.round(PlushTimer * 10) + 1) / 10
+				task.wait(0.1)
+			else
+				PlushTimer = 10
+			end
+
+			task.wait()
+		end
+	end)
+end
+
+function UI.Events.ItemOnUnequip.OnInvoke(Item)
+	if Item ~= "TheDemon" then
+		return
+	end
+	
+	Equipped = false
+	
+	if ActivateTimer then
+		task.cancel(ActivateTimer)
+		ActivateTimer = nil
+		
+		CanActivate = true
+	end
+
+	task.spawn(function()
+		while not Equipped and PlushTimer > 0 do
+			if not PlushContented then
+				if PlushTimer > 0 then
+					PlushTimer = (math.round(PlushTimer * 10) - 1) / 10
+					
+					if PlushTimer == 7.5 then
+						PlayerMain.SubTitles.new(
+							"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie needs attention...</font></font>",
+							6,
+							9999,
+							true
+						):Show()
+					elseif PlushTimer == 5 then
+						PlayerMain.SubTitles.new(
+							"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie wants attention...</font></font>",
+							6,
+							9999,
+							true
+						):Show()
+					elseif PlushTimer == 2.5 then
+						PlayerMain.SubTitles.new(
+							"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie demands attention...</font></font>",
+							6,
+							9999,
+							true
+						):Show()
+					end
+					
+					task.wait(0.1)
+				end
+			end
+			
+			if PlushTimer <= 0 then
+				print("Death")
+			end
+
+			task.wait()
+		end
+	end)
+end
+
+function UI.Events.ItemActivate.OnInvoke(Item, Anim)
+	if Item ~= "TheDemon" or not CanActivate then
+		return
+	end
+	
+	CanActivate = false
+	
+	if Anim then
+		if Anim.Pet then
+			Anim.Pet:Play()
+		end
+	end
+	
+	ActivateTimer = task.delay(1, function()
+		ActivateTimer = nil
+		PlushContented = true
+		
+		PlayerMain.SubTitles.new(
+			"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie is content for now...</font></font>",
+			6,
+			9999,
+			true
+		):Show()
+		
+		task.delay(PlushContentTime, function()
+			PlushContented = false
+			
+			PlayerMain.SubTitles.new(
+				"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie is no longer content...</font></font>",
+				6,
+				9999,
+				true
+			):Show()
+		end)
+		
+		task.delay(ActivateCooldown - 1, function()
+			CanActivate = true
+		end)
+	end)
+end
