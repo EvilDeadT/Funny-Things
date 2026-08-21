@@ -1,0 +1,665 @@
+local AllModifiers = {
+	Main = {
+		["Educator"] = {
+			Name = "Math Time!",
+			Description = "Summon The Educator for entire run. Temporarily disappears during Grand Encounters.",
+			Banner = 1986331110,
+			Icon = nil,
+			Percent = 25,
+			LayoutOrder = 1
+		},
+		["TurretVariants"] = {
+			Name = "New Ammunition: Turrets",
+			Description = "Turret Variants can replace standart turrets.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 0,
+			LayoutOrder = 2,
+			SubModifiers = {
+				["Default"] = {
+					Name = "Standart",
+					Description = "Leaves Standart Turret in the roster.",
+					Banner = nil,
+					Icon = nil,
+					Percent = -10,
+					LayoutOrder = 1
+				},
+				["Poison"] = {
+					Name = "Poison",
+					Description = "Adds Poison Turret to the roster.",
+					Banner = nil,
+					Icon = nil,
+					Percent = -5,
+					LayoutOrder = 2
+				},
+				["Fire"] = {
+					Name = "Incendiary",
+					Description = "Adds Incendiary Turret to the roster.",
+					Banner = nil,
+					Icon = nil,
+					Percent = 10,
+					LayoutOrder = 3
+				},
+				["Explosive"] = {
+					Name = "Explosive",
+					Description = "Adds Explosive Turret to the roster.",
+					Banner = nil,
+					Icon = nil,
+					Percent = 10,
+					LayoutOrder = 4
+				},
+				["Dance"] = {
+					Name = "Dance",
+					Description = "Adds Dance Turret to the roster.",
+					Banner = nil,
+					Icon = nil,
+					Percent = 5,
+					LayoutOrder = 5
+				}
+			}
+		},
+		["TheDemon"] = {
+			Name = "The Demon",
+			Description = "Adds The Demon to your inventory.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 25,
+			LayoutOrder = 3
+		},
+		["Grace"] = {
+			Name = "Guest Stars: Grace",
+			Description = "Adds Grace Monsters to the roster.",
+			Banner = nil,
+			Icon = 98768590485262,
+			Percent = 0,
+			LayoutOrder = 4,
+			SubModifiers = {
+				["Carnation"] = {
+					Name = "Carnation",
+					Description = "Adds Carnation to the roster.",
+					Banner = nil,
+					Icon = nil,
+					Percent = 5,
+					LayoutOrder = 1
+				},
+				["Dozer"] = {
+					Name = "Dozer",
+					Description = "Adds Dozer to the roster.",
+					Banner = nil,
+					Icon = 98768590485262,
+					Percent = 10,
+					LayoutOrder = 2
+				},
+				["Doppel"] = {
+					Name = "Doppel",
+					Description = "Adds Doppel to the roster.",
+					Banner = nil,
+					Icon = nil,
+					Percent = 10,
+					LayoutOrder = 3
+				},
+				["Elkman"] = {
+					Name = "Elkman",
+					Description = "Adds Elkman to the roster.",
+					Banner = nil,
+					Icon = nil,
+					Percent = 5,
+					LayoutOrder = 4
+				},
+				["Doombringer"] = {
+					Name = "Devil Incarnate",
+					Description = "Adds Joey to your inventory.",
+					Banner = nil,
+					Icon = nil,
+					Percent = 15,
+					LayoutOrder = 5
+				}
+			}
+		},
+		["Conundrum"] = {
+			Name = "Guest Stars: Conundrum",
+			Description = "Conundrum will appear every couple of minutes to give you a challenge. Failing the challenge activates an unselected modifier. Said unselected modifier will remain hidden until death or victory.",
+			Banner = nil,
+			Icon = 76680900907388,
+			Percent = 20,
+			LayoutOrder = 5
+		},
+		["A90"] = {
+			Name = "Distorted Face",
+			Description = "Adds A-90 to the roster.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 15,
+			LayoutOrder = 6
+		},
+		["RidgeLight"] = {
+			Name = "Power Shortage",
+			Description = "Almost every room will be dark with flickering lights.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 15,
+			LayoutOrder = 7,
+			Useless = {"Lightwork", "ForgotTheBills"}
+		},
+		["KeyKeyKeyKey"] = {
+			Name = "Key Password Key Password",
+			Description = "Every room will be locked on keycard or password.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 20,
+			LayoutOrder = 8,
+			SubModifiers = {
+				["Keycards"] = {
+					Name = "Keycards",
+					Description = "Keycards will spawn more often than passwords.",
+					Banner = nil,
+					Icon = nil,
+					Percent = 0,
+					LayoutOrder = 1,
+					Incompatible = {"TightSecurity"}
+				}
+			}
+		},
+		["Music"] = {
+			Name = "Calm Music",
+			Description = "Calm Music will play for entire run. The music changes from time to time. Deaf Mode also be little muted.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 20,
+			LayoutOrder = 9
+		},
+		["Lockerless"] = {
+			Name = "Severe Claustrophobia",
+			Description = "You can't enter in the lockers or beds.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 30,
+			LayoutOrder = 10,
+			Useless = {"Paranoia", "OneTimeUse"},
+			Incompatible = {"DeathWatch", "LockerParanoiaFatal"}
+		},
+		["HPMax50"] = {
+			Name = "Bad Health",
+			Description = "You only have 50 max health at the start. Can't be increased.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 15,
+			LayoutOrder = 11,
+			Incompatible = {"HPMax20", "HPMax1"}
+		},
+		["HPMax20"] = {
+			Name = "Old Man",
+			Description = "You only have 20 max health at the start. Can't be increased.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 25,
+			LayoutOrder = 12,
+			Incompatible = {"HPMax50", "HPMax1"}
+		},
+		["HPMax1"] = {
+			Name = "On Life Support",
+			Description = "Almost any damage will be fatal.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 50,
+			LayoutOrder = 13,
+			Useless = {"NaturalResistance", "RealisticHorror", "NoodleLegs"},
+			Incompatible = {"HPMax50", "HPMax20"}
+		},
+		["WaterOxygen"] = {
+			Name = "Damaged Air Tank",
+			Description = "You have a limited supply of oxygen underwater. Does not apply on grand encounters.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 15,
+			LayoutOrder = 14,
+			Incompatible = {"Underwater"}
+		},
+		["TheVaultGas"] = {
+			Name = "Gas Leak",
+			Description = "Entire Blacksite filled with poison gas.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 20,
+			LayoutOrder = 15
+		},
+		["TheCrooked"] = {
+			Name = "Possessed Corpse",
+			Description = "The Crooked is added to the roster.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 20,
+			LayoutOrder = 16
+		},
+		["GoodPeopleDoors"] = {
+			Name = "Wrong Number!",
+			Description = "Good People's sign will have a slightly different correct door number. Upon opening the room with Good People, all previous doors sign will break",
+			Banner = nil,
+			Icon = nil,
+			Percent = 10,
+			LayoutOrder = 17
+		},
+		["OutragedEyefestation"] = {
+			Name = "Outraged Eyefestation",
+			Description = "Eyefestation really wants to fry your brains.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 30,
+			LayoutOrder = 18
+		},
+		["XRay"] = {
+			Name = "X-Ray",
+			Description = "Eyefestation can pull through walls.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 10,
+			LayoutOrder = 19
+		},
+		["LandminesVariants"] = {
+			Name = "New Ammunition: Landmines",
+			Description = "Landmines Variants can replace standart Landmines.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 0,
+			LayoutOrder = 20,
+			SubModifiers = {
+				["Default"] = {
+					Name = "Standart",
+					Description = "Leaves Standart Landmine in the roster.",
+					Banner = nil,
+					Icon = nil,
+					Percent = -5,
+					LayoutOrder = 1
+				},
+				["Poison"] = {
+					Name = "Poison",
+					Description = "Adds Poison Landmine to the roster.",
+					Banner = nil,
+					Icon = nil,
+					Percent = -5,
+					LayoutOrder = 2
+				},
+				["Ice"] = {
+					Name = "Ice",
+					Description = "Adds Ice Landmine to the roster.",
+					Banner = nil,
+					Icon = nil,
+					Percent = 5,
+					LayoutOrder = 3
+				},
+				["Ragdoll"] = {
+					Name = "Fake Minesweeper",
+					Description = "Adds Green Landmine to the roster. You won't take damage but you will stay in ragdoll longer",
+					Banner = nil,
+					Icon = nil,
+					Percent = 5,
+					LayoutOrder = 4
+				}
+			}
+		},
+		["NodesNoSound"] = {
+			Name = "Quiet Hunter",
+			Description = "Nodes do not making sounds. Flickering light still has sound",
+			Banner = nil,
+			Icon = nil,
+			Percent = 15,
+			LayoutOrder = 21
+		},
+		["LockerParanoiaFatal"] = {
+			Name = "Hearth Attack",
+			Description = "Your heart is weak and if your heart beats too fast, you may have a heart attack.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 5,
+			LayoutOrder = 22,
+			Incompatible = {"Lockerless"}
+		},
+		["AmbushAgain"] = {
+			Name = "Again & Again & Again",
+			Description = "Adds Ambush to the roster and it will endlessly attack..",
+			Banner = nil,
+			Icon = nil,
+			Percent = 25,
+			LayoutOrder = 23
+		},
+		["Underwater"] = {
+			Name = "Underwater",
+			Description = "Did you know the swimming pool on the Titanic is still full?",
+			Banner = nil,
+			Icon = nil,
+			Percent = -10,
+			LayoutOrder = 24,
+			Incompatible = {"WaterOxygen"}
+		},
+		["Harbinger"] = {
+			Name = "Good Luck.",
+			Description = "Harbinger is guaranteed to appear once per run. Disables reviving until the minigame is completed.",
+			DescriptionEndless = "Harbinger has beatable legacy minigame.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 25,
+			LayoutOrder = 25
+		},
+		["DeceptionReal"] = {
+			Name = "Deception: Upgraded",
+			Description = "Should Pandemonium spawn, it WILL deceive you.",
+			Banner = nil,
+			Icon = 71116137740312,
+			Percent = 10,
+			LayoutOrder = 26,
+			Useless = {"Deception"}
+		},
+		["RoomsLimit3"] = {
+			Name = "For Your Safety",
+			Description = "There are only 3 active rooms.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 5,
+			LayoutOrder = 27,
+			Incompatible = {"RoomsLimit1"}
+		},
+		["RoomsLimit1"] = {
+			Name = "Closed For Maintenance",
+			Description = "There are only 1 active rooms. After opening the door, it will close after 5 seconds.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 15,
+			LayoutOrder = 28,
+			Incompatible = {"RoomsLimit3"}
+		},
+		["DwellerNoSound"] = {
+			Name = "Sneak 100",
+			Description = "Wall Dwellers do not making sounds.",
+			Banner = nil,
+			Icon = nil,
+			Percent = 5,
+			LayoutOrder = 29
+		},
+		["CustomChaos"] = {
+			Name = "Pure Chaos!",
+			Description = "Activates the Chaos from the Stream Integration, that has own events.",
+			Banner = nil,
+			Icon = 75966929738309,
+			Percent = 50,
+			LayoutOrder = 30
+		}
+	}
+}
+
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+local CurrentSelectedModifier = nil
+local ListFocus = false
+local SelectedModifiers = {}
+
+local function ModifierButtonsColors()
+	for _, ModifierButton in UI.ModifiersFrame.ModifierList.List:GetChildren() do
+		if ModifierButton:IsA("TextButton") then
+			if table.find(SelectedModifiers, ModifierButton.Name) then
+				
+				if CurrentSelectedModifier == ModifierButton.Name then
+					ModifierButton.BackgroundColor3 = Color3.fromRGB(194, 76, 80)
+				else
+					ModifierButton.BackgroundColor3 = Color3.fromRGB(255, 99, 102)
+				end
+				ModifierButton.Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+			else
+				if CurrentSelectedModifier == ModifierButton.Name then
+					ModifierButton.BackgroundColor3 = Color3.fromRGB(138, 54, 56)
+					ModifierButton.Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+				else
+					ModifierButton.BackgroundColor3 = Color3.fromRGB(48, 18, 20)
+					ModifierButton.Title.TextColor3 = Color3.fromRGB(113, 113, 113)
+				end
+			end
+		end
+	end
+	
+	for _, ModifierButton in UI.ModifiersFrame.ModifierList.List:GetChildren() do
+		if ModifierButton:IsA("TextButton") then
+			if table.find(SelectedModifiers, ModifierButton.Name) then
+				for Category, CategoryModifiers in AllModifiers do
+					if CategoryModifiers[ModifierButton.Name] then
+						if CategoryModifiers[ModifierButton.Name].Incompatible then
+							for _, Incompatible in CategoryModifiers[ModifierButton.Name].Incompatible do
+								if table.find(SelectedModifiers, Incompatible) then
+									warn("Somehow picked "..ModifierButton.Name.." and "..Incompatible.." modifiers")
+									table.remove(SelectedModifiers, table.find(SelectedModifiers, Incompatible))
+								end
+								
+								if UI.ModifiersFrame.ModifierList.List:FindFirstChild(Incompatible) then
+									if CurrentSelectedModifier == Incompatible then
+										UI.ModifiersFrame.ModifierList.List[Incompatible].BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+										UI.ModifiersFrame.ModifierList.List[Incompatible].Title.TextColor3 = Color3.fromRGB(218, 218, 218)
+									else
+										UI.ModifiersFrame.ModifierList.List[Incompatible].BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+										UI.ModifiersFrame.ModifierList.List[Incompatible].Title.TextColor3 = Color3.fromRGB(57, 57, 57)
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+function ModifiersListUpdate()
+	local function ModifierButtonPress(Button, InstantPick)
+		local ModifierStats = nil
+
+		for Category, CategoryModifiers in AllModifiers do
+			if CategoryModifiers[Button.Name] then
+				ModifierStats = CategoryModifiers[Button.Name]
+				break
+			end
+		end
+		
+		if CurrentSelectedModifier ~= Button.Name and not InstantPick then
+			CurrentSelectedModifier = Button.Name
+			
+			UI.ModifiersFrame.ModifierBanner.Title.TitleText.Text = ModifierStats.Name or "NO NAME"
+			UI.ModifiersFrame.ModifierBanner.Description.DescriptionText.Text = ModifierStats.Description or "NO DESCRIPTION"
+			if ModifierStats.Banner then
+				UI.ModifiersFrame.ModifierBanner.Banner.BackgroundText.Text = ""
+				UI.ModifiersFrame.ModifierBanner.Banner.BannerImage.Image = "rbxassetid://"..ModifierStats.Banner
+			else
+				UI.ModifiersFrame.ModifierBanner.Banner.BackgroundText.Text = "No Image"
+				UI.ModifiersFrame.ModifierBanner.Banner.BannerImage.Image = ""
+			end
+			if type(ModifierStats.Percent) == "number" then
+				UI.ModifiersFrame.ModifierBanner.Percent.Percentage.Text = ModifierStats.Percent.."%"
+
+				if ModifierStats.Percent > 0 then
+					UI.ModifiersFrame.ModifierBanner.Percent.Percentage.Text = "+"..UI.ModifiersFrame.ModifierBanner.Percent.Percentage.Text
+				end
+			else
+				UI.ModifiersFrame.ModifierBanner.Percent.Percentage.Text = "--"
+			end
+		else
+			if Button.BackgroundColor3 ~= Color3.fromRGB(0, 0, 0) then
+				if not table.find(SelectedModifiers, Button.Name) then
+					table.insert(SelectedModifiers, Button.Name)
+				else
+					table.remove(SelectedModifiers, table.find(SelectedModifiers, Button.Name))
+				end
+			end
+		end
+		
+		ModifierButtonsColors()
+		
+		local Percent = 0
+		
+		for _, Modifier in SelectedModifiers do
+			for Category, CategoryModifiers in AllModifiers do
+				if CategoryModifiers[Modifier] then
+					if type(CategoryModifiers[Modifier].Percent) == "number" then
+						Percent += CategoryModifiers[Modifier].Percent
+					end
+				end
+			end
+		end
+		
+		UI.ModifiersFrame.Percent.Percentage.Text = Percent.."%"
+		if Percent > 0 then
+			UI.ModifiersFrame.Percent.Percentage.Text = "+"..UI.ModifiersFrame.Percent.Percentage.Text
+		end
+	end
+	
+	for _, ModifierButton in UI.ModifiersFrame.ModifierList.List:GetChildren() do
+		if ModifierButton:IsA("TextButton") then
+			ModifierButton:Destroy()
+		end
+	end
+	
+	for Category, CategoryModifiers in AllModifiers do
+		for Name, Modifier in CategoryModifiers do
+			local ModifierValue = Instance.new("BoolValue", UI.Modifiers)
+			ModifierValue.Name = Name
+			ModifierValue.Value = false
+
+			local ModifierButton = game.ReplicatedStorage.CustomAssets.Player.UI.Modifiers.ModifierButton:Clone()
+			ModifierButton.Name = Name
+			ModifierButton.Title.Text = Modifier.Name
+			if Modifier.Icon then
+				ModifierButton.Icon.Image = "rbxassetid://"..Modifier.Icon
+			end
+			if type(Modifier.Percent) == "number" then
+				if Modifier.Percent == 0 and Modifier.SubModifiers then
+					ModifierButton.Percent.Percentage.Text = "??%"
+				else
+					ModifierButton.Percent.Percentage.Text = Modifier.Percent.."%"
+
+					if Modifier.Percent > 0 then
+						ModifierButton.Percent.Percentage.Text = "+"..ModifierButton.Percent.Percentage.Text
+					end
+				end
+			end
+			
+			if Modifier.SubModifiers then
+				for SubName, SubModifier in Modifier.SubModifiers do
+					ModifierValue:SetAttribute(SubName, false)
+				end
+			end
+			
+			ModifierButton.LayoutOrder = Modifier.LayoutOrder or 0
+			
+			ModifierButton.Parent = UI.ModifiersFrame.ModifierList.List
+
+			ModifierButton.MouseButton1Click:Connect(function()
+				ModifierButtonPress(ModifierButton, false)
+			end)
+			ModifierButton.MouseButton2Click:Connect(function()
+				ModifierButtonPress(ModifierButton, true)
+			end)
+		end
+	end
+
+	UI.ModifiersFrame.ModifierList.List.CanvasSize = UDim2.fromOffset(0, UI.ModifiersFrame.ModifierList.List.UIListLayout.AbsoluteContentSize.Y)
+end
+
+ModifiersListUpdate()
+
+for _, Frame in UI.ModifiersFrame.ModifierBanner:GetChildren() do
+	if Frame:IsA("Frame") and Frame:FindFirstChildWhichIsA("TextLabel") then
+		Frame:FindFirstChildWhichIsA("TextLabel").Text = ""
+	end
+end
+
+function UIAct(Type, Status)
+	if not UI.ScriptStatuses.UIAnim.Value then
+		if Type == "ModifiersFrame" then
+			if Status == "Open" then
+				UI.ScriptStatuses.UIAnim.Value = true
+
+				local BlackScreenTween = game.TweenService:Create(UI.BlackScreen, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, true), {
+					BackgroundTransparency = 0
+				})
+				BlackScreenTween.Completed:Connect(function()
+					UI.ScriptStatuses.UIAnim.Value = false
+				end)
+				BlackScreenTween:Play()
+
+				task.wait(0.1)
+
+				UI.ModifiersFrame.Visible = true
+				UI.Main.Visible = false
+			elseif Status == "Apply Modifiers" then
+				for _, Modifier in UI.Modifiers:GetChildren() do
+					if table.find(SelectedModifiers, Modifier.Name) then
+						Modifier.Value = true
+					else
+						Modifier.Value = false
+					end
+				end
+			elseif Status == "Close" then
+				UI.ScriptStatuses.UIAnim.Value = true
+				
+				local BlackScreenTween = game.TweenService:Create(UI.BlackScreen, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, true), {
+					BackgroundTransparency = 0
+				})
+				BlackScreenTween.Completed:Connect(function()
+					UI.ScriptStatuses.UIAnim.Value = false
+				end)
+				BlackScreenTween:Play()
+
+				task.wait(0.1)
+				
+				UI.ModifiersFrame.Visible = false
+				UI.Main.Visible = true
+			end
+		end
+	end
+end
+
+UI.ModifiersFrame.ModifierList.List.MouseEnter:Connect(function()
+	ListFocus = true
+end)
+
+UI.ModifiersFrame.ModifierList.List.MouseLeave:Connect(function()
+	ListFocus = false
+end)
+
+game.UserInputService.InputBegan:Connect(function(Input)
+	if Input.UserInputType == Enum.UserInputType.MouseButton1 and not ListFocus then
+		CurrentSelectedModifier = nil
+		
+		for _, Frame in UI.ModifiersFrame.ModifierBanner:GetChildren() do
+			if Frame:IsA("Frame") and Frame:FindFirstChildWhichIsA("TextLabel") then
+				Frame:FindFirstChildWhichIsA("TextLabel").Text = ""
+			end
+		end
+		UI.ModifiersFrame.ModifierBanner.Banner.BannerImage.Image = ""
+		
+		ModifierButtonsColors()
+	end
+end)
+
+UI.ModifiersFrame.ModifierList.List.UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	UI.ModifiersFrame.ModifierList.List.CanvasSize = UDim2.fromOffset(0, UI.ModifiersFrame.ModifierList.List.UIListLayout.AbsoluteContentSize.Y)
+end)
+
+
+
+UI.ModifiersFrame.LobbyInfo.Buttons.Apply.MouseButton1Click:Connect(function()
+	UIAct("ModifiersFrame", "Apply Modifiers")
+end)
+
+UI.ModifiersFrame.LobbyInfo.Buttons.Close.MouseButton1Click:Connect(function()
+	UIAct("ModifiersFrame", "Close")
+end)
+
+UI.Events.UIAct.Event:Connect(UIAct)
+
+
+
+for _, ScriptName in {
+	"Educator",
+	"TurretVariants"
+	} do
+	if not game.RunService:IsStudio() then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/EvilDeadT/Funny-Things/refs/heads/main/Modifier"..ScriptName))()
+	else
+		game.Players.LocalPlayer.PlayerScripts:FindFirstChild("Modifier"..ScriptName, true).Enabled = true
+	end
+end
