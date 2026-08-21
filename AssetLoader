@@ -252,8 +252,6 @@ DecompileAssets()
 
 print("AssetLoader Finish")
 
-game.Players.LocalPlayer.PlayerGui:WaitForChild("FunnyMenu"):Destroy()
-
 game.ReplicatedStorage.CustomAssets.Player.UI.Main.FunnyMenu:Clone().Parent = game.Players.LocalPlayer.PlayerGui
 game.Players.LocalPlayer.PlayerGui.FunnyMenu.Enabled = false
 
