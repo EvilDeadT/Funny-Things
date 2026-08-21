@@ -1,0 +1,66 @@
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+
+function UI.Events.UIModule.OnInvoke(Type, Value1, Value2, Value3)
+	if Type == "PlaySound" and Value1 then
+		local Sound = Value1
+		
+		if Sound then
+			if Sound:GetAttribute("ID") then
+				Sound.SoundId = Sound:GetAttribute("ID")
+			end
+
+			Sound:Play()
+		end
+	elseif Type == "FindByThread" and (Value1 and Value2) then
+		local PathStart = Value1
+		local Thread = Value2
+		
+		if PathStart and Thread then
+			local PickedFolder = PathStart
+
+			for _, Path in string.split(Thread, ".") do
+				local PathInstance = Path
+				local SpecialInstance = nil
+				local SpecialMethod = nil
+
+				if string.find(PathInstance, ":") then
+					PathInstance = string.split(Path, ":")[1]
+					SpecialInstance = string.split(string.split(string.split(Path, ":")[2], "(")[2], ")")[1]
+					SpecialMethod = string.split(string.split(Path, ":")[2], "(")[1]
+				end
+
+				if PathInstance == "LocalPlayer" then
+					PickedFolder = game.Players.LocalPlayer
+				elseif PathInstance == "CFrame" then
+					PickedFolder = PickedFolder.CFrame
+
+					return PickedFolder
+				else
+					local IsProperty = pcall(function()
+						PickedFolder[PathInstance] = PickedFolder[PathInstance]
+					end)
+
+					if PickedFolder:FindFirstChild(PathInstance) or IsProperty then
+						PickedFolder = PickedFolder[PathInstance]
+					else
+						print("FindByThread not found: "..PathInstance)
+
+						return
+					end
+				end
+
+				if SpecialInstance then
+					if SpecialMethod == "FindFirstChildWhichIsA" then
+						PickedFolder = PickedFolder:FindFirstChildWhichIsA(SpecialInstance)
+					elseif SpecialMethod == "GetChildren" then
+						PickedFolder = PickedFolder:GetChildren()
+					end
+				end
+			end
+
+			return PickedFolder
+		end
+	end
+	
+	return
+end
