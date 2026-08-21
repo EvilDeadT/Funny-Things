@@ -1,3 +1,4 @@
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
 local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main"):WaitForChild("Client"):WaitForChild("MainClient"))
 local PlayerZone = PlayerMain.Zones
 local PlayerHealthMode = "Default"
@@ -305,7 +306,7 @@ local ChosenVariants = "VoidTurret and IncendiaryTurret and ExplosiveTurret and 
 local ReallyStrongTurretsChance = 0
 
 local TurretVariants = {}
-local TurretCount = 1
+local TurretCount = 0
 
 for _, Variant in string.split(ChosenVariants, " and ") do
 	table.insert(TurretVariants, Variant)
@@ -972,7 +973,7 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 								Attachment.Parent = Part
 								game:GetService("Debris"):AddItem(Part, 5)
 
-								PlayerMain.SpecialLocalEffects.Effects.ApplyForceRelative(Attachment.WorldCFrame, 250)
+								.SpecialLocalEffects.Effects.ApplyForceRelative(Attachment.WorldCFrame, 250)
 								
 								TurretPlayerDamage("Explosion")
 							elseif TurretInfo.Variant == "DanceTurret" then
@@ -1604,29 +1605,31 @@ function CreateCustomTurret(TurretOriginalPart, TurretRoom, Info)
 end
 
 game.RunService.RenderStepped:Connect(function()
-	for _, Room in game.Workspace.GameplayFolder.Rooms:GetChildren() do
-		if TurretCustomRoomPosition[Room.Name] and not Room:GetAttribute("TurretCustomPosition") then
-			CreateCustomRoomPosition(Room)
-		end
-		
-		if Room:FindFirstChild("Interactables") then
-			for _, Turret in Room.Interactables:GetChildren() do
-				if string.find(Turret.Name, "TurretSpawn") and Turret:IsA("BasePart") and not Turret:GetAttribute("CustomMade") and not Turret:GetAttribute("CustomChecked") then
-					CreateCustomTurret(Turret, Room, {
-						Variant = TurretVariants[math.random(1, #TurretVariants)]
-					})
+	if UI.Modifiers.TurretVariants.Value then
+		for _, Room in game.Workspace.GameplayFolder.Rooms:GetChildren() do
+			if TurretCustomRoomPosition[Room.Name] and not Room:GetAttribute("TurretCustomPosition") then
+				CreateCustomRoomPosition(Room)
+			end
 
-					Turret:Destroy()
-				elseif string.find(Turret.Name, "Turret") and Turret:GetAttribute("CustomMade") then
-					if Room.Interactables:FindFirstChild("TurretControls") then
-						if Room.Interactables.TurretControls:FindFirstChildWhichIsA("ProximityPrompt", true) then
-							Turret:SetAttribute("Disabled", false)
-						else
-							Turret:SetAttribute("Disabled", true)
+			if Room:FindFirstChild("Interactables") then
+				for _, Turret in Room.Interactables:GetChildren() do
+					if string.find(Turret.Name, "TurretSpawn") and Turret:IsA("BasePart") and not Turret:GetAttribute("CustomMade") and not Turret:GetAttribute("CustomChecked") then
+						CreateCustomTurret(Turret, Room, {
+							Variant = TurretVariants[math.random(1, #TurretVariants)]
+						})
+
+						Turret:Destroy()
+					elseif string.find(Turret.Name, "Turret") and Turret:GetAttribute("CustomMade") then
+						if Room.Interactables:FindFirstChild("TurretControls") then
+							if Room.Interactables.TurretControls:FindFirstChildWhichIsA("ProximityPrompt", true) then
+								Turret:SetAttribute("Disabled", false)
+							else
+								Turret:SetAttribute("Disabled", true)
+							end
 						end
-					end
 
-					Turret:SetAttribute("PlayerInRoom", PlayerZone.CurrentRoom == Room)
+						Turret:SetAttribute("PlayerInRoom", PlayerZone.CurrentRoom == Room)
+					end
 				end
 			end
 		end
