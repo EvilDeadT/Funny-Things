@@ -100,7 +100,7 @@ function UI.Events.ItemOnUnequip.OnInvoke(Item, Anim)
 			end
 			
 			if PlushTimer <= 0 then
-				print("Death")
+				UI.Events.Atomize:Fire(game.Players.LocalPlayer.Character)
 			end
 
 			task.wait()
