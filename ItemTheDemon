@@ -19,7 +19,7 @@ function UI.Events.ItemOnEquip.OnInvoke(Item, Anim)
 		PlushTimer = 10
 
 		PlayerMain.SubTitles.new(
-			"<font family='rbxasset://fonts/families/Cartoon.json'><font color='rgb(255, 107, 164)'><b>"..game.Players.LocalPlayer.Name.." grabbed the plush...</b></font></font>",
+			"<font family='rbxasset://fonts/families/Zekton.json'><font color='rgb(255, 107, 164)'><b>"..game.Players.LocalPlayer.Name.." grabbed the plush...</b></font></font>",
 			6
 		):Show()
 	end
