@@ -1,0 +1,146 @@
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+local ItemAnim = {}
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function(Character)
+	ItemAnim = {}
+end)
+
+function LoadAnimation(Item, Anim)
+	if ItemAnim[Item] then
+		if ItemAnim[Item][Anim.Name] then
+			return
+		end
+	else
+		ItemAnim[Item] = {}
+	end
+
+	local LoadedAnim = game.Players.LocalPlayer.Character.Humanoid.Animator:LoadAnimation(Anim)
+	ItemAnim[Item][Anim.Name] = LoadedAnim
+	
+	return
+end
+
+function UI.Events.ItemEquip.OnInvoke(Item)
+	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") then
+		return
+	end
+	
+	if not (type(Item) == "string" or type(Item) == "number") then
+		return warn("Do normal request for item equip")
+	end
+	
+	local ItemFolder = game.ReplicatedStorage.CustomAssets.Items[Item]
+	
+	if not ItemFolder then
+		return warn("No Item Folder For "..Item)
+	end
+	
+	for _, CustomItem in game.ReplicatedStorage.CustomAssets.Items:GetChildren() do
+		if game.Players.LocalPlayer.Character:FindFirstChild(CustomItem.Name) then
+			UI.Events.ItemUnequip:Invoke(CustomItem.Name)
+		end
+	end
+	
+	
+
+	if ItemFolder:FindFirstChild("Models") then
+		if ItemFolder.Models:FindFirstChild("Equip") then
+			local ItemModel = ItemFolder.Models.Equip:Clone()
+			ItemModel.Name = Item
+
+			if ItemModel:FindFirstChild("Handle") then
+				ItemModel.Handle.Part0 = game.Players.LocalPlayer.Character:WaitForChild("RightHand")
+				ItemModel.Parent = game.Players.LocalPlayer.Character
+			end
+		end
+	end
+
+	if ItemFolder:FindFirstChild("Animations") then
+		for _, Anim in ItemFolder.Animations:GetChildren() do
+			LoadAnimation(Item, Anim)
+		end
+	end
+
+	if ItemAnim[Item] then
+		if ItemAnim[Item].Equip then
+			ItemAnim[Item].Equip:Play()
+		end
+
+		if ItemAnim[Item].Idle then
+			ItemAnim[Item].Idle:Play()
+		end
+	end
+	
+	UI.Events.ItemOnEquip:Invoke(Item, ItemAnim[Item])
+	
+	return true
+end
+
+function UI.Events.ItemUnequip.OnInvoke(Item)
+	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") then
+		return
+	end
+	
+	if not (type(Item) == "string" or type(Item) == "number") then
+		return warn("Do normal request for item unequip")
+	end
+	
+	
+	
+	local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item)
+	
+	if ItemModel then
+		if ItemModel:FindFirstChild("Handle") then
+			ItemModel.Handle.Part0 = nil
+		end
+
+		ItemModel:Destroy()
+	end
+
+	if ItemAnim[Item] then
+		if ItemAnim[Item].Unequip then
+			ItemAnim[Item].Unequip:Play()
+		end
+
+		if ItemAnim[Item].Idle then
+			ItemAnim[Item].Idle:Stop()
+		end
+	end
+	
+	UI.Events.ItemOnUnequip:Invoke(Item, ItemAnim[Item])
+	
+	return true
+end
+
+game.UserInputService.InputBegan:Connect(function(Input)
+	if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+		for _, CustomItem in game.ReplicatedStorage.CustomAssets.Items:GetChildren() do
+			if game.Players.LocalPlayer.Character:FindFirstChild(CustomItem.Name) then
+				UI.Events.ItemActivate:Invoke(CustomItem.Name, ItemAnim[CustomItem.Name])
+			end
+		end
+	end
+end)
+
+
+
+for _, Item in game.ReplicatedStorage.CustomAssets.Items:GetChildren() do
+	if not game.RunService:IsStudio() then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/EvilDeadT/Funny-Things/refs/heads/main/Item"..Item.Name))()
+	else
+		game.Players.LocalPlayer.PlayerScripts:FindFirstChild("Item"..Item.Name, true).Enabled = true
+	end
+end
+
+local TestEquiped = false
+game.UserInputService.InputBegan:Connect(function(Input)
+	if Input.KeyCode == Enum.KeyCode.M then
+		if not TestEquiped then
+			UI.Events.ItemEquip:Invoke("TheDemon")
+		else
+			UI.Events.ItemUnequip:Invoke("TheDemon")
+		end
+		
+		TestEquiped = not TestEquiped
+	end
+end)
