@@ -5,10 +5,16 @@ local Equipped = false
 local ActivateCooldown = 10
 local CanActivate = true
 local ActivateTimer = nil
+local AnimBusy = false
+
 local PlushContented = false
 local PlushContentTime = 6
 local PlushTimer = nil
 local PlushTimerDelay = nil
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function(Character)
+	PlushTimer = 10
+end)
 
 function UI.Events.ItemOnEquip.OnInvoke(Item, Anim)
 	if Item ~= "TheDemon" then
@@ -27,6 +33,7 @@ function UI.Events.ItemOnEquip.OnInvoke(Item, Anim)
 	if Anim then
 		if Anim.Pet then
 			Anim.Pet:Stop()
+			AnimBusy = false
 		end
 	end
 
@@ -63,6 +70,7 @@ function UI.Events.ItemOnUnequip.OnInvoke(Item, Anim)
 	if Anim then
 		if Anim.Pet then
 			Anim.Pet:Stop()
+			AnimBusy = false
 		end
 	end
 
@@ -109,7 +117,7 @@ function UI.Events.ItemOnUnequip.OnInvoke(Item, Anim)
 end
 
 function UI.Events.ItemActivate.OnInvoke(Item, Anim)
-	if Item ~= "TheDemon" or not CanActivate then
+	if Item ~= "TheDemon" or not CanActivate or AnimBusy then
 		return
 	end
 	
@@ -119,23 +127,21 @@ function UI.Events.ItemActivate.OnInvoke(Item, Anim)
 	
 	CanActivate = false
 	
-	local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item)
-
-	if ItemModel then
-		if ItemModel.Handle then
-			game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-				C1 = CFrame.new(Vector3.new(0.7, 0, 0)) * ItemModel.Handle.C1.Rotation
-			}):Play()
-		end
-	end
-	
 	if Anim then
 		if Anim.Pet then
-			Anim.Pet:Play()
+			AnimBusy = true
+			
+			local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item)
+			
+			if ItemModel then
+				if ItemModel.Handle then
+					game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+						C1 = CFrame.new(Vector3.new(0.7, 0, 0)) * ItemModel.Handle.C1.Rotation
+					}):Play()
+				end
+			end
 			
 			Anim.Pet.Stopped:Once(function()
-				local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item)
-				
 				if ItemModel then
 					if ItemModel.Handle then
 						game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
@@ -143,7 +149,11 @@ function UI.Events.ItemActivate.OnInvoke(Item, Anim)
 						}):Play()
 					end
 				end
+
+				AnimBusy = false
 			end)
+			
+			Anim.Pet:Play()
 		end
 	end
 	
@@ -173,4 +183,32 @@ function UI.Events.ItemActivate.OnInvoke(Item, Anim)
 			CanActivate = true
 		end)
 	end)
+end
+
+function UI.Events.ItemInspect.OnInvoke(Item, Anim)
+	if Item ~= "TheDemon" or AnimBusy then
+		return
+	end
+	
+	if Anim then
+		if Anim.Inspect then
+			AnimBusy = true
+			
+			local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item)
+
+			Anim.Inspect.Stopped:Once(function()
+				if ItemModel then
+					if ItemModel.Handle then
+						game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+							C1 = CFrame.new(Vector3.new(0, 0, 0)) * ItemModel.Handle.C1.Rotation
+						})
+					end
+				end
+
+				AnimBusy = false
+			end)
+
+			Anim.Inspect:Play()
+		end
+	end
 end
