@@ -320,7 +320,7 @@ for _, RoomAssetPart in game.ReplicatedStorage.CustomAssets:GetDescendants() do
 						if AssetModel.Name == "NormalDoor" then
 							AssetModel.Frame.Frame.Color = RoomAssetPart:GetAttribute("CompileAssetColor")
 						elseif AssetModel.Name == "BigDoor" then
-							AssetModel.Frame.Frane.Color = RoomAssetPart:GetAttribute("CompileAssetColor")
+							AssetModel.Door.BigRoomDoor.Frame.Frane.Color = RoomAssetPart:GetAttribute("CompileAssetColor")
 						end
 				
 						AssetModel.Parent = RoomAssetPart.Parent
