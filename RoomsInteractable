@@ -2,8 +2,10 @@ local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
 local InteractableAssets = {}
 
 UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
+	print("Asset Name: "..Asset.Name)
+	
 	if table.find(InteractableAssets, Asset) then
-		return
+		return print("Already Interactable")
 	end
 	
 	table.insert(InteractableAssets, Asset)
@@ -11,6 +13,8 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 	local InteractAnim = {}
 	
 	if Asset.Name == "NormalDoor" then
+		print("NormalDoor")
+		
 		local RootPrompt = Asset.Root:FindFirstChildWhichIsA("ProximityPrompt")
 		local OpenSound = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Doors["NormalDoorOpen"..math.random(1, 2)]:Clone()
 		OpenSound.Parent = Asset.Root
