@@ -1,0 +1,107 @@
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+local InteractableAssets = {}
+
+UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
+	if table.find(InteractableAssets, Asset) then
+		return
+	end
+	
+	table.insert(InteractableAssets, Asset)
+	
+	local InteractAnim = {}
+	
+	if Asset.Name == "NormalDoor" then
+		local RootPrompt = Asset.Root:FindFirstChildWhichIsA("ProximityPrompt")
+		local OpenSound = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Doors["NormalDoorOpen"..math.random(1, 2)]:Clone()
+		OpenSound.Parent = Asset.Root
+		
+		if game.ReplicatedStorage.CustomAssets.RoomAssets.Animations:FindFirstChild(Asset.Name) then
+			for _, Anim in game.ReplicatedStorage.CustomAssets.RoomAssets.Animations[Asset.Name] do
+				InteractAnim[Anim.Name] = Asset.AnimationController.Animator:LoadAnimation(Anim)
+			end
+		end
+		
+		InteractAnim.NormalDoorOpen:GetMarkerReachedSignal("Pause"):Connect(function()
+			if Asset.OpenValue.Value then
+				InteractAnim.NormalDoorOpen:AdjustSpeed(0)
+			end
+		end)
+		
+		InteractAnim.NormalDoorOpen:GetMarkerReachedSignal("Opened"):Connect(function()
+			if Asset.OpenValue.Value and not Asset:GetAttribute("Stuck") then
+				Asset.CollisionPart.CanCollide = false
+				Asset.CollisionPart.CanQuery = false
+			end
+		end)
+		
+		InteractAnim.NormalDoorOpen:GetMarkerReachedSignal("Sound"):Connect(function(AnimValue)
+			if (AnimValue == "Forward" and Asset.OpenValue.Value) or (AnimValue == "Backward" and not Asset.OpenValue.Value) then
+				OpenSound:Play()
+			end
+		end)
+		
+		if Asset:FindFirstChild("NormalDoor") then
+			Asset.NormalDoor:Destroy()
+		end
+		
+		if Type ~= "ProgressDoor" then
+			if Asset:FindFirstChild("Enter") then
+				Asset.Enter:Destroy()
+			end
+			
+			if Asset:FindFirstChild("Exit") then
+				Asset.Exit:Destroy()
+			end
+		end
+		
+		local function AutoPromptHold()
+			task.spawn(function()
+				if RootPrompt then
+					while RootPrompt do
+						if RootPrompt then
+							if not RootPrompt then
+								break
+							else
+								if not RootPrompt.Enabled then
+									break
+								end
+							end
+							
+							RootPrompt:InputHoldBegin()
+							task.wait()
+						end
+					end
+				end
+			end)
+		end
+		
+		AutoPromptHold()
+		
+		if Asset.OpenValue then
+			Asset.OpenValue:GetPropertyChangedSignal("Value"):Connect(function()
+				if Asset.OpenValue.Value then
+					RootPrompt.Enabled = false
+					InteractAnim.NormalDoorOpen:Play()
+				else
+					InteractAnim.OpenAnimation:AdjustSpeed(-1)
+					Asset.CollisionPart.CanCollide = true
+					
+					if not Asset:GetAttribute("NeverOpen") then
+						RootPrompt.Enabled = true
+						AutoPromptHold()
+					end
+				end
+			end)
+			
+			if Asset.OpenValue.Value then
+				RootPrompt.Enabled = false
+				InteractAnim.NormalDoorOpen:Play()
+			else
+				RootPrompt.Enabled = true
+				AutoPromptHold()
+			end
+		else
+			warn(Asset.Name.." No OpenValue")
+		end
+	end
+end)
