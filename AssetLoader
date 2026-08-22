@@ -77,8 +77,8 @@ local Assets = {
 		},
 		Sounds = {
 			Doors = {
-				NormalDoorOpen1 = {Name='NormalDoorOpen1',ClassName='Sound',RollOffMaxDistance=200,Volume=0.35,Tags={'Muffle'}},
-				NormalDoorOpen2 = {Name='NormalDoorOpen2',ClassName='Sound',RollOffMaxDistance=200,Volume=0.35,Tags={'Muffle'}}
+				NormalDoorOpen1 = {Name='NormalDoorOpen1',ClassName='Sound',SoundId=16549679557,RollOffMaxDistance=200,Volume=0.35,Tags={'Muffle'}},
+				NormalDoorOpen2 = {Name='NormalDoorOpen2',ClassName='Sound',SoundId=16549679739,RollOffMaxDistance=200,Volume=0.35,Tags={'Muffle'}}
 			}
 		},
 		Animations = {
