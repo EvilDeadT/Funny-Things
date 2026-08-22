@@ -2,10 +2,8 @@ local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
 local InteractableAssets = {}
 
 UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
-	print("Asset Name: "..Asset.Name)
-	
 	if table.find(InteractableAssets, Asset) then
-		return print("Already Interactable")
+		return printAsset.Name.." Already Interactable")
 	end
 	
 	table.insert(InteractableAssets, Asset)
@@ -13,9 +11,11 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 	local InteractAnim = {}
 	
 	if Asset.Name == "NormalDoor" then
-		print("NormalDoor")
-		
 		local RootPrompt = Asset.Root:FindFirstChildWhichIsA("ProximityPrompt")
+		RootPrompt.Triggered:Connect(function()
+			Asset.OpenValue.Value = true
+		end)
+		
 		local OpenSound = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Doors["NormalDoorOpen"..math.random(1, 2)]:Clone()
 		OpenSound.Parent = Asset.Root
 		
@@ -61,22 +61,17 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		end
 		
 		local function AutoPromptHold()
-			print("AutoPrompt")
 			task.spawn(function()
 				if RootPrompt then
-					print("Auto 1")
 					while RootPrompt do
 						if RootPrompt then
 							if not RootPrompt.Enabled then
-								print("Disabled")
 								break
 							end
 						else
-							print("RootPrompt Not Exist")
 							break
 						end
-						
-						print("Prompt Hold")
+
 						RootPrompt:InputHoldBegin()
 						task.wait()
 					end
