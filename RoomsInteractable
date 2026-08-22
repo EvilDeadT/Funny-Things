@@ -36,7 +36,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		
 		if game.ReplicatedStorage.CustomAssets.RoomAssets.Animations:FindFirstChild(Asset.Name) then
 			for _, Anim in game.ReplicatedStorage.CustomAssets.RoomAssets.Animations[Asset.Name]:GetChildren() do
-				InteractAnim[string.split(Anim, Anim.Name)[2]] = Asset.AnimationController.Animator:LoadAnimation(Anim)
+				InteractAnim[string.split(Anim.Name, Asset.Name)[2]] = Asset.AnimationController.Animator:LoadAnimation(Anim)
 			end
 		end
 		
