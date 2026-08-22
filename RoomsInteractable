@@ -97,8 +97,10 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 				RootPrompt.Enabled = false
 				InteractAnim.NormalDoorOpen:Play()
 			else
-				RootPrompt.Enabled = true
-				AutoPromptHold()
+				if not Asset:GetAttribute("NeverOpen") then
+					RootPrompt.Enabled = true
+					AutoPromptHold()
+				end
 			end
 		else
 			warn(Asset.Name.." No OpenValue")
