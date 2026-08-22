@@ -10,36 +10,54 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 	
 	local InteractAnim = {}
 	
-	if Asset.Name == "NormalDoor" then
+	if Asset.Name == "NormalDoor" or Asset.Name == "BigDoor" then
 		local RootPrompt = Asset.Root:FindFirstChildWhichIsA("ProximityPrompt")
 		RootPrompt.Triggered:Connect(function()
 			Asset.OpenValue.Value = true
 		end)
 		
-		local OpenSound = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Doors["NormalDoorOpen"..math.random(1, 2)]:Clone()
+		local OpenSound = nil
 		OpenSound.Parent = Asset.Root
+		local ValveSound = nil
+		
+		if Asset.Name == "NormalDoor" then
+			OpenSound = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Doors[Asset.Name.."Open"..math.random(1, 2)]:Clone()
+		elseif Asset.Name == "BigDoor" then
+			OpenSound = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Doors[Asset.Name.."Open"]
+			ValveSound = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Doors[Asset.Name.."Valve"]
+		end
 		
 		if game.ReplicatedStorage.CustomAssets.RoomAssets.Animations:FindFirstChild(Asset.Name) then
 			for _, Anim in game.ReplicatedStorage.CustomAssets.RoomAssets.Animations[Asset.Name]:GetChildren() do
-				InteractAnim[Anim.Name] = Asset.AnimationController.Animator:LoadAnimation(Anim)
+				InteractAnim[string.split(Anim, Anim.Name)[2]] = Asset.AnimationController.Animator:LoadAnimation(Anim)
 			end
 		end
 		
-		InteractAnim.NormalDoorOpen:GetMarkerReachedSignal("Pause"):Connect(function()
+		if Asset.Name == "BigDoor" then
+			InteractAnim.Open:GetMarkerReachedSignal("Valve"):Connect(function(AnimValue)
+				if (AnimValue ~= "Forward" or not Asset.OpenValue.Value) and (AnimValue ~= "Backward" or Asset.OpenValue.Value) then
+					return
+				end
+				
+				ValveSound:Play()
+			end)
+		end
+		
+		InteractAnim.Open:GetMarkerReachedSignal("Pause"):Connect(function()
 			if Asset.OpenValue.Value then
-				InteractAnim.NormalDoorOpen:AdjustSpeed(0)
+				InteractAnim.Open:AdjustSpeed(0)
 			end
 		end)
 		
-		InteractAnim.NormalDoorOpen:GetMarkerReachedSignal("Opened"):Connect(function()
+		InteractAnim.Open:GetMarkerReachedSignal("Opened"):Connect(function()
 			if Asset.OpenValue.Value and not Asset:GetAttribute("Stuck") then
 				Asset.CollisionPart.CanCollide = false
 				Asset.CollisionPart.CanQuery = false
 			end
 		end)
 		
-		InteractAnim.NormalDoorOpen:GetMarkerReachedSignal("Sound"):Connect(function(AnimValue)
-			if (AnimValue ~= "Forward" and not Asset.OpenValue.Value) and (AnimValue ~= "Backward" and Asset.OpenValue.Value) then
+		InteractAnim.Open:GetMarkerReachedSignal("Sound"):Connect(function(AnimValue)
+			if (AnimValue ~= "Forward" or not Asset.OpenValue.Value) and (AnimValue ~= "Backward" or Asset.OpenValue.Value) then
 				return
 			end
 			
@@ -85,9 +103,9 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 			Asset.OpenValue:GetPropertyChangedSignal("Value"):Connect(function()
 				if Asset.OpenValue.Value then
 					RootPrompt.Enabled = false
-					InteractAnim.NormalDoorOpen:Play()
+					InteractAnim.Open:Play()
 				else
-					InteractAnim.NormalDoorOpen:AdjustSpeed(-1)
+					InteractAnim.Open:AdjustSpeed(-1)
 					Asset.CollisionPart.CanCollide = true
 					
 					if not Asset:GetAttribute("NeverOpen") then
@@ -99,7 +117,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 			
 			if Asset.OpenValue.Value then
 				RootPrompt.Enabled = false
-				InteractAnim.NormalDoorOpen:Play()
+				InteractAnim.Open:Play()
 			else
 				if not Asset:GetAttribute("NeverOpen") then
 					RootPrompt.Enabled = true
