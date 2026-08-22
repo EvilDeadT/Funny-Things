@@ -17,7 +17,6 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		end)
 		
 		local OpenSound = nil
-		OpenSound.Parent = Asset.Root
 		local ValveSound = nil
 		
 		if Asset.Name == "NormalDoor" then
@@ -25,6 +24,14 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		elseif Asset.Name == "BigDoor" then
 			OpenSound = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Doors[Asset.Name.."Open"]
 			ValveSound = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Doors[Asset.Name.."Valve"]
+		end
+		
+		if OpenSound then
+			OpenSound.Parent = Asset.Root
+		end
+		
+		if ValveSound then
+			ValveSound.Parent = Asset.Root
 		end
 		
 		if game.ReplicatedStorage.CustomAssets.RoomAssets.Animations:FindFirstChild(Asset.Name) then
