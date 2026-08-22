@@ -64,8 +64,19 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		end)
 		
 		InteractAnim.Open:GetMarkerReachedSignal("Sound"):Connect(function(AnimValue)
-			if (AnimValue ~= "Forward" or not Asset.OpenValue.Value) and (AnimValue ~= "Backward" or Asset.OpenValue.Value) then
-				return
+			if Asset.Name == "NormalDoor" then
+				if (AnimValue ~= "Forward" or not Asset.OpenValue.Value) and (AnimValue ~= "Backward" or Asset.OpenValue.Value) then
+					return
+				end
+			elseif Asset.Name == "BigDoor" then
+				if AnimValue == "Forward" and Asset.OpenValue.Value then
+					OpenSound:Play()
+					
+					return
+				end
+				if AnimValue ~= "Backward" or Asset.OpenValue.Value then
+					return
+				end
 			end
 			
 			OpenSound:Play()
