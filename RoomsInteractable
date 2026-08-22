@@ -13,7 +13,9 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 	if Asset.Name == "NormalDoor" or Asset.Name == "BigDoor" then
 		local RootPrompt = Asset.Root:FindFirstChildWhichIsA("ProximityPrompt")
 		RootPrompt.Triggered:Connect(function()
-			Asset.OpenValue.Value = true
+			if not Asset:GetAttribute("NeverOpen") then
+				Asset.OpenValue.Value = true
+			end
 		end)
 		
 		local OpenSound = nil
@@ -100,7 +102,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 			task.spawn(function()
 				if RootPrompt then
 					while RootPrompt do
-						if RootPrompt then
+						if RootPrompt and not Asset:GetAttribute("NeverOpen") then
 							if not RootPrompt.Enabled then
 								break
 							end
