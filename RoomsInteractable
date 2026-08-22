@@ -3,7 +3,7 @@ local InteractableAssets = {}
 
 UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 	if table.find(InteractableAssets, Asset) then
-		return printAsset.Name.." Already Interactable")
+		return print(Asset.Name.." Already Interactable")
 	end
 	
 	table.insert(InteractableAssets, Asset)
