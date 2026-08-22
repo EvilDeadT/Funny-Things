@@ -78,8 +78,10 @@ local Assets = {
 		},
 		Sounds = {
 			Doors = {
+				BigDoorOpen = {Name='BigDoorOpen',ClassName='Sound',SoundId=12856573860,RollOffMaxDistance=225,RollOffMaxDistance=15.RollOfMode=Enum.RollOffMode.InverseTapered,PlaybackSpeed=0.6,Volume=0.75,Tags={'Muffle'}},
+				BigDoorValve = {Name='BigDoorValve',ClassName='Sound',SoundId=12856573860,RollOffMaxDistance=200,RollOfMode=Enum.RollOffMode.InverseTapered,Volume=0.5,Tags={'Muffle'}},
 				NormalDoorOpen1 = {Name='NormalDoorOpen1',ClassName='Sound',SoundId=16549679557,RollOffMaxDistance=200,Volume=0.35,Tags={'Muffle'}},
-				NormalDoorOpen2 = {Name='NormalDoorOpen2',ClassName='Sound',SoundId=16549679739,RollOffMaxDistance=200,Volume=0.35,Tags={'Muffle'}}
+				NormalDoorOpen2 = {Name='NormalDoorOpen2',ClassName='Sound',SoundId=rbxassetid://12856573860,RollOffMaxDistance=200,Volume=0.35,Tags={'Muffle'}}
 			}
 		},
 		Animations = {
@@ -315,9 +317,9 @@ for _, RoomAssetPart in game.ReplicatedStorage.CustomAssets:GetDescendants() do
 							AssetModel:ScaleTo(RoomAssetPart:GetAttribute("CompileAssetScale"))
 						end
 					
-						if RoomAssetPart.Name == "NormalDoor" then
+						if AssetModel.Name == "NormalDoor" then
 							AssetModel.Frame.Frame.Color = RoomAssetPart:GetAttribute("CompileAssetColor")
-						elseif RoomAssetPart.Name == "BigDoor" then
+						elseif AssetModel.Name == "BigDoor" then
 							AssetModel.Frame.Frane.Color = RoomAssetPart:GetAttribute("CompileAssetColor")
 						end
 				
