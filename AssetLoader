@@ -319,8 +319,7 @@ for _, RoomAssetPart in game.ReplicatedStorage.CustomAssets:GetDescendants() do
 						AssetModel.Parent = RoomAssetPart.Parent
 						RoomAssetPart:Destroy()
 						
-						print("Interaction Event Fire")
-						game.ReplicatedStorage.CustomAssets.Player.UI.Main.FunnyMenu.Events.RoomAssetInteraction:Fire(AssetModel.Name)
+						game.ReplicatedStorage.CustomAssets.Player.UI.Main.FunnyMenu.Events.RoomAssetInteraction:Fire(AssetModel)
 					else
 						RoomAssetPart.CanCollide = false
 						
