@@ -20,7 +20,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		OpenSound.Parent = Asset.Root
 		
 		if game.ReplicatedStorage.CustomAssets.RoomAssets.Animations:FindFirstChild(Asset.Name) then
-			for _, Anim in game.ReplicatedStorage.CustomAssets.RoomAssets.Animations[Asset.Name] do
+			for _, Anim in game.ReplicatedStorage.CustomAssets.RoomAssets.Animations[Asset.Name]:GetChildren() do
 				InteractAnim[Anim.Name] = Asset.AnimationController.Animator:LoadAnimation(Anim)
 			end
 		end
