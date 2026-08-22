@@ -22,8 +22,8 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		if Asset.Name == "NormalDoor" then
 			OpenSound = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Doors[Asset.Name.."Open"..math.random(1, 2)]:Clone()
 		elseif Asset.Name == "BigDoor" then
-			OpenSound = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Doors[Asset.Name.."Open"]
-			ValveSound = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Doors[Asset.Name.."Valve"]
+			OpenSound = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Doors[Asset.Name.."Open"]:Clone()
+			ValveSound = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Doors[Asset.Name.."Valve"]:Clone()
 		end
 		
 		if OpenSound then
