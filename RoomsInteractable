@@ -111,3 +111,5 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		end
 	end
 end)
+
+print("RoomsInteractable last line")
