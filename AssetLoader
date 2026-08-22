@@ -144,7 +144,7 @@ function DecompileAssets()
 					end
 				elseif Property == "MeshId" then
 					NewInstance:ApplyMesh(game.InsertService:CreateMeshPartAsync("rbxassetid://"..Value,
-						Properties.CollisionFidelity or Enum.CollisionFidelity.Box,
+						Enum.CollisionFidelity.PreciseConvexDecomposition,
 						Properties.RenderFidelity or Enum.RenderFidelity.Automatic)
 					)
 				elseif Property == "Scale" then
