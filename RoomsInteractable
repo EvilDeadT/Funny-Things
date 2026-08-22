@@ -1,6 +1,8 @@
 local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
 local InteractableAssets = {}
 
+print("RoomsInteractable first line")
+
 UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 	print("Asset Name: "..Asset.Name)
 	
