@@ -39,9 +39,11 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		end)
 		
 		InteractAnim.NormalDoorOpen:GetMarkerReachedSignal("Sound"):Connect(function(AnimValue)
-			if (AnimValue == "Forward" and Asset.OpenValue.Value) or (AnimValue == "Backward" and not Asset.OpenValue.Value) then
-				OpenSound:Play()
+			if (AnimValue ~= "Forward" and not Asset.OpenValue.Value) and (AnimValue ~= "Backward" and Asset.OpenValue.Value) then
+				return
 			end
+			
+			OpenSound:Play()
 		end)
 		
 		if Asset:FindFirstChild("NormalDoor") then
@@ -59,21 +61,24 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		end
 		
 		local function AutoPromptHold()
+			print("AutoPrompt")
 			task.spawn(function()
 				if RootPrompt then
+					print("Auto 1")
 					while RootPrompt do
 						if RootPrompt then
-							if not RootPrompt then
+							if not RootPrompt.Enabled then
+								print("Disabled")
 								break
-							else
-								if not RootPrompt.Enabled then
-									break
-								end
 							end
-							
-							RootPrompt:InputHoldBegin()
-							task.wait()
+						else
+							print("RootPrompt Not Exist")
+							break
 						end
+						
+						print("Prompt Hold")
+						RootPrompt:InputHoldBegin()
+						task.wait()
 					end
 				end
 			end)
@@ -87,7 +92,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 					RootPrompt.Enabled = false
 					InteractAnim.NormalDoorOpen:Play()
 				else
-					InteractAnim.OpenAnimation:AdjustSpeed(-1)
+					InteractAnim.NormalDoorOpen:AdjustSpeed(-1)
 					Asset.CollisionPart.CanCollide = true
 					
 					if not Asset:GetAttribute("NeverOpen") then
