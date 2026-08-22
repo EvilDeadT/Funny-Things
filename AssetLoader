@@ -104,7 +104,7 @@ local Assets = {
 }
 
 local LoadRoomAssets = true
-local LeaveTechnicalAttributesAndTags = true
+local LeaveTechnicalAttributesAndTags = false
 
 function DecompileAssets()
 	local function LoadInstance(InstanceToLoad, InstanceParent, StarterDecompile)
@@ -272,6 +272,30 @@ game.Players.LocalPlayer.PlayerGui.FunnyMenu.Events.PanelOpen.Event:Connect(func
 	game.UserInputService.MouseIconEnabled = game.Players.LocalPlayer.PlayerGui.FunnyMenu.Enabled
 end)
 
+print("AssetLoader Finish")
+
+for _, ScriptName in {
+	"UIModule",
+	"UITabChange",
+	"UIActionButtons",
+	"UIModifiers",
+	"ItemsBase",
+	"RoomsInteractable",
+	"PassiveLocalEntities",
+	"KeyBindsLoader",
+	"KeyBinds",
+	"Atomize",
+	"SkipRoom"
+	} do
+	if not game.RunService:IsStudio() then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/EvilDeadT/Funny-Things/refs/heads/main/"..ScriptName))()
+	else
+		game.Players.LocalPlayer.PlayerScripts:FindFirstChild(ScriptName, true).Enabled = true
+	end
+	
+	print(ScriptName.." loaded")
+end
+
 for _, RoomAssetPart in game.ReplicatedStorage.CustomAssets:GetDescendants() do
 	if RoomAssetPart:IsA("BasePart") and RoomAssetPart:GetAttribute("CompileAssetCategory") and RoomAssetPart:GetAttribute("CompileAssetType") then
 		if game.ReplicatedStorage.CustomAssets.RoomAssets:FindFirstChild(RoomAssetPart:GetAttribute("CompileAssetCategory")) then
@@ -324,30 +348,6 @@ if not LeaveTechnicalAttributesAndTags then
 			end
 		end
 	end
-end
-
-print("AssetLoader Finish")
-
-for _, ScriptName in {
-	"UIModule",
-	"UITabChange",
-	"UIActionButtons",
-	"UIModifiers",
-	"ItemsBase",
-	"RoomsInteractable",
-	"PassiveLocalEntities",
-	"KeyBindsLoader",
-	"KeyBinds",
-	"Atomize",
-	"SkipRoom"
-	} do
-	if not game.RunService:IsStudio() then
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/EvilDeadT/Funny-Things/refs/heads/main/"..ScriptName))()
-	else
-		game.Players.LocalPlayer.PlayerScripts:FindFirstChild(ScriptName, true).Enabled = true
-	end
-	
-	print(ScriptName.." loaded")
 end
 
 print("All Loaded.")
