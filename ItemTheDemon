@@ -134,7 +134,7 @@ function UI.Events.ItemActivate.OnInvoke(Item, Anim)
 			local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item)
 			
 			if ItemModel then
-				if ItemModel.Handle then
+				if ItemModel:FindFirstChild("Handle") then
 					game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
 						C1 = CFrame.new(Vector3.new(0.7, 0, 0)) * ItemModel.Handle.C1.Rotation
 					}):Play()
@@ -143,7 +143,7 @@ function UI.Events.ItemActivate.OnInvoke(Item, Anim)
 			
 			Anim.Pet.Stopped:Once(function()
 				if ItemModel then
-					if ItemModel.Handle then
+					if ItemModel:FindFirstChild("Handle") then
 						game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
 							C1 = CFrame.new(Vector3.new(0, 0, 0)) * ItemModel.Handle.C1.Rotation
 						}):Play()
@@ -198,10 +198,8 @@ function UI.Events.ItemInspect.OnInvoke(Item, Anim)
 
 			Anim.Inspect.Stopped:Once(function()
 				if ItemModel then
-					if ItemModel.Handle then
-						game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-							C1 = CFrame.new(Vector3.new(0, 0, 0)) * ItemModel.Handle.C1.Rotation
-						})
+					if ItemModel:FindFirstChild("Handle") then
+						
 					end
 				end
 
