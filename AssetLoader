@@ -297,6 +297,18 @@ game.Players.LocalPlayer.PlayerGui.FunnyMenu.Events.PanelOpen.Event:Connect(func
 	game.UserInputService.MouseIconEnabled = game.Players.LocalPlayer.PlayerGui.FunnyMenu.Enabled
 end)
 
+if not LoadRoomAssets then
+	print("No Room Assets")
+end
+
+if NoProperlyCollisions then
+	print("No Properly Collisions")
+end
+
+if NoLoadRooms then
+	print("No Load Rooms")
+end
+
 print("AssetLoader Finish")
 
 for _, ScriptName in {
