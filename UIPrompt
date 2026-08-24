@@ -46,8 +46,8 @@ game.ProximityPromptService.PromptShown:Connect(function(Prompt)
 		PromptUI.Button.Shop.Visible = false
 		PromptUI.Button.Remaining.Visible = false
 		
-		if PromptUI:GetAttribute("Display") then
-			PromptUI.Button.Top.TextLabel.Text = PromptUI:GetAttribute("Display")
+		if Prompt:GetAttribute("Display") then
+			PromptUI.Button.Top.TextLabel.Text = Prompt:GetAttribute("Display")
 			PromptUI.Button.Top.TextLabel.Visible = true
 		else
 			PromptUI.Button.Top.TextLabel.Visible = false
