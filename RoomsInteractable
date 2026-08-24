@@ -119,7 +119,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		AutoPromptHold()
 		
 		local function DoorOpen()
-			RootPrompt.Enabled = false
+			Prompt.Enabled = false
 			InteractAnim.Open:Play()
 		end
 		
@@ -128,7 +128,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 			Asset.CollisionPart.CanCollide = true
 
 			if not Asset:GetAttribute("NoUsage") then
-				RootPrompt.Enabled = true
+				Prompt.Enabled = true
 				AutoPromptHold()
 			end
 		end
