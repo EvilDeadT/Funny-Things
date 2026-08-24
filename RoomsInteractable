@@ -13,7 +13,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 	
 	for _, Category in game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds:GetChildren() do
 		for _, Sound in Category:GetChildren() do
-			if string.find(Sound, Asset.Name) and Sound:IsA("Sound") then
+			if string.find(Sound.Name, Asset.Name) and Sound:IsA("Sound") then
 				InteractSound[string.split(Sound.Name, Asset.Name)[2]] = Sound:Clone()
 				InteractSound[string.split(Sound.Name, Asset.Name)[2]].Name = string.split(Sound.Name, Asset.Name)[2]
 
