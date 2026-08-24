@@ -1,0 +1,91 @@
+local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main"):WaitForChild("Client"):WaitForChild("MainClient"))
+local CurrentPrompt = nil
+local HoldPromptTween = nil
+local HoldPromptChangeFunction = {}
+
+game.ProximityPromptService.PromptShown:Connect(function(Prompt)
+	local PromptUI = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main.PressBillboard")
+	local Highlight = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main.Highlight")
+	
+	if PromptUI and Highlight and Prompt:GetAttribute("Custom") and not Prompt:GetAttribute("Hidden") then
+		PromptUI.Button.Shop.Visible = false
+		PromptUI.Button.Remaining.Visible = false
+		
+		if PromptUI:GetAttribute("Display") then
+			PromptUI.Button.Top.TextLabel.Text = PromptUI:GetAttribute("Display")
+			PromptUI.Button.Top.TextLabel.Visible = true
+		else
+			PromptUI.Button.Top.TextLabel.Visible = false
+		end
+		
+		PromptUI.Button.Top.TextLabel.MaxVisibleGraphemes = 0
+		game.TweenService:Create(PromptUI.Button.Top.TextLabel, TweenInfo.new(0.2), {MaxVisibleGraphemes = string.len(PromptUI.Button.Top.TextLabel.Text)}):Play()
+		PromptUI.Button.Top.Interact.IconInner.UIGradient.Offset = Vector2.new(0, 0.4)
+		CurrentPrompt = Prompt
+		PromptUI.Adornee = Prompt.Parent
+		PlayerMain.Device.UI.Mobile.BaseControls.Interact.Visible = true
+		PromptUI.Enabled = true
+		Highlight.Adornee = Prompt.Parent
+		Highlight.Enabled = true
+		
+		if not table.find(HoldPromptChangeFunction, Prompt) and Prompt.HoldDuration > 0 then
+			table.insert(HoldPromptChangeFunction, Prompt)
+			
+			Prompt:GetPropertyChangedSignal("HoldDuration"):Connect(function()
+				if CurrentPrompt ~= Prompt then
+					return
+				end
+				
+				if HoldPromptTween then
+					HoldPromptTween:Cancel()
+				end
+				
+				HoldPromptTween = game.TweenService:Create(PromptUI.Button.Top.Interact.IconInner.UIGradient, TweenInfo.new(Prompt.HoldDuration, Enum.EasingStyle.Linear), {
+					Offset = Vector2.new(0, -0.6)
+				})
+			end)
+		end
+	end
+end)
+
+game.ProximityPromptService.PromptButtonHoldBegan:Connect(function(Prompt)
+	local PromptUI = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main.PressBillboard")
+	local Highlight = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main.Highlight")
+
+	if not PromptUI or not Highlight then
+		return
+	end
+	
+	if CurrentPrompt ~= Prompt then
+		return
+	end
+	
+	if Prompt.HoldDuration > 0 then
+		PromptUI.Button.Top.Interact.IconInner.UIGradient.Offset = Vector2.new(0, 0.4)
+		HoldPromptTween = game.TweenService:Create(PromptUI.Button.Top.Interact.IconInner.UIGradient, TweenInfo.new(Prompt.HoldDuration, Enum.EasingStyle.Linear), {
+			Offset = Vector2.new(0, -0.6)
+		})
+		HoldPromptTween:Play()
+	end
+end)
+
+game.ProximityPromptService.PromptHidden:Connect(function(Prompt)
+	local PromptUI = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main.PressBillboard")
+	local Highlight = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main.Highlight")
+
+	if not PromptUI or not Highlight then
+		return
+	end
+	
+	if Highlight.Adornee ~= Prompt.Parent then
+		return
+	end
+	
+	CurrentPrompt = nil
+	Highlight.Adornee = nil
+	Highlight.Enabled = false
+	PromptUI.Enabled = false
+	Prompt.Adornee = nil
+	PlayerMain.Device.UI.Mobile.BaseControls.Interact.Visible = false
+end)
