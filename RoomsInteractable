@@ -36,11 +36,27 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 	
 	if Asset.Name == "NormalDoor" or Asset.Name == "BigDoor" then
 		local Prompt = Asset.Root:FindFirstChildWhichIsA("ProximityPrompt")
+		Prompt:SetAttribute("Hidden", true)
+		Prompt:SetAttribute("Custom", true)
 		Prompt.Triggered:Connect(function()
 			if not Asset:GetAttribute("NoUsage") then
 				Asset.OpenValue.Value = true
 			end
 		end)
+		
+		if Asset:FindFirstChild("NormalDoor") then
+			Asset.NormalDoor:Destroy()
+		end
+		
+		if Type ~= "ProgressDoor" then
+			if Asset:FindFirstChild("Enter") then
+				Asset.Enter:Destroy()
+			end
+			
+			if Asset:FindFirstChild("Exit") then
+				Asset.Exit:Destroy()
+			end
+		end
 		
 		if Asset.Name == "BigDoor" then
 			InteractAnim.Open:GetMarkerReachedSignal("Valve"):Connect(function(AnimValue)
@@ -71,7 +87,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 					return
 				end
 			elseif Asset.Name == "BigDoor" then
-				if (AnimValue == "Forward" and not Asset.OpenValue.Value) or (AnimValue ~= "Backward" or Asset.OpenValue.Value) then
+				if (AnimValue == "Forward" and not Asset.OpenValue.Value) or (AnimValue == "Backward" and Asset.OpenValue.Value) then
 					return
 				end
 			end
@@ -82,20 +98,6 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 				InteractSound["Open"..math.random(1, 2)]:Play()
 			end
 		end)
-		
-		if Asset:FindFirstChild("NormalDoor") then
-			Asset.NormalDoor:Destroy()
-		end
-		
-		if Type ~= "ProgressDoor" then
-			if Asset:FindFirstChild("Enter") then
-				Asset.Enter:Destroy()
-			end
-			
-			if Asset:FindFirstChild("Exit") then
-				Asset.Exit:Destroy()
-			end
-		end
 		
 		local function AutoPromptHold()
 			task.spawn(function()
@@ -150,6 +152,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		local InteractCooldown = false
 		
 		local Prompt = Asset.Door:FindFirstChildWhichIsA("ProximityPrompt")
+		Prompt:SetAttribute("Custom", true)
 		Prompt.Triggered:Connect(function()
 			if not InteractCooldown and not Asset:GetAttribute("NoUsage") then
 				InteractCooldown = true
@@ -161,7 +164,15 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 			end
 		end)
 		
-		InteractAnim.Open:GetMarkerReachedSignal("Pause"):Connect(function() --[[ Line: 34 | Upvalues: p2 (copy) ]]
+		if Asset:FindFirstChild("SpawnLocations") then
+			for _, SpawnLocation in Asset.SpawnLocations:GetChildren() do
+				if SpawnLocation:IsA("BasePart") then
+					SpawnLocation.Transparency = 1
+				end
+			end
+		end
+		
+		InteractAnim.Open:GetMarkerReachedSignal("Pause"):Connect(function()
 			InteractAnim.Open:AdjustSpeed(0)
 			InteractCooldown = false
 		end)
@@ -179,14 +190,14 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		end
 		
 		Asset.Closed:GetPropertyChangedSignal("Value"):Connect(function()
-			if Asset.Closed.Value then
+			if not Asset.Closed.Value then
 				DoorOpen()
 			else
 				DoorClose()
 			end
 		end)
 
-		if Asset.Closed.Value then
+		if not Asset.Closed.Value then
 			DoorOpen()
 		else
 			DoorClose()
