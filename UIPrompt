@@ -4,9 +4,43 @@ local CurrentPrompt = nil
 local HoldPromptTween = nil
 local HoldPromptChangeFunction = {}
 
+function GetPromptInstance(InstanceTo)
+	local PromptInstance = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main"..InstanceTo)
+	
+	if PromptInstance then
+		local HasOriginalAndCustom = false
+		
+		for _, InstanceUI in game.Players.LocalPlayer.PlayerGui.Main:GetChildren() do
+			if InstanceUI.Name == PromptInstance.Name and InstanceUI ~= PromptInstance then
+				HasOriginalAndCustom = true
+			end
+		end
+		
+		if HasOriginalAndCustom then
+			for _, InstanceUI in game.Players.LocalPlayer.PlayerGui.Main:GetChildren() do
+				if InstanceUI.Name == InstanceTo then
+					if InstanceUI:GetAttribute("Custom") then
+						InstanceUI:Destroy()
+					else
+						PromptInstance = InstanceUI
+					end
+				end
+			end
+		end
+	else
+		if game.ReplicatedStorage.CustomAssets.Player.UI.Main:FindFirstChild(InstanceTo) then
+			PromptInstance = game.ReplicatedStorage.CustomAssets.Player.UI.Main[InstanceTo]:Clone()
+			PromptInstance:SetAttribute("Custom", true)
+			PromptInstance.Parent = game.Players.LocalPlayer.PlayerGui.Main
+		end
+	end
+	
+	return PromptInstance
+end
+
 game.ProximityPromptService.PromptShown:Connect(function(Prompt)
-	local PromptUI = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main.PressBillboard")
-	local Highlight = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main.Highlight")
+	local PromptUI = GetPromptInstance("PressBillboard")
+	local Highlight = GetPromptInstance("Highlight")
 	
 	if PromptUI and Highlight and Prompt:GetAttribute("Custom") and not Prompt:GetAttribute("Hidden") then
 		PromptUI.Button.Shop.Visible = false
@@ -50,8 +84,8 @@ game.ProximityPromptService.PromptShown:Connect(function(Prompt)
 end)
 
 game.ProximityPromptService.PromptButtonHoldBegan:Connect(function(Prompt)
-	local PromptUI = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main.PressBillboard")
-	local Highlight = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main.Highlight")
+	local PromptUI = GetPromptInstance("PressBillboard")
+	local Highlight = GetPromptInstance("Highlight")
 
 	if not PromptUI or not Highlight then
 		return
@@ -71,8 +105,8 @@ game.ProximityPromptService.PromptButtonHoldBegan:Connect(function(Prompt)
 end)
 
 game.ProximityPromptService.PromptHidden:Connect(function(Prompt)
-	local PromptUI = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main.PressBillboard")
-	local Highlight = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main.Highlight")
+	local PromptUI = GetPromptInstance("PressBillboard")
+	local Highlight = GetPromptInstance("Highlight")
 
 	if not PromptUI or not Highlight then
 		return
