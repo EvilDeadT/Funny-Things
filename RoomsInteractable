@@ -28,7 +28,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 
 	for _, Category in game.ReplicatedStorage.CustomAssets.RoomAssets.Animations:GetChildren() do
 		for _, Anim in Category:GetChildren() do
-			if string.find(Anim, Asset.Name) and Anim:IsA("Animation") then
+			if string.find(Anim.Name, Asset.Name) and Anim:IsA("Animation") then
 				InteractAnim[string.split(Anim.Name, Asset.Name)[2]] = Asset.AnimationController.Animator:LoadAnimation(Anim)
 			end
 		end
