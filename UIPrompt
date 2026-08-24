@@ -5,7 +5,7 @@ local HoldPromptTween = nil
 local HoldPromptChangeFunction = {}
 
 function GetPromptInstance(InstanceTo)
-	local PromptInstance = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main"..InstanceTo)
+	local PromptInstance = UI.Events.UIModule:Invoke("FindByThread", game.Players.LocalPlayer.PlayerGui, "Main."..InstanceTo)
 	
 	if PromptInstance then
 		local HasOriginalAndCustom = false
