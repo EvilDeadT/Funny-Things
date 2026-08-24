@@ -152,6 +152,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		local InteractCooldown = false
 		
 		local Prompt = Asset.Door:FindFirstChildWhichIsA("ProximityPrompt")
+		Prompt:SetAttribute("Display", "Sovet Ass")
 		Prompt:SetAttribute("Custom", true)
 		Prompt.Triggered:Connect(function()
 			if not InteractCooldown and not Asset:GetAttribute("NoUsage") then
