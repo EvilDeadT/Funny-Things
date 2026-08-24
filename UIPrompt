@@ -120,6 +120,6 @@ game.ProximityPromptService.PromptHidden:Connect(function(Prompt)
 	Highlight.Adornee = nil
 	Highlight.Enabled = false
 	PromptUI.Enabled = false
-	Prompt.Adornee = nil
+	PromptUI.Adornee = nil
 	PlayerMain.Device.UI.Mobile.BaseControls.Interact.Visible = false
 end)
