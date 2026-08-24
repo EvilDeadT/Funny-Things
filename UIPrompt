@@ -116,6 +116,11 @@ game.ProximityPromptService.PromptHidden:Connect(function(Prompt)
 		return
 	end
 	
+	if HoldPromptTween then
+		HoldPromptTween:Cancel()
+		HoldPromptTween = nil
+	end
+	
 	CurrentPrompt = nil
 	Highlight.Adornee = nil
 	Highlight.Enabled = false
