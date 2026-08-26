@@ -1,4 +1,5 @@
 local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main"):WaitForChild("Client"):WaitForChild("MainClient"))
 local ItemAnim = {}
 
 game.Players.LocalPlayer.CharacterAdded:Connect(function(Character)
@@ -16,37 +17,184 @@ function LoadAnimation(Item, Anim)
 
 	local LoadedAnim = game.Players.LocalPlayer.Character.Humanoid.Animator:LoadAnimation(Anim)
 	ItemAnim[Item][Anim.Name] = LoadedAnim
+
+	return
+end
+
+function GetWheel(Item)
+	for _, WheelItem in game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:GetChildren() do
+		if WheelItem.Name == tostring(Item.LayoutOrder) then
+			return WheelItem
+		end
+	end
 	
 	return
 end
 
-function UI.Events.ItemEquip.OnInvoke(Item)
-	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") then
-		return
+UI.Inventory.ChildAdded:Connect(function(Item)
+	local ItemIcon = game.ReplicatedStorage.CustomAssets.Player.UI.Pressure.temp:Clone()
+	ItemIcon.Name = Item.Name
+	
+	ItemIcon.frame.ImageColor3 = Color3.fromRGB(218, 145, 0)
+	ItemIcon.Number.UIStroke.Color = Color3.fromRGB(255, 170, 0)
+	
+	if game.ReplicatedStorage.CustomAssets.Items[Item.Name]:FindFirstChild("Icons") then
+		if game.ReplicatedStorage.CustomAssets.Items[Item.Name].Icons:FindFirstChild("Toolbar") then
+			ItemIcon.ImageLabel.Image = game.ReplicatedStorage.CustomAssets.Items[Item.Name].Icons.Toolbar.Image
+		end
+	end
+
+	if game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("MaxUses") then
+		ItemIcon.Stack.Visible = true
+		ItemIcon.Stack.Text = "x"..game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats.MaxUses.Value
+		Item.Changed:Connect(function()
+			ItemIcon.Stack.Text = "x"..Item.Value
+			
+			local WheelIcon = GetWheel(ItemIcon)
+			if WheelIcon then
+				WheelIcon.Stack.Text = "x"..Item.Value
+			end
+		end)
+	elseif game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("MaxCharge") then
+		ItemIcon.Bar.Visible = true
+		local ChargeValue = Instance.new("IntValue")
+		ChargeValue.Changed:Connect(function()
+			if not (ItemIcon and ItemIcon.Parent) then
+				return
+			end
+			ItemIcon.Bar.TextLabel.Text = tostring((math.floor(ItemIcon.Value / game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats.MaxCharge.Value))) .. "%"
+		end)
+		ChargeValue.Value = Item.Value * 100
+		ItemIcon.Bar.TextLabel.Text = tostring((math.floor(ChargeValue.Value / game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats.MaxUses.Value))) .. "%"
+		
+		Item.Changed:Connect(function()
+			game.TweenService:Create(ChargeValue, TweenInfo.new(0.6, Enum.EasingStyle.Linear),{
+				Value = Item.Value * 100
+			}):Play()
+			
+			local WheelIcon = GetWheel(ItemIcon)
+			if WheelIcon then
+				game.TweenService:Create(WheelIcon.Bar.Frame, TweenInfo.new(0.6, Enum.EasingStyle.Linear), {
+					Size = UDim2.new(Item.Value / game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats.MaxUses.Value, 0, 1, 0)
+				}):Play()
+			end
+		end)
 	end
 	
-	if not (type(Item) == "string" or type(Item) == "number") then
-		return warn("Do normal request for item equip")
+	ItemIcon.Parent = game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar
+	ItemIcon.Activated:Connect(function()
+		if PlayerMain.Toolbar.CurrentSelected ~= ItemIcon then
+			ItemEquip(ItemIcon)
+		else
+			ItemUnequip(ItemIcon)
+		end
+	end)
+	
+	if game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("EquipOnGive") then
+		ItemEquip(ItemIcon)
 	end
+end)
+
+UI.Inventory.ChildRemoved:Connect(function(Item)
+	local ItemsInventory = {}
+	local ItemsToolbar = {}
 	
-	local ItemFolder = game.ReplicatedStorage.CustomAssets.Items[Item]
-	
-	if not ItemFolder then
-		return warn("No Item Folder For "..Item)
-	end
-	
-	for _, CustomItem in game.ReplicatedStorage.CustomAssets.Items:GetChildren() do
-		if game.Players.LocalPlayer.Character:FindFirstChild(CustomItem.Name) then
-			UI.Events.ItemUnequip:Invoke(CustomItem.Name)
+	for _, Inventory in UI.Inventory:GetChildren() do
+		if ItemsInventory[Inventory.Name] then
+			ItemsInventory[Inventory.Name] += 1
+		else
+			ItemsInventory[Inventory.Name] = 1
 		end
 	end
 	
+	for _, Toolbar in game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar:GetChildren() do
+		if game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(Toolbar.Name) then
+			if ItemsToolbar[Toolbar.Name] then
+				ItemsToolbar[Toolbar.Name] += 1
+			else
+				ItemsToolbar[Toolbar.Name] = 1
+			end
+		end
+	end
 	
+	for ItemName, ItemNumber in ItemsToolbar do
+		if ItemsInventory[ItemName] then
+			if ItemNumber > ItemsInventory[ItemName] then
+				for _ = 1, (ItemNumber - ItemsInventory[ItemName]) do
+					if PlayerMain.Toolbar.CurrentSelected == game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar[ItemName] then
+						ItemUnequip(game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar[ItemName])
+					end
+
+					game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar[ItemName]:Destroy()
+				end
+			end
+		else
+			if PlayerMain.Toolbar.CurrentSelected == game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar[ItemName] then
+				ItemUnequip(game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar[ItemName])
+			end
+
+			game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar[ItemName]:Destroy()
+		end
+	end
+end)
+
+function ItemGive(Item)
+	local ItemValue = Instance.new("NumberValue")
+	ItemValue.Name = Item
+	ItemValue.Value = -1
+
+	if game.ReplicatedStorage.CustomAssets.Items[Item].Stats:FindFirstChild("MaxUses") then
+		ItemValue.Value = game.ReplicatedStorage.CustomAssets.Items[Item].Stats.MaxUses.Value
+	elseif game.ReplicatedStorage.CustomAssets.Items[Item].Stats:FindFirstChild("MaxCharge") then
+		ItemValue.Value = game.ReplicatedStorage.CustomAssets.Items[Item].Stats.MaxCharge.Value
+	end
+
+	ItemValue.Parent = UI.Inventory
+end
+
+function ItemRemove(Item, AllCopies)
+	if UI.Inventory:FindFirstChild(Item) then
+		if not AllCopies then
+			UI.Inventory[Item]:Destroy()
+		else
+			for _, ItemCopy in UI.Inventory:GetChildren() do
+				if ItemCopy.Name == Item then
+					ItemCopy:Destroy()
+				end
+			end
+		end
+	end
+end
+
+function ItemEquip(Item)
+	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") or not UI.Inventory:FindFirstChild(Item.Name) then
+		return
+	end
+
+	if not (type(Item.Name) == "string" or type(Item.Name) == "number") then
+		return warn("Do normal request for item equip")
+	end
+
+	local ItemFolder = game.ReplicatedStorage.CustomAssets.Items[Item.Name]
+
+	if not ItemFolder then
+		return warn("No Item Folder For "..Item.Name)
+	end
+	
+	PlayerMain.Toolbar.UnSelect()
+
+	for _, CustomItem in game.ReplicatedStorage.CustomAssets.Items:GetChildren() do
+		if game.Players.LocalPlayer.Character:FindFirstChild(CustomItem.Name) then
+			ItemUnequip(game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar:FindFirstChild(CustomItem.Name))
+		end
+	end
+
+
 
 	if ItemFolder:FindFirstChild("Models") then
 		if ItemFolder.Models:FindFirstChild("Equip") then
 			local ItemModel = ItemFolder.Models.Equip:Clone()
-			ItemModel.Name = Item
+			ItemModel.Name = Item.Name
 
 			if ItemModel:FindFirstChild("Handle") then
 				ItemModel.Handle.Part0 = game.Players.LocalPlayer.Character:WaitForChild("RightHand")
@@ -57,38 +205,39 @@ function UI.Events.ItemEquip.OnInvoke(Item)
 
 	if ItemFolder:FindFirstChild("Animations") then
 		for _, Anim in ItemFolder.Animations:GetChildren() do
-			LoadAnimation(Item, Anim)
+			LoadAnimation(Item.Name, Anim)
 		end
 	end
 
-	if ItemAnim[Item] then
-		if ItemAnim[Item].Equip then
-			ItemAnim[Item].Equip:Play()
+	if ItemAnim[Item.Name] then
+		if ItemAnim[Item.Name].Equip then
+			ItemAnim[Item.Name].Equip:Play()
 		end
 
-		if ItemAnim[Item].Idle then
-			ItemAnim[Item].Idle:Play()
+		if ItemAnim[Item.Name].Idle then
+			ItemAnim[Item.Name].Idle:Play()
 		end
 	end
-	
-	UI.Events.ItemOnEquip:Invoke(Item, ItemAnim[Item])
-	
-	return true
+
+	PlayerMain.Toolbar.CurrentSelected = Item
+	game.TweenService:Create(Item, TweenInfo.new(0.2), {
+		Size = UDim2.new(1, 0, 1, 0)
+	}):Play()
+
+	UI.Events.ItemOnEquip:Fire(Item.Name, ItemAnim[Item.Name])
 end
 
-function UI.Events.ItemUnequip.OnInvoke(Item)
-	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") then
+function ItemUnequip(Item)
+	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") or not game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar:FindFirstChild(Item.Name) then
 		return
 	end
-	
-	if not (type(Item) == "string" or type(Item) == "number") then
+
+	if not (type(Item.Name) == "string" or type(Item.Name) == "number") then
 		return warn("Do normal request for item unequip")
 	end
-	
-	
-	
-	local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item)
-	
+
+	local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item.Name)
+
 	if ItemModel then
 		if ItemModel:FindFirstChild("Handle") then
 			ItemModel.Handle.Part0 = nil
@@ -97,33 +246,42 @@ function UI.Events.ItemUnequip.OnInvoke(Item)
 		ItemModel:Destroy()
 	end
 
-	if ItemAnim[Item] then
-		if ItemAnim[Item].Unequip then
-			ItemAnim[Item].Unequip:Play()
+	if ItemAnim[Item.Name] then
+		if ItemAnim[Item.Name].Unequip then
+			ItemAnim[Item.Name].Unequip:Play()
 		end
 
-		if ItemAnim[Item].Idle then
-			ItemAnim[Item].Idle:Stop()
+		if ItemAnim[Item.Name].Idle then
+			ItemAnim[Item.Name].Idle:Stop()
 		end
 	end
-	
-	UI.Events.ItemOnUnequip:Invoke(Item, ItemAnim[Item])
-	
-	return true
+
+	if PlayerMain.Toolbar.CurrentSelected == Item then
+		PlayerMain.Toolbar.CurrentSelected = nil
+	end
+	game.TweenService:Create(Item, TweenInfo.new(0.2), {
+		Size = UDim2.new(0.8, 0, 0.8, 0)
+	}):Play()
+
+	UI.Events.ItemOnUnequip:Fire(Item.Name, ItemAnim[Item.Name])
 end
 
+function ItemDrop(Item)
+	
+end
+
+UI.Events.ItemGive.Event:Connect(ItemGive)
+UI.Events.ItemRemove.Event:Connect(ItemRemove)
+UI.Events.ItemEquip.Event:Connect(ItemEquip)
+UI.Events.ItemUnequip.Event:Connect(ItemUnequip)
+UI.Events.ItemDrop.Event:Connect(ItemDrop)
+
 game.UserInputService.InputBegan:Connect(function(Input)
-	if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-		for _, CustomItem in game.ReplicatedStorage.CustomAssets.Items:GetChildren() do
-			if game.Players.LocalPlayer.Character:FindFirstChild(CustomItem.Name) then
-				UI.Events.ItemActivate:Invoke(CustomItem.Name, ItemAnim[CustomItem.Name])
-			end
-		end
-	elseif Input.UserInputType == Enum.UserInputType.MouseButton3 then
-		for _, CustomItem in game.ReplicatedStorage.CustomAssets.Items:GetChildren() do
-			if game.Players.LocalPlayer.Character:FindFirstChild(CustomItem.Name) then
-				UI.Events.ItemInspect:Invoke(CustomItem.Name, ItemAnim[CustomItem.Name])
-			end
+	if PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) then
+		UI.Events.ItemOnInput:Fire(PlayerMain.Toolbar.CurrentSelected.Name, ItemAnim[PlayerMain.Toolbar.CurrentSelected.Name], Input)
+		
+		if Input.KeyCode == Enum.KeyCode.G and not game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") then
+			ItemDrop(PlayerMain.Toolbar.CurrentSelected)
 		end
 	end
 end)
@@ -136,16 +294,3 @@ for _, Item in game.ReplicatedStorage.CustomAssets.Items:GetChildren() do
 		game.Players.LocalPlayer.PlayerScripts:FindFirstChild("Item"..Item.Name, true).Enabled = true
 	end
 end
-
-local TestEquiped = false
-game.UserInputService.InputBegan:Connect(function(Input)
-	if Input.KeyCode == Enum.KeyCode.M then
-		if not TestEquiped then
-			UI.Events.ItemEquip:Invoke("TheDemon")
-		else
-			UI.Events.ItemUnequip:Invoke("TheDemon")
-		end
-		
-		TestEquiped = not TestEquiped
-	end
-end)
