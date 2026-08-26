@@ -255,7 +255,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 					game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
 					game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
 					game.RunService.Heartbeat:Wait()
-				until not Asset.Folder.PlayerIn.Value or game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored.Position == Asset.Start.Position
+				until not Asset.Folder.PlayerIn.Value or game.Players.LocalPlayer.Character.HumanoidRootPart.Position == Asset.Start.Position
 			end)
 			
 			if PlayerMain.Swimming.State then
@@ -289,7 +289,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 			PlayerMain.Animations.LockerEnter:GetMarkerReachedSignal("Finished"):Once(function()
 				game.Players.LocalPlayer.Character:PivotTo(Asset.Start.CFrame)
 				PlayerMain.Animations.LockerIdle:Play()
-				game.Players.LocalPlayer.HumanoidRootPart.Anchored = true
+				game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
 			end)
 			
 			Asset.LockerCollision.CollisionGroup = "Player"
@@ -433,7 +433,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 					Prompt.Triggered:Connect(function()
 						if not InteractCooldown and not Asset:GetAttribute("NoUsage") then
 							InteractCooldown = true
-							Asset.OpenValue.Value = not Asset.OpenValue.Value
+							Drawer.Drawer.OpenValue.Value = not Drawer.Drawer.OpenValue.Value
 
 							task.wait(0.5)
 
@@ -441,15 +441,15 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 						end
 					end)
 					
-					Asset.OpenValue:GetPropertyChangedSignal("Value"):Connect(function()
-						if Asset.OpenValue.Value then
+					Drawer.Drawer.OpenValue:GetPropertyChangedSignal("Value"):Connect(function()
+						if Drawer.Drawer.OpenValue.Value then
 							DrawerOpen()
 						else
 							DrawerClose()
 						end
 					end)
 
-					if Asset.OpenValue.Value then
+					if Drawer.Drawer.OpenValue.Value then
 						DrawerOpen()
 					else
 						DrawerClose()
