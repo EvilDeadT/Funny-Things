@@ -395,7 +395,7 @@ local function ModifierButtonsColors()
 	for _, ModifierButton in UI.ModifiersFrame.ModifierList.List:GetChildren() do
 		if ModifierButton:IsA("TextButton") then
 			if table.find(SelectedModifiers, ModifierButton.Name) then
-				
+
 				if CurrentSelectedModifier == ModifierButton.Name then
 					ModifierButton.BackgroundColor3 = Color3.fromRGB(194, 76, 80)
 				else
@@ -413,7 +413,7 @@ local function ModifierButtonsColors()
 			end
 		end
 	end
-	
+
 	for _, ModifierButton in UI.ModifiersFrame.ModifierList.List:GetChildren() do
 		if ModifierButton:IsA("TextButton") then
 			if table.find(SelectedModifiers, ModifierButton.Name) then
@@ -425,7 +425,7 @@ local function ModifierButtonsColors()
 									warn("Somehow picked "..ModifierButton.Name.." and "..Incompatible.." modifiers")
 									table.remove(SelectedModifiers, table.find(SelectedModifiers, Incompatible))
 								end
-								
+
 								if UI.ModifiersFrame.ModifierList.List:FindFirstChild(Incompatible) then
 									if CurrentSelectedModifier == Incompatible then
 										UI.ModifiersFrame.ModifierList.List[Incompatible].BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -454,10 +454,10 @@ function ModifiersListUpdate()
 				break
 			end
 		end
-		
+
 		if CurrentSelectedModifier ~= Button.Name and not InstantPick then
 			CurrentSelectedModifier = Button.Name
-			
+
 			UI.ModifiersFrame.ModifierBanner.Title.TitleText.Text = ModifierStats.Name or "NO NAME"
 			UI.ModifiersFrame.ModifierBanner.Description.DescriptionText.Text = ModifierStats.Description or "NO DESCRIPTION"
 			if ModifierStats.Banner then
@@ -485,11 +485,11 @@ function ModifiersListUpdate()
 				end
 			end
 		end
-		
+
 		ModifierButtonsColors()
-		
+
 		local Percent = 0
-		
+
 		for _, Modifier in SelectedModifiers do
 			for Category, CategoryModifiers in AllModifiers do
 				if CategoryModifiers[Modifier] then
@@ -499,19 +499,19 @@ function ModifiersListUpdate()
 				end
 			end
 		end
-		
+
 		UI.ModifiersFrame.Percent.Percentage.Text = Percent.."%"
 		if Percent > 0 then
 			UI.ModifiersFrame.Percent.Percentage.Text = "+"..UI.ModifiersFrame.Percent.Percentage.Text
 		end
 	end
-	
+
 	for _, ModifierButton in UI.ModifiersFrame.ModifierList.List:GetChildren() do
 		if ModifierButton:IsA("TextButton") then
 			ModifierButton:Destroy()
 		end
 	end
-	
+
 	for Category, CategoryModifiers in AllModifiers do
 		for Name, Modifier in CategoryModifiers do
 			local ModifierValue = Instance.new("BoolValue", UI.Modifiers)
@@ -535,15 +535,15 @@ function ModifiersListUpdate()
 					end
 				end
 			end
-			
+
 			if Modifier.SubModifiers then
 				for SubName, SubModifier in Modifier.SubModifiers do
 					ModifierValue:SetAttribute(SubName, false)
 				end
 			end
-			
+
 			ModifierButton.LayoutOrder = Modifier.LayoutOrder or 0
-			
+
 			ModifierButton.Parent = UI.ModifiersFrame.ModifierList.List
 
 			ModifierButton.MouseButton1Click:Connect(function()
@@ -588,13 +588,23 @@ function UIAct(Type, Status)
 				for _, Modifier in UI.Modifiers:GetChildren() do
 					if table.find(SelectedModifiers, Modifier.Name) then
 						Modifier.Value = true
+						
+						if Modifier.Name == "TheDemon" then
+							if not game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar:FindFirstChild("TheDemon") then
+								UI.Events.ItemGive:Fire("TheDemon")
+							end
+						end
 					else
 						Modifier.Value = false
+						
+						if Modifier.Name == "TheDemon" then
+							UI.Events.ItemRemove:Fire("TheDemon", true)
+						end
 					end
 				end
 			elseif Status == "Close" then
 				UI.ScriptStatuses.UIAnim.Value = true
-				
+
 				local BlackScreenTween = game.TweenService:Create(UI.BlackScreen, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, true), {
 					BackgroundTransparency = 0
 				})
@@ -604,7 +614,7 @@ function UIAct(Type, Status)
 				BlackScreenTween:Play()
 
 				task.wait(0.1)
-				
+
 				UI.ModifiersFrame.Visible = false
 				UI.Main.Visible = true
 			end
@@ -623,14 +633,14 @@ end)
 game.UserInputService.InputBegan:Connect(function(Input)
 	if Input.UserInputType == Enum.UserInputType.MouseButton1 and not ListFocus then
 		CurrentSelectedModifier = nil
-		
+
 		for _, Frame in UI.ModifiersFrame.ModifierBanner:GetChildren() do
 			if Frame:IsA("Frame") and Frame:FindFirstChildWhichIsA("TextLabel") then
 				Frame:FindFirstChildWhichIsA("TextLabel").Text = ""
 			end
 		end
 		UI.ModifiersFrame.ModifierBanner.Banner.BannerImage.Image = ""
-		
+
 		ModifierButtonsColors()
 	end
 end)
