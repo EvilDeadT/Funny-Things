@@ -1,4 +1,5 @@
 local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
+local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main"):WaitForChild("Client"):WaitForChild("MainClient"))
 local InteractableAssets = {}
 
 UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
@@ -19,8 +20,6 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 
 				if type(Sound:GetAttribute("UsageParent")) == "string" or type(Sound:GetAttribute("UsageParent")) == "number" then
 					InteractSound[string.split(Sound.Name, Asset.Name)[2]].Parent = UI.Events.UIModule:Invoke("FindByThread", Asset, Sound:GetAttribute("UsageParent"))
-				else
-					return error("No UsageParent For "..Sound.Name..". Asset: "..Asset.Name)
 				end
 			end
 		end
@@ -38,6 +37,41 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		local Prompt = Asset.Root:FindFirstChildWhichIsA("ProximityPrompt")
 		Prompt:SetAttribute("Hidden", true)
 		Prompt:SetAttribute("Custom", true)
+		
+		local function AutoPromptHold()
+			task.spawn(function()
+				if Prompt then
+					while Prompt do
+						if Prompt and not Asset:GetAttribute("NoUsage") then
+							if not Prompt.Enabled then
+								break
+							end
+						else
+							break
+						end
+
+						Prompt:InputHoldBegin()
+						task.wait()
+					end
+				end
+			end)
+		end
+
+		local function DoorOpen()
+			Prompt.Enabled = false
+			InteractAnim.Open:Play()
+		end
+
+		local function DoorClose()
+			InteractAnim.Open:AdjustSpeed(-1)
+			Asset.CollisionPart.CanCollide = true
+
+			if not Asset:GetAttribute("NoUsage") then
+				Prompt.Enabled = true
+				AutoPromptHold()
+			end
+		end
+		
 		Prompt.Triggered:Connect(function()
 			if not Asset:GetAttribute("NoUsage") then
 				Asset.OpenValue.Value = true
@@ -99,41 +133,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 			end
 		end)
 		
-		local function AutoPromptHold()
-			task.spawn(function()
-				if Prompt then
-					while Prompt do
-						if Prompt and not Asset:GetAttribute("NoUsage") then
-							if not Prompt.Enabled then
-								break
-							end
-						else
-							break
-						end
-
-						Prompt:InputHoldBegin()
-						task.wait()
-					end
-				end
-			end)
-		end
-		
 		AutoPromptHold()
-		
-		local function DoorOpen()
-			Prompt.Enabled = false
-			InteractAnim.Open:Play()
-		end
-		
-		local function DoorClose()
-			InteractAnim.Open:AdjustSpeed(-1)
-			Asset.CollisionPart.CanCollide = true
-
-			if not Asset:GetAttribute("NoUsage") then
-				Prompt.Enabled = true
-				AutoPromptHold()
-			end
-		end
 		
 		Asset.OpenValue:GetPropertyChangedSignal("Value"):Connect(function()
 			if Asset.OpenValue.Value then
@@ -148,12 +148,222 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		else
 			DoorClose()
 		end
+	elseif Asset.Name == "Locker" or Asset.Name == "BaldiLocker" then
+		local MoveFunction = nil
+		
+		local Prompt = Asset:FindFirstChildWhichIsA("ProximityPrompt")
+		Prompt:SetAttribute("Display", "Locker")
+		Prompt:SetAttribute("Custom", true)
+		
+		local function BruteExit()
+			
+		end
+		
+		local function LockerExit()
+			if PlayerMain.Locker.CantExit then
+				return
+			end
+			
+			if MoveFunction then
+				MoveFunction:Disconnect()
+				MoveFunction = nil
+			end
+			
+			if PlayerMain.IsTeleporting then
+				return
+			end
+			
+			Asset.Folder.OpenValue.Value = "exit"
+			Asset.Folder.PlayerIn.Value = false
+			
+			Asset.LockerCollision.CollisionGroup = "Default"
+			
+			PlayerMain.Locker = nil
+			PlayerMain.Claustrophobia.FadeOut()
+			PlayerMain.Main.Animations.LockerExit:Play()
+			PlayerMain.Animations.LockerIdle:Stop()
+			PlayerMain.CameraModule.Switch("HeadFollow")
+			
+			PlayerMain.Animations.LockerExit:GetMarkerReachedSignal("Finished"):Once(function(p12)
+				PlayerMain.Animations.LockerExit:Stop(0)
+				game.Players.LocalPlayer.Character:PivotTo(game.Players.LocalPlayer.Character.UpperTorso.CFrame)
+				game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
+				game.Players.LocalPlayer.Character.Humanoid.AutoRotate = true
+			end)
+			
+			game.TweenService:Create(game.Workspace.CurrentCamera, TweenInfo.new(0.2), {
+				FieldOfView = 90
+			}):Play()
+			
+			PlayerMain.Animations.LockerExit.Stopped:Wait()
+			
+			if PlayerMain.Swimming.State then
+				game.Players.LocalPlayer.Character.Humanoid.PlatformStand = true
+				PlayerMain.Swimming.BodyVel.Enabled = true
+				PlayerMain.CameraModule.Switch("Swimming")
+			else
+				PlayerMain.CameraModule.Switch("PlayerControl")
+			end
+			
+			PlayerMain.CantOverrideCFrame = nil
+			PlayerMain.Interactions.Base.AllDisabled = false
+			game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = PlayerMain.CameraModule.GetWalkSpeed()
+			
+			task.wait(0.2)
+			
+			Prompt.Enabled = true
+			PlayerMain.Toolbar.CanEquip = true
+			PlayerMain.LockerState = false
+		end
+		
+		local function LockerEnter()
+			if game.Workspace:HasTag("LockersLocked") then
+				return
+			end
+			
+			if PlayerMain.LockedOut then
+				PlayerMain.SubTitles.new("You need to calm down first", 3):Show()
+				return
+			end
+			
+			Prompt.Enabled = false
+			
+			Asset.Folder.PlayerIn.Value = true
+			Asset.Folder.OpenValue.Value = "enter"
+			
+			PlayerMain.Locker = Asset
+			PlayerMain.Locker.Entering = true
+			PlayerMain.Interactions.Base.AllDisabled = true
+			PlayerMain.Toolbar.CanEquip = false
+			PlayerMain.CameraModule.Switch("HeadFollow")
+			PlayerMain.LockerState = true
+			PlayerMain.CantOverrideCFrame = true
+			
+			game.Players.LocalPlayer.PlayerFolder.HidInLocker.Value = true
+			game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 0
+			game.Players.LocalPlayer.Character.Humanoid.AutoRotate = false
+			game.Players.LocalPlayer.Character:PivotTo(Asset.Start.CFrame)
+			
+			local Success, ErrorReason = pcall(function()
+				PlayerMain.Toolbar.UnSelect()
+			end)
+			if not Success then
+				warn(ErrorReason)
+			end
+			
+			task.defer(function()
+				repeat
+					game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
+					game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
+					game.RunService.Heartbeat:Wait()
+				until not Asset.Folder.PlayerIn.Value or game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored.Position == Asset.Start.Position
+			end)
+			
+			if PlayerMain.Swimming.State then
+				PlayerMain.Swimming.BodyVel.Enabled = false
+				if PlayerMain.Swimming.CurrentlyPlaying then
+					PlayerMain.Swimming.Main.Animations[PlayerMain.Swimming.CurrentlyPlaying]:Stop()
+				end
+				PlayerMain.Swimming.CurrentlyPlaying = nil
+				PlayerMain.Swimming.BodyVel.VectorVelocity = Vector3.new(0, 0, 0)
+				if PlayerMain.CameraModule.SwimTween then
+					PlayerMain.CameraModule.SwimTween:Cancel()
+				end
+				game.Players.LocalPlayer.Character:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0, 0.65, 0))
+			end
+			
+			task.spawn(function()
+				while Asset.Folder.PlayerIn.Value do
+					task.wait(0.01)
+					if not Asset or not Asset:FindFirstChild("Folder") or not Asset.Folder:FindFirstChild("PlayerIn") or not Asset.Folder.PlayerIn.Value then
+						break
+					end
+					if not ((game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Asset.Root.Position).Magnitude > 9) then
+						continue
+					end
+					print("while player in locker he went too far away")
+					LockerExit()
+				end
+			end)
+			
+			PlayerMain.Animations.LockerEnter:Play()
+			PlayerMain.Animations.LockerEnter:GetMarkerReachedSignal("Finished"):Once(function()
+				game.Players.LocalPlayer.Character:PivotTo(Asset.Start.CFrame)
+				PlayerMain.Animations.LockerIdle:Play()
+				game.Players.LocalPlayer.HumanoidRootPart.Anchored = true
+			end)
+			
+			Asset.LockerCollision.CollisionGroup = "Player"
+			
+			game.TweenService:Create(game.Workspace.CurrentCamera, TweenInfo.new(0.9), {
+				FieldOfView = 50
+			}):Play()
+			
+			PlayerMain.Animations.LockerEnter.Stopped:Wait()
+			
+			PlayerMain.Locker.Entering = nil
+			
+			task.wait(0.3)
+			
+			PlayerMain.LockerPeek = true
+			PlayerMain.CameraModule.Switch("LockerCamera")
+			PlayerMain.Claustrophobia.Start(Asset, 10, 15)
+			
+			task.wait(0.2)
+			
+			MoveFunction = game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("MoveDirection"):Connect(function()
+				LockerExit()
+			end)
+		end
+		
+		Prompt.Triggered:Connect(function()
+			if not (PlayerMain.PlayerDead or PlayerMain.IsGhost or PlayerMain.HangerImmunity) then
+				LockerEnter()
+			end
+		end)
+		
+		InteractAnim.Enter:GetMarkerReachedSignal("LockerOpen"):Connect(function()
+			InteractSound.Enter:Play()
+		end)
+		
+		InteractAnim.Enter:GetMarkerReachedSignal("LockerClose"):Connect(function()
+			InteractSound.Exit:Play()
+		end)
+		
+		InteractAnim.Exit:GetMarkerReachedSignal("LockerOpen"):Connect(function()
+			InteractSound.Enter:Play()
+		end)
+		
+		InteractAnim.Exit:GetMarkerReachedSignal("LockerClose"):Connect(function()
+			InteractSound.Exit:Play()
+		end)
+
+		Asset.Folder.OpenValue:GetPropertyChangedSignal("Value"):Connect(function()
+			if Asset.Folder.OpenValue.Value == "enter" then
+				InteractAnim.Enter:Play()
+			elseif Asset.Folder.OpenValue.Value == "exit" and not InteractSound.Close.IsPlaying then
+				InteractAnim.Exit:Play()
+			end
+		end)
 	elseif Asset.Name == "ItemLocker" or Asset.Name == "BaldiItemLocker" then
 		local InteractCooldown = false
 		
 		local Prompt = Asset.Door:FindFirstChildWhichIsA("ProximityPrompt")
 		Prompt:SetAttribute("Display", "Item Locker")
 		Prompt:SetAttribute("Custom", true)
+		
+		local function DoorOpen()
+			InteractSound.Open:Play()
+			InteractAnim.Open:Play()
+			InteractAnim.Open:AdjustSpeed(2)
+		end
+
+		local function DoorClose()
+			InteractSound.Close:Play()
+			InteractAnim.Open:Play(0.1, 1, -1)
+			InteractAnim.Open:AdjustSpeed(2)
+		end
+		
 		Prompt.Triggered:Connect(function()
 			if not InteractCooldown and not Asset:GetAttribute("NoUsage") then
 				InteractCooldown = true
@@ -178,18 +388,6 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 			InteractCooldown = false
 		end)
 		
-		local function DoorOpen()
-			InteractSound.Open:Play()
-			InteractAnim.Open:Play()
-			InteractAnim.Open:AdjustSpeed(2)
-		end
-
-		local function DoorClose()
-			InteractSound.Close:Play()
-			InteractAnim.Open:Play(0.1, 1, -1)
-			InteractAnim.Open:AdjustSpeed(2)
-		end
-		
 		Asset.Closed:GetPropertyChangedSignal("Value"):Connect(function()
 			if not Asset.Closed.Value then
 				DoorOpen()
@@ -202,6 +400,65 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 			DoorOpen()
 		else
 			DoorClose()
+		end
+	else
+		if Asset:FindFirstChild("Drawers") then
+			for _, Drawer in Asset.Drawers:GetChildren() do
+				if Drawer:IsA("BasePart") and Drawer:FindFirstChild("Drawer") then
+					InteractAnim.Open = game.TweenService:Create(Drawer, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),{
+						CFrame = Drawer.CFrame * CFrame.new(0, 0, -1.3)
+					})
+					InteractAnim.Close = game.TweenService:Create(Drawer, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In),{
+						CFrame = Drawer.CFrame
+					})
+					
+					InteractSound.Open = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Furniture.DrawerOpen:Clone()
+					InteractSound.Open.Parent = Drawer.Drawer.HighLight
+					InteractSound.Close = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Furniture.DrawerClose:Clone()
+					InteractSound.Close.Parent = Drawer.Drawer.HighLight
+					
+					local InteractCooldown = false
+
+					local Prompt = Asset.Door:FindFirstChildWhichIsA("ProximityPrompt")
+					Prompt:SetAttribute("Display", "Drawer")
+					Prompt:SetAttribute("Custom", true)
+					
+					local function DrawerOpen()
+						InteractAnim.Open:Play()
+						InteractSound.Open:Play()
+					end
+
+					local function DrawerClose()
+						InteractAnim.Close:Play()
+						InteractSound.Close:Play()
+					end
+					
+					Prompt.Triggered:Connect(function()
+						if not InteractCooldown and not Asset:GetAttribute("NoUsage") then
+							InteractCooldown = true
+							Asset.OpenValue.Value = not Asset.OpenValue.Value
+
+							task.wait(0.5)
+
+							InteractCooldown = false
+						end
+					end)
+					
+					Asset.OpenValue:GetPropertyChangedSignal("Value"):Connect(function()
+						if Asset.OpenValue.Value then
+							DrawerOpen()
+						else
+							DrawerClose()
+						end
+					end)
+
+					if Asset.OpenValue.Value then
+						DrawerOpen()
+					else
+						DrawerClose()
+					end
+				end
+			end
 		end
 	end
 end)
