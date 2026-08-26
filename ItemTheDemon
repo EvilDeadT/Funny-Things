@@ -1,7 +1,6 @@
 local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
 local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main"):WaitForChild("Client"):WaitForChild("MainClient"))
 
-local Equipped = false
 local ActivateCooldown = 10
 local CanActivate = true
 local ActivateTimer = nil
@@ -16,11 +15,11 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function(Character)
 	PlushTimer = 10
 end)
 
-function UI.Events.ItemOnEquip.OnInvoke(Item, Anim)
+UI.Events.ItemOnEquip.Event:Connect(function(Item, Anim)
 	if Item ~= "TheDemon" then
 		return
 	end
-	
+
 	if PlushTimer == nil then
 		PlushTimer = 10
 
@@ -29,7 +28,7 @@ function UI.Events.ItemOnEquip.OnInvoke(Item, Anim)
 			6
 		):Show()
 	end
-	
+
 	if Anim then
 		if Anim.Pet then
 			Anim.Pet:Stop()
@@ -37,36 +36,33 @@ function UI.Events.ItemOnEquip.OnInvoke(Item, Anim)
 		end
 	end
 
-	Equipped = true
-
 	task.spawn(function()
-		while Equipped and PlushTimer < 10 do
+		while PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon" and UI.Modifiers.TheDemon.Value do
 			if PlushTimer < 10 then
 				PlushTimer = (math.round(PlushTimer * 10) + 1) / 10
 				task.wait(0.1)
 			else
 				PlushTimer = 10
+				break
 			end
 
 			task.wait()
 		end
 	end)
-end
+end)
 
-function UI.Events.ItemOnUnequip.OnInvoke(Item, Anim)
+UI.Events.ItemOnUnequip.Event:Connect(function(Item, Anim)
 	if Item ~= "TheDemon" then
 		return
 	end
-	
-	Equipped = false
-	
+
 	if ActivateTimer then
 		task.cancel(ActivateTimer)
 		ActivateTimer = nil
-		
+
 		CanActivate = true
 	end
-	
+
 	if Anim then
 		if Anim.Pet then
 			Anim.Pet:Stop()
@@ -75,11 +71,15 @@ function UI.Events.ItemOnUnequip.OnInvoke(Item, Anim)
 	end
 
 	task.spawn(function()
-		while not Equipped and PlushTimer > 0 do
+		while not PlayerMain.Toolbar.CurrentSelected and UI.Modifiers.TheDemon.Value do
+			if (PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon") or not UI.Modifiers.TheDemon.Value then
+				break
+			end
+			
 			if not PlushContented then
 				if PlushTimer > 0 then
 					PlushTimer = (math.round(PlushTimer * 10) - 1) / 10
-					
+
 					if PlushTimer == 7.5 then
 						PlayerMain.SubTitles.new(
 							"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie needs attention...</font></font>",
@@ -102,111 +102,126 @@ function UI.Events.ItemOnUnequip.OnInvoke(Item, Anim)
 							true
 						):Show()
 					end
-					
+
 					task.wait(0.1)
+					
+					if (PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon") or not UI.Modifiers.TheDemon.Value then
+						break
+					end
 				end
 			end
-			
+
 			if PlushTimer <= 0 then
 				UI.Events.Atomize:Fire(game.Players.LocalPlayer.Character)
+				break
 			end
 
 			task.wait()
 		end
 	end)
-end
+end)
 
-function UI.Events.ItemActivate.OnInvoke(Item, Anim)
-	if Item ~= "TheDemon" or not CanActivate or AnimBusy then
-		return
-	end
-	
-	local Pet = "rbxassetid://12895906881"
+UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
+	if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+		if not CanActivate or AnimBusy then
+			return
+		end
 
-	game.ReplicatedStorage.CustomAssets.Items.TheDemon.Animations.Pet.AnimationId = Pet
-	
-	CanActivate = false
-	
-	if Anim then
-		if Anim.Pet then
-			AnimBusy = true
-			
-			local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item)
-			
-			if ItemModel then
-				if ItemModel:FindFirstChild("Handle") then
-					game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-						C1 = CFrame.new(Vector3.new(0.7, 0, 0)) * ItemModel.Handle.C1.Rotation
-					}):Play()
-				end
-			end
-			
-			Anim.Pet.Stopped:Once(function()
+		local Pet = "rbxassetid://12895906881"
+
+		game.ReplicatedStorage.CustomAssets.Items.TheDemon.Animations.Pet.AnimationId = Pet
+
+		CanActivate = false
+
+		if Anim then
+			if Anim.Pet then
+				AnimBusy = true
+
+				local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item)
+
 				if ItemModel then
 					if ItemModel:FindFirstChild("Handle") then
 						game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-							C1 = CFrame.new(Vector3.new(0, 0, 0)) * ItemModel.Handle.C1.Rotation
+							C1 = CFrame.new(Vector3.new(0.7, 0, 0)) * ItemModel.Handle.C1.Rotation
 						}):Play()
 					end
 				end
 
-				AnimBusy = false
-			end)
-			
-			Anim.Pet:Play()
+				Anim.Pet.Stopped:Once(function()
+					if ItemModel then
+						if ItemModel:FindFirstChild("Handle") then
+							game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+								C1 = CFrame.new(Vector3.new(0, 0, 0)) * ItemModel.Handle.C1.Rotation
+							}):Play()
+						end
+					end
+
+					AnimBusy = false
+				end)
+
+				Anim.Pet:Play()
+			end
 		end
-	end
-	
-	ActivateTimer = task.delay(1, function()
-		ActivateTimer = nil
-		PlushContented = true
-		
-		PlayerMain.SubTitles.new(
-			"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie is content for now...</font></font>",
-			6,
-			9999,
-			true
-		):Show()
-		
-		task.delay(PlushContentTime, function()
-			PlushContented = false
-			
+
+		ActivateTimer = task.delay(1, function()
+			ActivateTimer = nil
+			PlushContented = true
+
 			PlayerMain.SubTitles.new(
-				"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie is no longer content...</font></font>",
+				"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie is content for now...</font></font>",
 				6,
 				9999,
 				true
 			):Show()
-		end)
-		
-		task.delay(ActivateCooldown - 1, function()
-			CanActivate = true
-		end)
-	end)
-end
 
-function UI.Events.ItemInspect.OnInvoke(Item, Anim)
-	if Item ~= "TheDemon" or AnimBusy then
-		return
-	end
-	
-	if Anim then
-		if Anim.Inspect then
-			AnimBusy = true
-			
-			local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item)
+			task.delay(PlushContentTime, function()
+				PlushContented = false
 
-			Anim.Inspect.Stopped:Once(function()
-				if ItemModel then
-					if ItemModel:FindFirstChild("Handle") then
-						
-					end
-				end
-
-				AnimBusy = false
+				PlayerMain.SubTitles.new(
+					"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie is no longer content...</font></font>",
+					6,
+					9999,
+					true
+				):Show()
 			end)
 
-			Anim.Inspect:Play()
+			task.delay(ActivateCooldown - 1, function()
+				CanActivate = true
+			end)
+		end)
+	elseif Input.UserInputType == Enum.UserInputType.MouseButton3 then
+		if AnimBusy then
+			return
+		end
+
+		if Anim then
+			if Anim.Inspect then
+				AnimBusy = true
+
+				local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item)
+
+				Anim.Inspect.Stopped:Once(function()
+					if ItemModel then
+						if ItemModel:FindFirstChild("Handle") then
+
+						end
+					end
+
+					AnimBusy = false
+				end)
+
+				Anim.Inspect:Play()
+			end
 		end
 	end
-end
+end)
+
+UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
+	if not UI.Modifiers.TheDemon.Value then
+		PlushTimer = nil
+		PlayerMain.SubTitles.new(
+			"<font family='rbxasset://fonts/families/Zekton.json'><font color='rgb(255, 107, 164)'><b>"..game.Players.LocalPlayer.Name.." refused the plush...</b></font></font>",
+			6
+		):Show()
+	end
+end)
