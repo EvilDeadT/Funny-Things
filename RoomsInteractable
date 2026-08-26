@@ -402,17 +402,17 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		if Asset:FindFirstChild("Drawers") then
 			for _, Drawer in Asset.Drawers:GetChildren() do
 				if Drawer:IsA("BasePart") and Drawer:FindFirstChild("Drawer") then
-					InteractAnim.Open = game.TweenService:Create(Drawer, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),{
+					InteractAnim[Drawer].Open = game.TweenService:Create(Drawer, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),{
 						CFrame = Drawer.CFrame * CFrame.new(0, 0, -1.3)
 					})
-					InteractAnim.Close = game.TweenService:Create(Drawer, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In),{
+					InteractAnim[Drawer].Close = game.TweenService:Create(Drawer, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In),{
 						CFrame = Drawer.CFrame
 					})
 					
-					InteractSound.Open = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Furniture.DrawerOpen:Clone()
-					InteractSound.Open.Parent = Drawer.Drawer.HighLight
-					InteractSound.Close = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Furniture.DrawerClose:Clone()
-					InteractSound.Close.Parent = Drawer.Drawer.HighLight
+					InteractSound[Drawer].Open = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Furniture.DrawerOpen:Clone()
+					InteractSound[Drawer].Open.Parent = Drawer.Drawer.HighLight
+					InteractSound[Drawer].Close = game.ReplicatedStorage.CustomAssets.RoomAssets.Sounds.Furniture.DrawerClose:Clone()
+					InteractSound[Drawer].Close.Parent = Drawer.Drawer.HighLight
 					
 					local InteractCooldown = false
 
@@ -421,13 +421,13 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 					Prompt:SetAttribute("Custom", true)
 					
 					local function DrawerOpen()
-						InteractAnim.Open:Play()
-						InteractSound.Open:Play()
+						InteractAnim[Drawer].Open:Play()
+						InteractSound[Drawer].Open:Play()
 					end
 
 					local function DrawerClose()
-						InteractAnim.Close:Play()
-						InteractSound.Close:Play()
+						InteractAnim[Drawer].Close:Play()
+						InteractSound[Drawer].Close:Play()
 					end
 					
 					Prompt.Triggered:Connect(function()
