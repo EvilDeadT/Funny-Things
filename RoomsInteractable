@@ -232,7 +232,6 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 			Asset.Folder.OpenValue.Value = "enter"
 			
 			PlayerMain.Locker = Asset
-			PlayerMain.Locker.Entering = true
 			PlayerMain.Interactions.Base.AllDisabled = true
 			PlayerMain.Toolbar.CanEquip = false
 			PlayerMain.CameraModule.Switch("HeadFollow")
@@ -300,8 +299,6 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 			}):Play()
 			
 			PlayerMain.Animations.LockerEnter.Stopped:Wait()
-			
-			PlayerMain.Locker.Entering = nil
 			
 			task.wait(0.3)
 			
@@ -419,7 +416,7 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 					
 					local InteractCooldown = false
 
-					local Prompt = Asset.Door:FindFirstChildWhichIsA("ProximityPrompt")
+					local Prompt = Drawer.Drawer.HighLight:FindFirstChildWhichIsA("ProximityPrompt")
 					Prompt:SetAttribute("Display", "Drawer")
 					Prompt:SetAttribute("Custom", true)
 					
