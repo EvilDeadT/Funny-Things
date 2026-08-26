@@ -178,9 +178,12 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 			
 			Asset.LockerCollision.CollisionGroup = "Default"
 			
+			PlayerMain.Locker.Folder.Parent.Locker.LDoor.C1 = CFrame.new(Vector3.new(-1.1, 0, 0))
+			PlayerMain.Locker.Folder.Parent.Locker.RDoor.C1 = CFrame.new(Vector3.new(1.1, 0, 0))
+			
 			PlayerMain.Locker = nil
 			PlayerMain.Claustrophobia.FadeOut()
-			PlayerMain.Main.Animations.LockerExit:Play()
+			PlayerMain.Animations.LockerExit:Play()
 			PlayerMain.Animations.LockerIdle:Stop()
 			PlayerMain.CameraModule.Switch("HeadFollow")
 			
@@ -231,7 +234,9 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 			Asset.Folder.PlayerIn.Value = true
 			Asset.Folder.OpenValue.Value = "enter"
 			
-			PlayerMain.Locker = Asset
+			PlayerMain.Locker = {
+				Folder = Asset.Folder
+			}
 			PlayerMain.Interactions.Base.AllDisabled = true
 			PlayerMain.Toolbar.CanEquip = false
 			PlayerMain.CameraModule.Switch("HeadFollow")
@@ -336,9 +341,9 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		end)
 
 		Asset.Folder.OpenValue:GetPropertyChangedSignal("Value"):Connect(function()
-			if Asset.Folder.OpenValue.Value == "enter" then
+			if Asset.Folder.OpenValue.Value == "enter" and not InteractAnim.Enter.IsPlaying then
 				InteractAnim.Enter:Play()
-			elseif Asset.Folder.OpenValue.Value == "exit" and not InteractSound.Close.IsPlaying then
+			elseif Asset.Folder.OpenValue.Value == "exit" and not InteractAnim.Exit.IsPlaying then
 				InteractAnim.Exit:Play()
 			end
 		end)
@@ -402,6 +407,9 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		if Asset:FindFirstChild("Drawers") then
 			for _, Drawer in Asset.Drawers:GetChildren() do
 				if Drawer:IsA("BasePart") and Drawer:FindFirstChild("Drawer") then
+					InteractAnim[Drawer] = {}
+					InteractSound[Drawer] = {}
+					
 					InteractAnim[Drawer].Open = game.TweenService:Create(Drawer, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),{
 						CFrame = Drawer.CFrame * CFrame.new(0, 0, -1.3)
 					})
