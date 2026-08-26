@@ -114,11 +114,11 @@ local Assets = {
 				NormalDoorOpen = {Name='NormalDoorOpen',ClassName='Animation',AnimationId=93236882334051}
 			},
 			Furniture = {
-				BaldiLockerOpen = {Name='BaldiLockerOpen',ClassName='Animation',AnimationId=12497904850},
-				BaldiLockerClose = {Name='BaldiLockerClose',ClassName='Animation',AnimationId=12497903631},
+				BaldiLockerEnter = {Name='BaldiLockerEnter',ClassName='Animation',AnimationId=12497904850},
+				BaldiLockerExit = {Name='BaldiLockerExit',ClassName='Animation',AnimationId=12497903631},
 				BaldiItemLockerOpen = {Name='BaldiItemLockerOpen',ClassName='Animation',AnimationId=13927201923},
-				LockerOpen = {Name='LockerOpen',ClassName='Animation',AnimationId=12497904850},
-				LockerClose = {Name='LockerClose',ClassName='Animation',AnimationId=12497903631},
+				LockerEnter = {Name='LockerEnter',ClassName='Animation',AnimationId=12497904850},
+				LockerExit = {Name='LockerExit',ClassName='Animation',AnimationId=12497903631},
 				ItemLockerOpen = {Name='ItemLockerOpen',ClassName='Animation',AnimationId=13927201923}
 			}
 		}
