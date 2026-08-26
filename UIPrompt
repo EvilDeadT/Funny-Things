@@ -29,8 +29,8 @@ function GetPromptInstance(InstanceTo)
 			end
 		end
 	else
-		if game.ReplicatedStorage.CustomAssets.Player.UI.Main:FindFirstChild(InstanceTo) then
-			PromptInstance = game.ReplicatedStorage.CustomAssets.Player.UI.Main[InstanceTo]:Clone()
+		if game.ReplicatedStorage.CustomAssets.Player.UI.Pressure:FindFirstChild(InstanceTo) then
+			PromptInstance = game.ReplicatedStorage.CustomAssets.Player.UI.Pressure[InstanceTo]:Clone()
 			PromptInstance:SetAttribute("Custom", true)
 			PromptInstance.Parent = game.Players.LocalPlayer.PlayerGui.Main
 		end
