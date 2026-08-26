@@ -147,7 +147,7 @@ local Assets = {
 
 local LoadRoomAssets = true
 local NoProperlyCollisions = false
-local NoLoadRooms = true
+local NoLoadRooms = false
 local LeaveTechnicalAttributesAndTags = false
 
 function DecompileAssets()
