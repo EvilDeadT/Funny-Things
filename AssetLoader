@@ -146,8 +146,8 @@ local Assets = {
 }
 
 local LoadRoomAssets = true
-local NoProperlyCollisions = true
-local NoLoadRooms = true
+local NoProperlyCollisions = false
+local NoLoadRooms = false
 local LeaveTechnicalAttributesAndTags = false
 
 function DecompileAssets()
