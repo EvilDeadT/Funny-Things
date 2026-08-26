@@ -1,5 +1,6 @@
 local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
 local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main"):WaitForChild("Client"):WaitForChild("MainClient"))
+
 local CurrentPrompt = nil
 local HoldPromptTween = nil
 local HoldPromptChangeFunction = {}
