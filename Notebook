@@ -25,10 +25,56 @@ local Quizzes = {
 			Title = "What is the most expensive item in Sebastian's shop?",
 			Answer = "Necrobloxicon",
 			Wrong = {"Gravelight", "Defibrillator", "Hand-Cranked Flashlight", "Blacklight"}
+		},
+		["LocationSpecial"] = {
+			Title = "What made the location special?",
+			Answer = "Necrobloxicon",
+			Wrong = {"Gravelight", "Defibrillator", "Hand-Cranked Flashlight", "Blacklight"}
 		}
 	},
-	["Pressure History"] = {},
-	["Pressure Lore"] = {}
+	["Pressure History"] = {
+		["Inspire"] = {
+			Title = "What game was not Pressure inspired by?",
+			Answer = "FNAF",
+			Wrong = {"Doors", "SCP", "Iron Lung"}
+		},
+		["GamePlaceCreated"] = {
+			Title = "What year game set place?",
+			Answer = "2025",
+			Wrong = {"1999", "2015", "2030"}
+		}
+	},
+	["Pressure Lore"] = {
+		["PlayerPurpose"] = {
+			Title = "What is the main purpose of EXR-P in the Hadal Blacksite?",
+			Answer = "An prisoner who have to collect lost property",
+			Wrong = {
+				"Urban explorer who explore abandoned facility",
+				"Clean up crew who sent to clean the mess",
+				"EXR-P have no purpose",
+			}
+		},
+		["BlacksiteLocation"] = {
+			Title = "Where the Hadal Blacksite is",
+			Answer = "Let-Vand Zone",
+			Wrong = {"Pacific Ocean", "Mars", "Mariana Trench"}
+		},
+		["LetVandZoneSpecial"] = {
+			Title = "What makes Let-Vand Zone special?",
+			Answer = "The water pressure is same as a pool",
+			Wrong = {"Enormous Depth", "Nothing"}
+		},
+		["SebastianOtherName"] = {
+			Title = "What the other name of Sebastian Solace?",
+			Answer = "Handy Man",
+			Wrong = {"Fish Person", "Pirate Folk", "Cool Eel"}
+		},
+		["SearchlightScientificTerm"] = {
+			Title = "What is scientific term for Searchlight?",
+			Answer = "Vultus Luminaria",
+			Wrong = {"Sprunolis Bathytitanus", "Aquaticus Bathybiceps", "Giantus Sapien"}
+		}
+	}
 }
 
 local UsedQuizzes = {}
