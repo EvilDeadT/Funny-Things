@@ -469,23 +469,25 @@ local InputNumber = {
 	[Enum.KeyCode.KeypadZero] = 0
 }
 
-game.UserInputService.InputBegan:Connect(function(Input)
-	if InputNumber[Input.KeyCode] then
-		if game.Players.LocalPlayer.PlayerGui:FindFirstChild("NotebookUI") then
-			for _, Answer in game.Players.LocalPlayer.PlayerGui.NotebookUI.Notebook.Notepad.Answers:GetChildren() do
-				if Answer:IsA("Frame") and string.find(Answer.Name, "Answer") and InputNumber[Input.KeyCode] == tonumber(Answer:FindFirstChild("AnswerNumber", true).Text) then
-					UI.Events.NotebookAnswer:Fire(Answer.Answer.Text)
+if game.RunService:IsStudio() then
+	game.UserInputService.InputBegan:Connect(function(Input)
+		if InputNumber[Input.KeyCode] then
+			if game.Players.LocalPlayer.PlayerGui:FindFirstChild("NotebookUI") then
+				for _, Answer in game.Players.LocalPlayer.PlayerGui.NotebookUI.Notebook.Notepad.Answers:GetChildren() do
+					if Answer:IsA("Frame") and string.find(Answer.Name, "Answer") and InputNumber[Input.KeyCode] == tonumber(Answer:FindFirstChild("AnswerNumber", true).Text) then
+						UI.Events.NotebookAnswer:Fire(Answer.Answer.Text)
+					end
 				end
 			end
 		end
-	end
-	
-	if Input.KeyCode == Enum.KeyCode.M then
-		local NotebookSolved = NotebookStart("Quiz")
-		if NotebookSolved then
-			print("Correct")
-		else
-			print("Wrong")
+
+		if Input.KeyCode == Enum.KeyCode.M then
+			local NotebookSolved = NotebookStart("Quiz")
+			if NotebookSolved then
+				print("Correct")
+			else
+				print("Wrong")
+			end
 		end
-	end
-end)
+	end)
+end
