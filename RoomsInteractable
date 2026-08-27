@@ -403,6 +403,35 @@ UI.Events.RoomAssetInteraction.Event:Connect(function(Asset, Type)
 		else
 			DoorClose()
 		end
+	elseif Asset.Name == "Notebook" then
+		local InteractCooldown = false
+		
+		local Prompt = Asset.InteractionPart:FindFirstChildWhichIsA("ProximityPrompt")
+		Prompt:SetAttribute("Display", "Notebook")
+		Prompt:SetAttribute("Custom", true)
+		
+		Prompt.Triggered:Connect(function()
+			if not InteractCooldown then
+				InteractCooldown = true
+				
+				InteractSound.Music:Play()
+				
+				local NotebookSolved = UI.Events.Notebook:Invoke()
+				
+				InteractSound.Music:Stop()
+				InteractSound.Wrong:Play()
+				
+				if NotebookSolved then
+					Asset:Destroy()
+				else
+					UI.Events.Entity:Fire("Educator", "NotebookWrong")
+					
+					task.wait(10)
+					
+					InteractCooldown = false
+				end
+			end
+		end)
 	else
 		if Asset:FindFirstChild("Drawers") then
 			for _, Drawer in Asset.Drawers:GetChildren() do
