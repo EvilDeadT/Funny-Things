@@ -11,7 +11,9 @@ local SkipRoom = {
 	DoorClientOpen = nil
 }
 
-local Main = {}
+local Main = {
+	UnCollisionBoxCollisionParts = {}
+}
 
 function ReturnCollision()
 	for _, Part in Main.UnCollisionBoxCollisionParts do
