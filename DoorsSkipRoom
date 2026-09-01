@@ -7,6 +7,7 @@ local SkipRoom = {
 	
 	Door = nil,
 	DoorCollision = nil,
+	DoorCollisionCFrame = nil,
 	DoorClientOpen = nil
 }
 
@@ -165,6 +166,7 @@ function RoomStats()
 	
 	SkipRoom.Door = SkipRoom.LastRoom.Door
 	SkipRoom.DoorCollision = SkipRoom.LastRoom.Door.Collision
+	SkipRoom.DoorCollisionCFrame = SkipRoom.LastRoom.Door.Collision.CFrame
 	SkipRoom.DoorClientOpen = SkipRoom.LastRoom.Door.ClientOpen
 end
 
@@ -185,7 +187,7 @@ game.RunService.RenderStepped:Connect(function()
 		if string.find(SkipAction, "Open ProgressDoor") and not string.find(SkipAction, "TouchPart") and SkipRoom.DoorCollision then
 			local Offset = -10
 
-			TeleportPlayer(SkipRoom.DoorCollision + Vector3.new(0, Offset, 0))
+			TeleportPlayer(SkipRoom.DoorCollisionCFrame + Vector3.new(0, Offset, 0))
 		end
 	end
 end)
