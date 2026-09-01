@@ -285,7 +285,7 @@ game.RunService.RenderStepped:Connect(function()
 				SkipAction = "Pickup Lotus"
 				
 				PromptInFrontOfCamera(Lotus)
-				TeleportPlayer(SkipRoom.Main)
+				TeleportPlayer(Lotus.Main.CFrame)
 			end
 		end
 		
