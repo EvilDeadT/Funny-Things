@@ -131,7 +131,7 @@ function GetRoom()
 		return error("No Room with name: "..RoomNumber)
 	end
 	
-	return game.Workspace.CurrentRooms[RoomNumber]
+	SkipRoom.LastRoom = game.Workspace.CurrentRooms[RoomNumber]
 end
 
 function RoomStats()
