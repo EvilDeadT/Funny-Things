@@ -1,0 +1,216 @@
+local SkipAction = "Idle"
+local AutoSkip = false
+
+local SkipRoom = {
+	OpenedRooms = {},
+	LastRoom = nil,
+	
+	Door = nil,
+	DoorCollision = nil,
+	DoorClientOpen = nil
+}
+
+local Main = {}
+
+function ReturnCollision()
+	for _, Part in Main.UnCollisionBoxCollisionParts do
+		if Part ~= nil then
+			if Part.Parent ~= nil then
+				if Part:IsA("BasePart") and Part.Name ~= "CollisionPart" then
+					Part.CanCollide = true
+				end
+			end
+		end
+	end
+
+	if game.Workspace:FindFirstChild("TemporaryFloor") then
+		game.Workspace.TemporaryFloor:Destroy()
+	end
+
+	if game.Workspace:FindFirstChild("UncollisionBox") then
+		game.Workspace.UncollisionBox:Destroy()
+	end
+end
+
+function UnCollisionAll(TeleportCFrame)
+	for _, Part in Main.UnCollisionBoxCollisionParts do
+		if Part ~= nil then
+			if Part.Parent ~= nil then
+				if Part:IsA("BasePart") and Part.Name ~= "CollisionPart" then
+					Part.CanCollide = true
+				end
+			end
+		end
+	end
+
+	local TemporaryFloor = game.Workspace:FindFirstChild("TemporaryFloor")
+	if TemporaryFloor == nil then
+		TemporaryFloor = Instance.new("Part", game.Workspace)
+		TemporaryFloor.Name = "TemporaryFloor"
+		TemporaryFloor.Transparency = 0.5
+		TemporaryFloor.Anchored = true
+		TemporaryFloor.CanCollide = true
+		TemporaryFloor.CastShadow = false
+		TemporaryFloor.Size = Vector3.new(8, 1, 8)
+	end
+
+	local UncollisionBox = game.Workspace:FindFirstChild("UncollisionBox")
+	if UncollisionBox == nil then
+		UncollisionBox = Instance.new("Part", game.Workspace)
+		UncollisionBox.Name = "UncollisionBox"
+		UncollisionBox.Transparency = 0.5
+		UncollisionBox.Anchored = true
+		UncollisionBox.CanCollide = false
+		UncollisionBox.CastShadow = false
+		UncollisionBox.Size = Vector3.new(8, 8, 8)
+	end
+
+	UncollisionBox.CFrame = TeleportCFrame
+	TemporaryFloor.CFrame = TeleportCFrame + Vector3.new(0, -4, 0)
+
+	for _, Part in game.Workspace:GetPartsInPart(UncollisionBox) do
+		if Part.Parent ~= game.Players.LocalPlayer.Character and Part:IsA("BasePart") then
+			if Part.CanCollide == true and Part ~= TemporaryFloor then
+				Part.CanCollide = false
+				table.insert(Main.UnCollisionBoxCollisionParts, Part)
+			end
+		end
+	end
+end
+
+function TeleportPlayer(TeleportCFrame)
+	game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = TeleportCFrame
+	UnCollisionAll(TeleportCFrame)
+end
+
+function ClearAllStats(Info)
+	if Info then
+		if Info.PrintStats == true then
+			if SkipRoom.LastRoom ~= nil then
+				print("Clear stats of Room: "..SkipRoom.LastRoom.Name)
+			end
+		end
+	end
+
+	for _, Stat in {
+		"Door",
+		"DoorCollision"
+		} do
+		if Info then
+			if Info.PrintStats == true and SkipRoom[Stat] ~= nil then
+				local PrintMessage = Stat
+
+				if Stat == "PasswordCode" then
+					PrintMessage = Stat..": "..SkipRoom[Stat]
+				end
+
+				print(PrintMessage)
+			end
+		end
+
+		SkipRoom[Stat] = nil
+	end
+end
+
+function GetRoom()
+	local RoomNumber = 0
+	
+	for _, Room in game.Workspace.CurrentRooms:GetChildren() do
+		if not tonumber(Room.Name) then
+			return error("Room Name is not a number. Room Name: "..Room.Name)
+		end
+		
+		if tonumber(Room.Name) > RoomNumber then
+			RoomNumber = tonumber(Room.Name)
+		end
+	end
+	
+	RoomNumber -= 1
+	
+	if not game.Workspace.CurrentRooms:FindFirstChild(RoomNumber) then
+		return error("No Room with name: "..RoomNumber)
+	end
+	
+	return game.Workspace.CurrentRooms[RoomNumber]
+end
+
+function RoomStats()
+	if not SkipRoom.LastRoom then
+		return warn("RoomStats: No LastRoom")
+	end
+	
+	if SkipRoom.LastRoom.Parent ~= game.Workspace.CurrentRooms then
+		return warn("RoomStats: LastRoom is not a Child of game.Workspace.CurrentRooms")
+	end
+	
+	if not SkipRoom.LastRoom:FindFirstChild("Door") then
+		return warn("RoomStats: LastRoom does not have a Door")
+	end
+	
+	if not (SkipRoom.LastRoom.Door:FindFirstChild("Collision") and SkipRoom.LastRoom.Door:FindFirstChild("ClientOpen")) then
+		return warn("RoomStats: LastRoom Door does not have something important")
+	end
+	
+	SkipRoom.LastRoom.Door:GetAttributeChangedSignal("Opened"):Once(function()
+		if SkipRoom.LastRoom.Door:GetAttribute("Opened") and SkipAction ~= "Start Open" then
+			SkipAction = "Idle"
+			ClearAllStats()
+
+			if AutoSkip == true then
+				task.wait(0.5)
+				OpenNextDoor()
+			end
+		end
+	end)
+	
+	SkipRoom.Door = SkipRoom.LastRoom.Door
+	SkipRoom.DoorCollision = SkipRoom.LastRoom.Door.Collision
+	SkipRoom.DoorClientOpen = SkipRoom.LastRoom.Door.ClientOpen
+end
+
+function OpenNextDoor()
+	SkipAction = "Start Open"
+	GetRoom()
+	RoomStats()
+end
+
+game.RunService.RenderStepped:Connect(function()
+	if SkipAction ~= "Idle" then
+		if SkipRoom.Door and SkipRoom.DoorClientOpen then
+			SkipAction = "Open ProgressDoor Touch"
+			
+			SkipRoom.DoorClientOpen:FireServer()
+		end
+		
+		if string.find(SkipAction, "Open ProgressDoor") and not string.find(SkipAction, "TouchPart") and SkipRoom.DoorCollision then
+			local Offset = -10
+
+			TeleportPlayer(SkipRoom.DoorCollision + Vector3.new(0, Offset, 0))
+		end
+	end
+end)
+
+game.UserInputService.InputBegan:Connect(function(Input)
+	if Input.KeyCode == Enum.KeyCode.P then
+		AutoSkip = false
+		
+		if SkipAction == "Idle" then
+			OpenNextDoor()
+		end
+	elseif Input.KeyCode == Enum.KeyCode.O then
+		AutoSkip = not AutoSkip
+		
+		if AutoSkip and SkipAction == "Idle" then
+			OpenNextDoor()
+		end
+	elseif Input.KeyCode == Enum.KeyCode.X then
+		SkipAction = "Cancel"
+		AutoSkip = false
+
+		ClearAllStats({
+			PrintStats = true
+		})
+
+		SkipAction = "Idle"
+	end
+end)
