@@ -274,6 +274,8 @@ end
 
 game.RunService.RenderStepped:Connect(function()
 	if SkipAction ~= "Idle" then
+		local TakenPriority = false
+		
 		if SkipRoom.LastRoom then
 			local Lotus = SkipRoom.LastRoom:FindFirstChild("LotusHolder", true)
 			
@@ -281,15 +283,16 @@ game.RunService.RenderStepped:Connect(function()
 				Lotus = SkipRoom.LastRoom:FindFirstChild("LotusPetalPickup", true)
 			end
 			
-			if not string.find(SkipAction, "Pickup") and Lotus and Lotus:FindFirstChild("Main") and Lotus:FindFirstChildWhichIsA("ProximityPrompt") then
+			if not TakenPriority and Lotus and Lotus:FindFirstChild("Main") and Lotus:FindFirstChildWhichIsA("ProximityPrompt") then
 				SkipAction = "Pickup Lotus"
+				TakenPriority = true
 				
 				PromptInFrontOfCamera(Lotus)
 				TeleportPlayer(Lotus.Main.CFrame)
 			end
 		end
 		
-		if SkipRoom.Door and SkipRoom.DoorClientOpen and not string.find(SkipAction, "Pickup") then
+		if SkipRoom.Door and SkipRoom.DoorClientOpen and not TakenPriority then
 			SkipAction = "Open ProgressDoor Touch"
 			
 			SkipRoom.DoorClientOpen:FireServer()
