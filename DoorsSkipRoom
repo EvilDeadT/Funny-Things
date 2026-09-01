@@ -92,7 +92,7 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 	end
 
 	PartInFrontOfCamera.CFrame = CFrame.new(
-		Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * PartOffset
+		game.Workspace.CurrentCamera.CFrame.Position + game.Workspace.CurrentCamera.CFrame.LookVector * PartOffset
 	) * CFrame.fromOrientation(0, 0, 0)
 
 	if Prompt.Parent ~= PartInFrontOfCamera then
@@ -274,20 +274,20 @@ end
 
 game.RunService.RenderStepped:Connect(function()
 	if SkipAction ~= "Idle" then
-		local HasItem = false
+		local TakenPriority = false
 		
 		if SkipRoom.LastRoom then
 			local Lotus = SkipRoom.LastRoom:FindFirstChild("LotusHolder", true)
 			
-			if Lotus and Lotus:FindFirstChild("Main") and Lotus:FindFirstChildWhichIsA("ProximityPrompt") then
-				HasItem = true
+			if not TakenPriority and Lotus and Lotus:FindFirstChild("Main") and Lotus:FindFirstChildWhichIsA("ProximityPrompt") then
+				TakenPriority = true
 				
 				PromptInFrontOfCamera(Lotus)
 				TeleportPlayer(SkipRoom.Main)
 			end
 		end
 		
-		if SkipRoom.Door and SkipRoom.DoorClientOpen and not HasItem then
+		if SkipRoom.Door and SkipRoom.DoorClientOpen and not TakenPriority then
 			SkipAction = "Open ProgressDoor Touch"
 			
 			SkipRoom.DoorClientOpen:FireServer()
