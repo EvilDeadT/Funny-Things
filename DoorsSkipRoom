@@ -15,6 +15,100 @@ local Main = {
 	UnCollisionBoxCollisionParts = {}
 }
 
+function PromptClearPrompts()
+	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
+		for _, UsedPrompt in game.Workspace.PartInFrontOfCamera:GetChildren() do
+			UsedPrompt.KeyboardKeyCode = Enum.KeyCode.E
+			for _, Info in UsedPrompt:GetChildren() do
+				if string.find(Info.Name, "Prompt") then
+					UsedPrompt[string.split(Info.Name, "Prompt")[2]] = Info.Value
+				end
+
+				Info:Destroy()
+			end
+		end
+	end
+end
+
+function PromptSetInfo(Prompt)
+	if Prompt then
+		for _, Info in {"MaxActivationDistance", "RequiresLineOfSight", "HoldDuration", "Enabled", "Parent"} do
+			local PromptInfo = nil
+
+			if Info == "RequiresLineOfSight" or Info == "Enabled" then
+				PromptInfo = Instance.new("BoolValue")
+			elseif Info == "MaxActivationDistance" or Info == "HoldDuration" then
+				PromptInfo = Instance.new("NumberValue")
+			elseif Info == "Parent" then
+				PromptInfo = Instance.new("ObjectValue")
+			end
+
+			PromptInfo.Name = "Prompt"..Info
+			PromptInfo.Value = Prompt[Info]
+			PromptInfo.Parent = Prompt
+		end
+	end
+end
+
+function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
+	if PromptPart == nil then
+		return warn("PromptInFrontOfCamera No Prompt")
+	end
+
+	local Prompt = PromptPart:FindFirstChildWhichIsA("ProximityPrompt")
+	local PartOffset = LookVectorOffset or 7
+
+	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
+		if game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt") then
+			if game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt"):FindFirstChild("PromptParent") then
+				if game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt").PromptParent.Value == PromptPart then
+					Prompt = game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt")
+				else
+					PromptSetInfo(Prompt)
+				end
+			else
+				PromptSetInfo(Prompt)
+			end
+		else
+			PromptSetInfo(Prompt)
+		end
+	else
+		PromptSetInfo(Prompt)
+	end
+
+	if Prompt == nil then
+		return
+	end
+
+	local PartInFrontOfCamera = game.Workspace:FindFirstChild("PartInFrontOfCamera")
+	if not PartInFrontOfCamera then
+		PartInFrontOfCamera = Instance.new("Part", game.Workspace)
+		PartInFrontOfCamera.Name = "PartInFrontOfCamera"
+		PartInFrontOfCamera.Transparency = 1
+		PartInFrontOfCamera.Anchored = true
+		PartInFrontOfCamera.CanCollide = true
+		PartInFrontOfCamera.CastShadow = false
+		PartInFrontOfCamera.Size = Vector3.new(0.5, 0.5, 0.5)
+	end
+
+	PartInFrontOfCamera.CFrame = CFrame.new(
+		Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * PartOffset
+	) * CFrame.fromOrientation(0, 0, 0)
+
+	if Prompt.Parent ~= PartInFrontOfCamera then
+		PromptClearPrompts()
+	end
+
+	Prompt.MaxActivationDistance = 100
+	Prompt.RequiresLineOfSight = false
+	Prompt.HoldDuration = 0
+	Prompt.Enabled = true
+	Prompt.KeyboardKeyCode = Enum.KeyCode.KeypadZero
+	Prompt.Parent = PartInFrontOfCamera
+	Prompt:InputHoldBegin()
+	Prompt:InputHoldEnd()
+end
+
 function ReturnCollision()
 	for _, Part in Main.UnCollisionBoxCollisionParts do
 		if Part ~= nil then
@@ -187,7 +281,7 @@ game.RunService.RenderStepped:Connect(function()
 		end
 		
 		if string.find(SkipAction, "Open ProgressDoor") and not string.find(SkipAction, "TouchPart") and SkipRoom.DoorCollision then
-			local Offset = -10
+			local Offset = -8
 
 			TeleportPlayer(SkipRoom.DoorCollisionCFrame + Vector3.new(0, Offset, 0))
 		end
@@ -214,7 +308,11 @@ game.UserInputService.InputBegan:Connect(function(Input)
 		ClearAllStats({
 			PrintStats = true
 		})
-
+		PromptClearPrompts()
+		
 		SkipAction = "Idle"
+	elseif Input.KeyCode == Enum.KeyCode.Z then
+		ReturnCollision()
+		PromptClearPrompts()
 	end
 end)
