@@ -274,7 +274,20 @@ end
 
 game.RunService.RenderStepped:Connect(function()
 	if SkipAction ~= "Idle" then
-		if SkipRoom.Door and SkipRoom.DoorClientOpen then
+		local HasItem = false
+		
+		if SkipRoom.LastRoom then
+			local Lotus = SkipRoom.LastRoom:FindFirstChild("LotusHolder", true)
+			
+			if Lotus and Lotus:FindFirstChild("Main") and Lotus:FindFirstChildWhichIsA("ProximityPrompt") then
+				HasItem = true
+				
+				PromptInFrontOfCamera(Lotus)
+				TeleportPlayer(SkipRoom.Main)
+			end
+		end
+		
+		if SkipRoom.Door and SkipRoom.DoorClientOpen and not HasItem then
 			SkipAction = "Open ProgressDoor Touch"
 			
 			SkipRoom.DoorClientOpen:FireServer()
