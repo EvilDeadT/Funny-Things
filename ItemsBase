@@ -264,7 +264,6 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 		SetIconSlot(ItemIcon, Slot)
 	end
 	
-	ItemIcon.Parent = game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar
 	ItemIcon.Activated:Connect(function()
 		if PlayerMain.Toolbar.CurrentSelected ~= ItemIcon then
 			ItemEquip(ItemIcon)
@@ -274,8 +273,8 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 	end)
 	
 	local ItemClasses = PlayerMain.Toolbar.CachedClasses[Item.Name] or {
-		Equip = ItemEquip(),
-		Unequip = ItemUnequip(),
+		Equip = ItemEquip(Item),
+		Unequip = ItemUnequip(Item),
 		Activate = function()
 			UI.Events.ItemOnInput:Fire(Item.Name, ItemAnim[Item.Name], Enum.UserInputType.MouseButton1)
 		end,
@@ -309,8 +308,10 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 		end
 	end)
 	
+	ItemIcon.Parent = game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar
+	
 	if game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("EquipOnGive") then
-		ItemEquip(ItemIcon)
+		--ItemEquip(ItemIcon)
 	end
 end)
 
