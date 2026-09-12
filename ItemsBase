@@ -273,8 +273,8 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 	end)
 	
 	local ItemClasses = PlayerMain.Toolbar.CachedClasses[Item.Name] or {
-		Equip = ItemEquip(Item),
-		Unequip = ItemUnequip(Item),
+		Equip = ItemEquip(ItemIcon),
+		Unequip = ItemUnequip(ItemIcon),
 		Activate = function()
 			UI.Events.ItemOnInput:Fire(Item.Name, ItemAnim[Item.Name], Enum.UserInputType.MouseButton1)
 		end,
