@@ -273,10 +273,14 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 	end)
 	
 	local ItemClasses = PlayerMain.Toolbar.CachedClasses[Item.Name] or {
-		Equip = ItemEquip(ItemIcon),
-		Unequip = ItemUnequip(ItemIcon),
+		Equip = function()
+			ItemEquip(ItemIcon)
+		end,
+		Unequip = function()
+			ItemUnequip(ItemIcon)
+		end,
 		Activate = function()
-			UI.Events.ItemOnInput:Fire(Item.Name, ItemAnim[Item.Name], Enum.UserInputType.MouseButton1)
+			UI.Events.ItemOnInput:Fire(Item.Name, ItemAnim[Item.Name], {UserInputType = Enum.UserInputType.MouseButton1})
 		end,
 		UnBindOffHandKey = function(UITo)
 			UITo.Health.AuxItems.OffHandItem.Visible = false
