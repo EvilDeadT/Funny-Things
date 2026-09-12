@@ -273,10 +273,7 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 		end
 	end)
 	
-	local ItemClasses = PlayerMain.Toolbar.CachedClasses[Item.Name] or PlayerMain.ToolsModule.new(Item.Name, {
-		Humanoid = game.Players.LocalPlayer.Character:FindFirstChild("Humanoid"),
-		Frame = PlayerMain.SubTitles
-	})
+	local ItemClasses = PlayerMain.Toolbar.CachedClasses[Item.Name] or {}
 	PlayerMain.Toolbar.CachedClasses[Item.Name] = ItemClasses
 	PlayerMain.Toolbar.Classes[ItemIcon] = ItemClasses
 	
