@@ -21,7 +21,7 @@ function LoadAnimation(Item, Anim)
 	return
 end
 
-function GetWheel(Item)
+function GetWheelItem(Item)
 	for _, WheelItem in game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:GetChildren() do
 		if WheelItem.Name == tostring(Item.LayoutOrder) then
 			return WheelItem
@@ -29,6 +29,163 @@ function GetWheel(Item)
 	end
 	
 	return
+end
+
+function GetOpenSlot(Min, Max)
+	for Slot = Min or 1, Max or 10 do
+		local TakenSlot = nil
+		for _, ItemIcon in PlayerMain.Toolbar.List do
+			if ItemIcon.LayoutOrder == Slot then
+				TakenSlot = ItemIcon
+				break
+			end
+		end
+		if not TakenSlot then
+			return Slot
+		end
+	end
+	
+	return
+end
+
+function NewWheelSlot(Item)
+	local WheelSlot = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:FindFirstChild(Item.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts)
+	
+	if WheelSlot then
+		WheelSlot.Icon.Image = Item.ImageLabel.Image
+		
+		if Item.Stack.Visible then
+			WheelSlot.Stack.Visible = true
+			WheelSlot.Stack.Text = Item.Stack.Text
+		end
+	end
+end
+
+function ClearWheelSlot(Item)
+	local MissingItem = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:FindFirstChild(Item.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts)
+	
+	if MissingItem then
+		MissingItem.Icon.Image = ""
+		MissingItem.Stack.Visible = false
+		MissingItem.Bar.Visible = false
+	end
+end
+
+function SetIconSlot(Item, Slot, RefreshWheel)
+	if Slot <= 9 then
+		Item.Number.TextLabel.Text = Slot
+	else
+		Item.Number.TextLabel.Text = 10
+	end
+	
+	ClearWheelSlot(Item)
+	
+	if RefreshWheel then
+		for _, ItemIcon in PlayerMain.Toolbar.List do
+			if ItemIcon.LayoutOrder == Slot then
+				ClearWheelSlot(ItemIcon, Item.LayoutOrder)
+				break
+			end
+		end
+	end
+	
+	item.LayoutOrder = Slot
+	
+	NewWheelSlot(Item)
+	
+	return true
+end
+
+function AppendZeroSlotsToEnd(ItemList)
+	for Item, ItemIcon in ItemList do
+		if ItemIcon:GetAttribute("ZeroSlot") then
+			ItemList[Item] = nil
+			ItemList[10] = ItemIcon
+			ItemIcon.LayoutOrder = 10
+		end
+	end
+end
+
+function OrderToolbar()
+	PlayerMain.Toolbar.List = {}
+	
+	local function AddItemToList(ItemIcon)
+		table.insert(PlayerMain.Toolbar.List, ItemIcon)
+
+		if #PlayerMain.Toolbar.List <= 9 then
+			ItemIcon.Number.TextLabel.Text = #PlayerMain.Toolbar.List
+		else
+			ItemIcon.Number.TextLabel.Text = "X"
+		end
+
+		ItemIcon.LayoutOrder = #PlayerMain.Toolbar.List
+	end
+	
+	for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
+		if ItemIcon.ClassName == "ImageButton" then
+			if ItemIcon:GetAttribute("AlwaysFirst") then
+				AddItemToList()
+			end
+		end
+	end
+	
+	for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
+		if ItemIcon.ClassName == "ImageButton" then
+			if not (ItemIcon:GetAttribute("AlwaysFirst") or ItemIcon:GetAttribute("AlwaysLast")) then
+				AddItemToList()
+			end
+		end
+	end
+	
+	for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
+		if ItemIcon.ClassName == "ImageButton" then
+			if ItemIcon:GetAttribute("AlwaysLast") then
+				AddItemToList()
+			end
+		end
+	end
+end
+
+function RefreshItemList()
+	PlayerMain.Toolbar.List = {}
+	
+	for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
+		if ItemIcon:IsA("ImageButton") then
+			table.insert(PlayerMain.Toolbar.List, ItemIcon)
+		end
+	end
+	
+	table.sort(PlayerMain.Toolbar.List, function(Icon1, Icon2)
+		return Icon1.LayoutOrder < Icon2.LayoutOrder
+	end)
+	
+	AppendZeroSlotsToEnd(PlayerMain.Toolbar.List)
+end
+
+function MoveSlotsDown(Offset)
+	local ItemList = {}
+	
+	for _, ItemIcon in PlayerMain.Toolbar.List do
+		if ItemIcon:IsA("ImageButton") and Offset < ItemIcon.LayoutOrder then
+			table.insert(ItemList, ItemIcon)
+		end
+	end
+	
+	table.sort(ItemList, function(Icon1, Icon2)
+		return Icon1.LayoutOrder < Icon2.LayoutOrder
+	end)
+	
+	AppendZeroSlotsToEnd(ItemList)
+	
+	for _, ItemIcon in ItemList do
+		local Slot = GetOpenSlot(Offset)
+		if ItemIcon.LayoutOrder >= Slot then
+			if ItemIcon:GetAttribute("ZeroSlot") then
+				Slot = 10
+			end
+			SetIconSlot(ItemIcon, Slot)
+		end
+	end
 end
 
 UI.Inventory.ChildAdded:Connect(function(Item)
@@ -50,7 +207,7 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 		Item.Changed:Connect(function()
 			ItemIcon.Stack.Text = "x"..Item.Value
 			
-			local WheelIcon = GetWheel(ItemIcon)
+			local WheelIcon = GetWheelItem(ItemIcon)
 			if WheelIcon then
 				WheelIcon.Stack.Text = "x"..Item.Value
 			end
@@ -72,7 +229,7 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 				Value = Item.Value * 100
 			}):Play()
 			
-			local WheelIcon = GetWheel(ItemIcon)
+			local WheelIcon = GetWheelItem(ItemIcon)
 			if WheelIcon then
 				game.TweenService:Create(WheelIcon.Bar.Frame, TweenInfo.new(0.6, Enum.EasingStyle.Linear), {
 					Size = UDim2.new(Item.Value / game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats.MaxUses.Value, 0, 1, 0)
@@ -81,12 +238,63 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 		end)
 	end
 	
+	if game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("AlwaysLast") then
+		ItemIcon:SetAttribute("AlwaysLast", true)
+	elseif game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("AlwaysFirst") then
+		PlayerMain.Toolbar.AlwaysFirsts = PlayerMain.Toolbar.AlwaysFirsts + 1
+		ItemIcon:SetAttribute("AlwaysFirst", true)
+	end
+	
+	if game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("AlwaysFirst") then
+		for _, ItemIconList in PlayerMain.Toolbar.List do
+			SetIconSlot(ItemIconList, ItemIconList.LayoutOrder + 1)
+		end
+		RefreshItemList()
+		
+		SetIconSlot(ItemIcon, GetOpenSlot())
+		MoveSlotsDown(1)
+	else
+		RefreshItemList()
+		
+		local Slot = GetOpenSlot()
+		if game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:GetAttribute("ZeroSlot") then
+			Slot = 10
+		end
+		
+		SetIconSlot(ItemIcon, Slot)
+	end
+	
 	ItemIcon.Parent = game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar
 	ItemIcon.Activated:Connect(function()
 		if PlayerMain.Toolbar.CurrentSelected ~= ItemIcon then
 			ItemEquip(ItemIcon)
 		else
 			ItemUnequip(ItemIcon)
+		end
+	end)
+	
+	local ItemClasses = PlayerMain.Toolbar.CachedClasses[Item.Name] or PlayerMain.ToolsModule.new(Item.Name, {
+		Humanoid = game.Players.LocalPlayer.Character:FindFirstChild("Humanoid"),
+		Frame = PlayerMain.SubTitles
+	})
+	PlayerMain.Toolbar.CachedClasses[Item.Name] = ItemClasses
+	PlayerMain.Toolbar.Classes[ItemIcon] = ItemClasses
+	
+	ItemIcon.TouchLongPress:Connect(function(TouchPositions, Input)
+		if PlayerMain.IsGhost then
+			return
+		end
+		
+		if Input == Enum.UserInputState.Begin and (TouchPositions[1] and not PlayerMain.Toolbar.DropHeld) then
+			PlayerMain.Toolbar.DropHeld = ItemIcon
+			local IconDrag = ItemIcon:Clone()
+			IconDrag.Parent = PlayerMain.Toolbar.FollowUI
+			IconDrag.Position = UDim2.new(0, 0, 0, 0)
+			PlayerMain.Toolbar.FollowUI.Visible = true
+			ItemIcon.Visible = false
+		elseif Input == Enum.UserInputState.End and PlayerMain.Toolbar.DropHeld then
+			SetIconSlot(PlayerMain.Toolbar.DropHeld, ItemIcon.LayoutOrder, true)
+			RefreshItemList()
 		end
 	end)
 	
