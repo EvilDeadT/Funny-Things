@@ -89,7 +89,7 @@ function SetIconSlot(Item, Slot, RefreshWheel)
 		end
 	end
 	
-	item.LayoutOrder = Slot
+	Item.LayoutOrder = Slot
 	
 	NewWheelSlot(Item)
 	
