@@ -108,23 +108,27 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 		ActivateTimer = task.delay(1, function()
 			ActivateTimer = nil
 			PlushContented = true
-
-			PlayerMain.SubTitles.new(
-				"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie is content for now...</font></font>",
-				6,
-				9999,
-				true
-			):Show()
-
-			task.delay(PlushContentTime, function()
-				PlushContented = false
-
+			
+			if UI.Modifiers.TheDemon.Value then
 				PlayerMain.SubTitles.new(
-					"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie is no longer content...</font></font>",
+					"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie is content for now...</font></font>",
 					6,
 					9999,
 					true
 				):Show()
+			end
+
+			task.delay(PlushContentTime, function()
+				PlushContented = false
+				
+				if UI.Modifiers.TheDemon.Value then
+					PlayerMain.SubTitles.new(
+						"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie is no longer content...</font></font>",
+						6,
+						9999,
+						true
+					):Show()
+				end
 			end)
 
 			task.delay(ActivateCooldown - 1, function()
