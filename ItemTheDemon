@@ -15,6 +15,7 @@ local PlushTimerDelay = nil
 game.Players.LocalPlayer.CharacterAdded:Connect(function(Character)
 	if UI.Modifiers.TheDemon.Value then
 		PlushTimer = 10
+		PlushTimerStart()
 	end
 end)
 
@@ -167,6 +168,55 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 	end
 end)
 
+function PlushTimerStart()
+	if PlushTimerStatus == "NoActive" then
+		task.spawn(function()
+			while UI.Modifiers.TheDemon.Value do
+				if type(PlushTimer) ~= "number" then
+					if PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon" then
+						if PlushTimerStatus ~= "Increase" then print("Early Equip")
+							if type(PlushTimerStatus) ~= "number" then
+								PlushTimerStatus = 1
+							end
+
+							PlushTimerStatus = ((PlushTimerStatus * 10) - 1) / 10
+
+							print("PlushTimerStatus:", PlushTimerStatus)
+
+							PlushTimerDecrease()
+
+							if type(PlushTimerStatus) == "number" then
+								if PlushTimerStatus > 0 then
+									task.wait(0.1)
+								else print("Can Add")
+									PlushTimerStatus = "Increase"
+								end
+							end
+						end
+
+						if PlushTimerStatus == "Increase" then
+							if PlushTimer < 10 then print("Add")
+								PlushTimer = (math.round(PlushTimer * 10) + 1) / 10
+								task.wait(0.1)
+							else
+								PlushTimer = 10
+							end
+						end
+					else
+						if not PlushContented then print("Take")
+							PlushTimerDecrease()
+						end
+					end
+
+					task.wait()
+				end
+			end
+
+			PlushTimerStatus = "NoActive"
+		end)
+	end
+end
+
 function PlushTimerDecrease()
 	if PlushTimer > 0 then
 		PlushTimerStatus = "Decrease"
@@ -203,52 +253,7 @@ end
 
 UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
 	if UI.Modifiers.TheDemon.Value then
-		if PlushTimerStatus == "NoActive" then
-			task.spawn(function()
-				while UI.Modifiers.TheDemon.Value do
-					if type(PlushTimer) ~= "number" then
-						if PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon" then
-							if PlushTimerStatus ~= "Increase" then print("Early Equip")
-								if type(PlushTimerStatus) ~= "number" then
-									PlushTimerStatus = 1
-								end
-
-								PlushTimerStatus = ((PlushTimerStatus * 10) - 1) / 10
-
-								print("PlushTimerStatus:", PlushTimerStatus)
-
-								PlushTimerDecrease()
-
-								if type(PlushTimerStatus) == "number" then
-									if PlushTimerStatus > 0 then
-										task.wait(0.1)
-									else print("Can Add")
-										PlushTimerStatus = "Increase"
-									end
-								end
-							end
-							
-							if PlushTimerStatus == "Increase" then
-								if PlushTimer < 10 then print("Add")
-									PlushTimer = (math.round(PlushTimer * 10) + 1) / 10
-									task.wait(0.1)
-								else
-									PlushTimer = 10
-								end
-							end
-						else
-							if not PlushContented then print("Take")
-								PlushTimerDecrease()
-							end
-						end
-
-						task.wait()
-					end
-				end
-				
-				PlushTimerStatus = "NoActive"
-			end)
-		end
+		PlushTimerStart()
 	else
 		PlushTimer = nil
 		PlayerMain.SubTitles.new(
