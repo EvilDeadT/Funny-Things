@@ -407,6 +407,8 @@ function ItemEquip(Item)
 		return warn("No Item Folder For "..Item.Name)
 	end
 	
+	print("ItemEquip")
+	
 	PlayerMain.Toolbar.UnSelect()
 
 	for _, CustomItem in game.ReplicatedStorage.CustomAssets.Items:GetChildren() do
@@ -461,6 +463,8 @@ function ItemUnequip(Item)
 	if not (type(Item.Name) == "string" or type(Item.Name) == "number") then
 		return warn("Do normal request for item unequip")
 	end
+	
+	print("ItemUnequip")
 
 	local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item.Name)
 
