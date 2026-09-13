@@ -210,7 +210,7 @@ UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
 					end
 					
 					if PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon" then
-						if PlushTimerStatus ~= "Increase" then
+						if PlushTimerStatus ~= "Increase" then print("Early Equip")
 							if type(PlushTimerStatus) ~= "number" then
 								PlushTimerStatus = 1
 							end
@@ -223,21 +223,20 @@ UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
 							if type(PlushTimerStatus) == "number" then
 								if PlushTimerStatus > 0 then
 									continue
-								else
+								else print("Can Add")
 									PlushTimerStatus = "Increase"
 								end
 							end
 						end
 						
-						if PlushTimer < 10 then
+						if PlushTimer < 10 then print("Add")
 							PlushTimer = (math.round(PlushTimer * 10) + 1) / 10
 							task.wait(0.1)
 						else
 							PlushTimer = 10
-							break
 						end
 					else
-						if not PlushContented then
+						if not PlushContented then print("Take")
 							PlushTimerDecrease()
 						end
 					end
