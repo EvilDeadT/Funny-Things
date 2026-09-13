@@ -391,8 +391,13 @@ function ItemGive(Item, PickedUp)
 end
 
 function ItemRemove(Item, AllCopies)
-	if type(Item) ~= "string" and Item.Parent == UI.Inventory then
-		Item:Destroy()
+	if type(Item) ~= "string" then
+		if Item.Parent == UI.Inventory then
+			Item:Destroy()
+		else
+			warn("Item is not a Instance but not a string too")
+		end
+		
 		return
 	end
 	
@@ -516,7 +521,11 @@ function ItemDrop(Item)
 	if UI.Events.UIModule:Invoke("FindByThread", ItemFolder, "Models.Drop") then
 		local ItemModel = ItemFolder.Models.Drop:Clone()
 		ItemModel:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame)
-		ItemModel.PrimaryPart.AssemblyLinearVelocity = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector * Vector3.new(20, -1, 0)
+		ItemModel.PrimaryPart.AssemblyLinearVelocity = Vector3.new(
+			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector.X * 20
+			-1,
+			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector.Z * 20
+		)
 		ItemModel.Parent = game.Workspace.GameplayFolder.DroppedItems
 		
 		task.delay(5, function()
