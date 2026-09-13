@@ -279,10 +279,10 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 	end)
 	
 	local ItemClasses = PlayerMain.Toolbar.CachedClasses[Item.Name] or {
-		Equip = function() print("Equip func")
+		Equip = function()
 			ItemEquip(ItemIcon, true)
 		end,
-		Unequip = function() print("Unequip func")
+		Unequip = function()
 			ItemUnequip(ItemIcon, true)
 		end,
 		Activate = function()
@@ -412,7 +412,7 @@ function ItemRemove(Item, AllCopies)
 	end
 end
 
-function ItemEquip(Item, ByToolbar) print("ItemEquip")
+function ItemEquip(Item, ByToolbar)
 	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") or not UI.Inventory:FindFirstChild(Item.Name) then
 		return
 	end
@@ -430,7 +430,7 @@ function ItemEquip(Item, ByToolbar) print("ItemEquip")
 	if not ByToolbar then
 		PlayerMain.Toolbar.UnSelect()
 
-		if PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) then print("Already hold")
+		if PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) then
 			ItemUnequip(Item)
 		end
 		
@@ -470,7 +470,7 @@ function ItemEquip(Item, ByToolbar) print("ItemEquip")
 	UI.Events.ItemOnEquip:Fire(Item.Name, ItemAnim[Item.Name])
 end
 
-function ItemUnequip(Item) print("ItemUnequip")
+function ItemUnequip(Item)
 	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") or not game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar:FindFirstChild(Item.Name) then
 		return
 	end
