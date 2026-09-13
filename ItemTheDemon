@@ -9,73 +9,14 @@ local AnimBusy = false
 local PlushContented = false
 local PlushContentTime = 6
 local PlushTimer = nil
+local PlushTimerStatus = "NoActive"
 local PlushTimerDelay = nil
 
 game.Players.LocalPlayer.CharacterAdded:Connect(function(Character)
-	PlushTimer = 10
+	if UI.Modifiers.TheDemon.Value then
+		PlushTimer = 10
+	end
 end)
-
-function TheDemonTimer(Type)
-	task.spawn(function()
-		if Type == "Increase" then
-			while PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon" and UI.Modifiers.TheDemon.Value do
-				if PlushTimer < 10 then
-					PlushTimer = (math.round(PlushTimer * 10) + 1) / 10
-					task.wait(0.1)
-				else
-					PlushTimer = 10
-					break
-				end
-
-				task.wait()
-			end
-		elseif Type == "Decrease" then
-			while not (PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon") and UI.Modifiers.TheDemon.Value do
-				if not PlushContented then
-					if type(PlushTimer) == "number" and PlushTimer > 0 then
-						PlushTimer = (math.round(PlushTimer * 10) - 1) / 10
-
-						if PlushTimer == 7.5 then
-							PlayerMain.SubTitles.new(
-								"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie needs attention...</font></font>",
-								6,
-								9999,
-								true
-							):Show()
-						elseif PlushTimer == 5 then
-							PlayerMain.SubTitles.new(
-								"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie wants attention...</font></font>",
-								6,
-								9999,
-								true
-							):Show()
-						elseif PlushTimer == 2.5 then
-							PlayerMain.SubTitles.new(
-								"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie demands attention...</font></font>",
-								6,
-								9999,
-								true
-							):Show()
-						end
-
-						task.wait(0.1)
-
-						if (PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon") or not UI.Modifiers.TheDemon.Value then
-							break
-						end
-					end
-				end
-
-				if PlushTimer <= 0 then
-					UI.Events.Atomize:Fire(game.Players.LocalPlayer.Character)
-					break
-				end
-
-				task.wait()
-			end
-		end
-	end)
-end
 
 UI.Events.ItemOnEquip.Event:Connect(function(Item, Anim)
 	if Item ~= "TheDemon" then
@@ -97,8 +38,6 @@ UI.Events.ItemOnEquip.Event:Connect(function(Item, Anim)
 			AnimBusy = false
 		end
 	end
-	
-	TheDemonTimer("Increase")
 end)
 
 UI.Events.ItemOnUnequip.Event:Connect(function(Item, Anim)
@@ -118,9 +57,11 @@ UI.Events.ItemOnUnequip.Event:Connect(function(Item, Anim)
 			Anim.Pet:Stop()
 			AnimBusy = false
 		end
+		if Anim.Inspect then
+			Anim.Inspect:Stop()
+			AnimBusy = false
+		end
 	end
-
-	TheDemonTimer("Decrease")
 end)
 
 UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
@@ -215,7 +156,86 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 end)
 
 UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
-	if not UI.Modifiers.TheDemon.Value then
+	if UI.Modifiers.TheDemon.Value then
+		if PlushTimerStatus == "NoActive" then
+			task.spawn(function()
+				while UI.Modifiers.TheDemon.Value do
+					if type(PlushTimer) ~= "number" then
+						task.wait()
+						continue
+					end
+					
+					if PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon" then
+						if PlushTimerStatus ~= "Increase" then
+							if type(PlushTimerStatus) ~= "number" then
+								PlushTimerStatus = 1
+							end
+							
+							PlushTimerStatus = ((PlushTimerStatus * 10) + 1) / 10
+							task.wait(0.1)
+							
+							if type(PlushTimerStatus) == "number" then
+								if PlushTimerStatus > 0 then
+									continue
+								else
+									PlushTimerStatus = "Increase"
+								end
+							end
+						end
+						
+						if PlushTimer < 10 then
+							PlushTimer = (math.round(PlushTimer * 10) + 1) / 10
+							task.wait(0.1)
+						else
+							PlushTimer = 10
+							break
+						end
+					else
+						if not PlushContented then
+							if PlushTimer > 0 then
+								PlushTimerStatus = "Decrease"
+								PlushTimer = (math.round(PlushTimer * 10) - 1) / 10
+
+								if PlushTimer == 7.5 then
+									PlayerMain.SubTitles.new(
+										"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie needs attention...</font></font>",
+										6,
+										9999,
+										true
+									):Show()
+								elseif PlushTimer == 5 then
+									PlayerMain.SubTitles.new(
+										"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie wants attention...</font></font>",
+										6,
+										9999,
+										true
+									):Show()
+								elseif PlushTimer == 2.5 then
+									PlayerMain.SubTitles.new(
+										"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie demands attention...</font></font>",
+										6,
+										9999,
+										true
+									):Show()
+								end
+
+								task.wait(0.1)
+							end
+						end
+
+						if type(PlushTimer) == "number" and PlushTimer <= 0 then
+							UI.Events.Atomize:Fire(game.Players.LocalPlayer.Character)
+							break
+						end
+					end
+					
+					task.wait()
+				end
+				
+				PlushTimerStatus = "NoActive"
+			end)
+		end
+	else
 		PlushTimer = nil
 		PlayerMain.SubTitles.new(
 			"<font family='rbxasset://fonts/families/Zekton.json'><font color='rgb(255, 107, 164)'><b>"..game.Players.LocalPlayer.Name.." refused the plush...</b></font></font>",
