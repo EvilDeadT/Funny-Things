@@ -48,7 +48,7 @@ function GetOpenSlot(Min, Max)
 	return
 end
 
-function NewWheelSlot(Item) print("NewWheelSlot")
+function NewWheelSlot(Item)
 	local WheelSlot = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:FindFirstChild(Item.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts)
 	
 	if WheelSlot then
@@ -61,7 +61,7 @@ function NewWheelSlot(Item) print("NewWheelSlot")
 	end
 end
 
-function ClearWheelSlot(Item) print("ClearWheelSlot")
+function ClearWheelSlot(Item)
 	local MissingItem = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:FindFirstChild(Item.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts)
 	
 	if MissingItem then
@@ -71,7 +71,7 @@ function ClearWheelSlot(Item) print("ClearWheelSlot")
 	end
 end
 
-function SetIconSlot(Item, Slot, RefreshWheel) print("SetIconSlot")
+function SetIconSlot(Item, Slot, RefreshWheel)
 	if Slot <= 9 then
 		Item.Number.TextLabel.Text = Slot
 	else
@@ -96,7 +96,7 @@ function SetIconSlot(Item, Slot, RefreshWheel) print("SetIconSlot")
 	return true
 end
 
-function AppendZeroSlotsToEnd(ItemList) print("AppendZeroSlotsToEnd")
+function AppendZeroSlotsToEnd(ItemList)
 	for Item, ItemIcon in ItemList do
 		if ItemIcon:GetAttribute("ZeroSlot") then
 			ItemList[Item] = nil
@@ -146,7 +146,7 @@ function OrderToolbar() print("OrderToolbar USELESS")
 	end
 end
 
-function RefreshItemList() print("RefreshItemList")
+function RefreshItemList()
 	PlayerMain.Toolbar.List = {}
 	
 	for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
@@ -162,7 +162,7 @@ function RefreshItemList() print("RefreshItemList")
 	AppendZeroSlotsToEnd(PlayerMain.Toolbar.List)
 end
 
-function MoveSlotsDown(Offset) print("MoveSlotsDown")
+function MoveSlotsDown(Offset)
 	local ItemList = {}
 	
 	for _, ItemIcon in PlayerMain.Toolbar.List do
@@ -284,7 +284,7 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 		Activate = function()
 			UI.Events.ItemOnInput:Fire(Item.Name, ItemAnim[Item.Name], {UserInputType = Enum.UserInputType.MouseButton1})
 		end,
-		UnBindOffHandKey = function(UITo)
+		UnBindOffHandKey = function(UITo) print("UnBindOffHandKey Func")
 			UITo.Health.AuxItems.OffHandItem.Visible = false
 			for _, Connection in require(game.ReplicatedStorage.ToolsModule.ToolsBase).OffHandConnections do
 				Connection:Disconnect()
@@ -407,17 +407,11 @@ function ItemEquip(Item)
 		return warn("No Item Folder For "..Item.Name)
 	end
 	
-	print("ItemEquip")
-	
 	PlayerMain.Toolbar.UnSelect()
 
-	for _, CustomItem in game.ReplicatedStorage.CustomAssets.Items:GetChildren() do
-		if game.Players.LocalPlayer.Character:FindFirstChild(CustomItem.Name) then
-			ItemUnequip(game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar:FindFirstChild(CustomItem.Name))
-		end
+	if PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) then
+		ItemUnequip(Item)
 	end
-
-
 
 	if ItemFolder:FindFirstChild("Models") then
 		if ItemFolder.Models:FindFirstChild("Equip") then
@@ -448,6 +442,7 @@ function ItemEquip(Item)
 	end
 
 	PlayerMain.Toolbar.CurrentSelected = Item
+	
 	game.TweenService:Create(Item, TweenInfo.new(0.2), {
 		Size = UDim2.new(1, 0, 1, 0)
 	}):Play()
@@ -463,8 +458,6 @@ function ItemUnequip(Item)
 	if not (type(Item.Name) == "string" or type(Item.Name) == "number") then
 		return warn("Do normal request for item unequip")
 	end
-	
-	print("ItemUnequip")
 
 	local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item.Name)
 
