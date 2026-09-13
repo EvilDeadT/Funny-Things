@@ -397,11 +397,7 @@ function ItemRemove(Item, AllCopies)
 		else
 			warn("Item is not a Instance but not a string too")
 		end
-		
-		return
-	end
-	
-	if UI.Inventory:FindFirstChild(Item) then
+	elseif UI.Inventory:FindFirstChild(Item) then
 		if not AllCopies then
 			UI.Inventory[Item]:Destroy()
 		else
@@ -412,6 +408,8 @@ function ItemRemove(Item, AllCopies)
 			end
 		end
 	end
+	
+	RefreshItemList()
 end
 
 function ItemEquip(Item)
