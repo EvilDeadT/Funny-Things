@@ -77,7 +77,7 @@ UI.Events.ItemOnUnequip.Event:Connect(function(Item, Anim)
 			end
 			
 			if not PlushContented then
-				if PlushTimer > 0 then
+				if type(PlushTimer) == "number" and PlushTimer > 0 then
 					PlushTimer = (math.round(PlushTimer * 10) - 1) / 10
 
 					if PlushTimer == 7.5 then
