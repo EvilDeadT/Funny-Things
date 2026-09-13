@@ -215,7 +215,7 @@ UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
 								PlushTimerStatus = 1
 							end
 							
-							PlushTimerStatus = ((PlushTimerStatus * 10) + 1) / 10
+							PlushTimerStatus = ((PlushTimerStatus * 10) - 1) / 10
 							
 							PlushTimerDecrease()
 							task.wait(0.1)
