@@ -219,11 +219,14 @@ UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
 							
 							PlushTimerStatus = ((PlushTimerStatus * 10) - 1) / 10
 							
+							print("PlushTimerStatus:", PlushTimerStatus)
+							
 							PlushTimerDecrease()
-							task.wait(0.1)
 							
 							if type(PlushTimerStatus) == "number" then
 								if PlushTimerStatus > 0 then
+									task.wait(0.1)
+									
 									continue
 								else print("Can Add")
 									PlushTimerStatus = "Increase"
