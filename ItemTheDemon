@@ -44,6 +44,8 @@ UI.Events.ItemOnUnequip.Event:Connect(function(Item, Anim)
 	if Item ~= "TheDemon" then
 		return
 	end
+	
+	PlushTimerStatus = "Unequiped"
 
 	if ActivateTimer then
 		task.cancel(ActivateTimer)
