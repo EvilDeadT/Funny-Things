@@ -161,6 +161,40 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 	end
 end)
 
+function PlushTimerDecrease()
+	if PlushTimer > 0 then
+		PlushTimerStatus = "Decrease"
+		PlushTimer = (math.round(PlushTimer * 10) - 1) / 10
+
+		if PlushTimer == 7.5 then
+			PlayerMain.SubTitles.new(
+				"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie needs attention...</font></font>",
+				6,
+				9999,
+				true
+			):Show()
+		elseif PlushTimer == 5 then
+			PlayerMain.SubTitles.new(
+				"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie wants attention...</font></font>",
+				6,
+				9999,
+				true
+			):Show()
+		elseif PlushTimer == 2.5 then
+			PlayerMain.SubTitles.new(
+				"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie demands attention...</font></font>",
+				6,
+				9999,
+				true
+			):Show()
+		elseif PlushTimer <= 0 then
+			UI.Events.Atomize:Fire(game.Players.LocalPlayer.Character)
+		end
+
+		task.wait(0.1)
+	end
+end
+
 UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
 	if UI.Modifiers.TheDemon.Value then
 		if PlushTimerStatus == "NoActive" then
@@ -178,6 +212,8 @@ UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
 							end
 							
 							PlushTimerStatus = ((PlushTimerStatus * 10) + 1) / 10
+							
+							PlushTimerDecrease()
 							task.wait(0.1)
 							
 							if type(PlushTimerStatus) == "number" then
@@ -198,41 +234,12 @@ UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
 						end
 					else
 						if not PlushContented then
-							if PlushTimer > 0 then
-								PlushTimerStatus = "Decrease"
-								PlushTimer = (math.round(PlushTimer * 10) - 1) / 10
-
-								if PlushTimer == 7.5 then
-									PlayerMain.SubTitles.new(
-										"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie needs attention...</font></font>",
-										6,
-										9999,
-										true
-									):Show()
-								elseif PlushTimer == 5 then
-									PlayerMain.SubTitles.new(
-										"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie wants attention...</font></font>",
-										6,
-										9999,
-										true
-									):Show()
-								elseif PlushTimer == 2.5 then
-									PlayerMain.SubTitles.new(
-										"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie demands attention...</font></font>",
-										6,
-										9999,
-										true
-									):Show()
-								end
-
-								task.wait(0.1)
-							end
+							PlushTimerDecrease()
 						end
-
-						if type(PlushTimer) == "number" and PlushTimer <= 0 then
-							UI.Events.Atomize:Fire(game.Players.LocalPlayer.Character)
-							break
-						end
+					end
+					
+					if type(PlushTimer) == "number" and PlushTimer <= 0 then
+						break
 					end
 					
 					task.wait()
