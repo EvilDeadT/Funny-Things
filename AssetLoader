@@ -38,6 +38,12 @@ local Assets = {
 			Joke = {
 				Lancer = {Name='Lancer',ClassName='Sound',Volume=5,SoundId=7551589091}
 			}
+		},
+		Items = {
+			Base = {
+				Pickup = {Name='Pickup',ClassName='Sound',SoundId=12946337158,PlaybackSpeed=0.8,Tags={'Muffle'}},
+				Butterfingers = {Name='Butterfingers',ClassName='Sound',Volume=0.75,SoundId=127268090779418,PlaybackSpeed=0.7,Tags={'Muffle'}}
+			}
 		}
 	},
 	Rooms = {
