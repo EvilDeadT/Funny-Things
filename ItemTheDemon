@@ -20,7 +20,7 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function(Character)
 end)
 
 UI.Events.ItemOnEquip.Event:Connect(function(Item, Anim)
-	if Item ~= "TheDemon" then
+	if Item.Name ~= "TheDemon" then
 		return
 	end
 
@@ -33,7 +33,7 @@ UI.Events.ItemOnEquip.Event:Connect(function(Item, Anim)
 end)
 
 UI.Events.ItemOnUnequip.Event:Connect(function(Item, Anim)
-	if Item ~= "TheDemon" then
+	if Item.Name ~= "TheDemon" then
 		return
 	end
 	
@@ -70,7 +70,7 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 			if Anim.Pet then
 				AnimBusy = true
 
-				local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item)
+				local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item.Name)
 
 				if ItemModel then
 					if ItemModel:FindFirstChild("Handle") then
@@ -138,7 +138,7 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 			if Anim.Inspect then
 				AnimBusy = true
 
-				local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item)
+				local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item.Name)
 
 				Anim.Inspect.Stopped:Once(function()
 					if ItemModel then
@@ -194,7 +194,7 @@ function PlushTimerStart()
 							end
 						end
 					else
-						if not PlushContented then print("Take")
+						if not PlushContented and PlayerMain.Toolbar.CanEquip then print("Take")
 							PlushTimerDecrease()
 						end
 					end
