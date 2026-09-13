@@ -97,7 +97,10 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 
 					AnimBusy = false
 				end)
-
+				
+				if Anim.Equip then
+					Anim.Equip:Stop()
+				end
 				Anim.Pet:Play()
 			end
 		end
@@ -148,7 +151,10 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 
 					AnimBusy = false
 				end)
-
+				
+				if Anim.Equip then
+					Anim.Equip:Stop()
+				end
 				Anim.Inspect:Play()
 			end
 		end
