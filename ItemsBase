@@ -280,10 +280,10 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 	
 	local ItemClasses = PlayerMain.Toolbar.CachedClasses[Item.Name] or {
 		Equip = function() print("Equip func")
-			ItemEquip(ItemIcon)
+			ItemEquip(ItemIcon, true)
 		end,
 		Unequip = function() print("Unequip func")
-			ItemUnequip(ItemIcon)
+			ItemUnequip(ItemIcon, true)
 		end,
 		Activate = function()
 			UI.Events.ItemOnInput:Fire(Item.Name, ItemAnim[Item.Name], {UserInputType = Enum.UserInputType.MouseButton1})
@@ -412,7 +412,7 @@ function ItemRemove(Item, AllCopies)
 	end
 end
 
-function ItemEquip(Item) print("ItemEquip")
+function ItemEquip(Item, ByToolbar) print("ItemEquip")
 	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") or not UI.Inventory:FindFirstChild(Item.Name) then
 		return
 	end
@@ -427,10 +427,18 @@ function ItemEquip(Item) print("ItemEquip")
 		return warn("No Item Folder For "..Item.Name)
 	end
 	
-	PlayerMain.Toolbar.UnSelect()
+	if not ByToolbar then
+		PlayerMain.Toolbar.UnSelect()
 
-	if PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) then print("Already hold")
-		ItemUnequip(Item)
+		if PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) then print("Already hold")
+			ItemUnequip(Item)
+		end
+		
+		PlayerMain.Toolbar.CurrentSelected = Item
+
+		game.TweenService:Create(Item, TweenInfo.new(0.2), {
+			Size = UDim2.new(1, 0, 1, 0)
+		}):Play()
 	end
 
 	if UI.Events.UIModule:Invoke("FindByThread", ItemFolder, "Models.Equip") then
@@ -458,12 +466,6 @@ function ItemEquip(Item) print("ItemEquip")
 			ItemAnim[Item.Name].Idle:Play()
 		end
 	end
-
-	PlayerMain.Toolbar.CurrentSelected = Item
-	
-	game.TweenService:Create(Item, TweenInfo.new(0.2), {
-		Size = UDim2.new(1, 0, 1, 0)
-	}):Play()
 
 	UI.Events.ItemOnEquip:Fire(Item.Name, ItemAnim[Item.Name])
 end
