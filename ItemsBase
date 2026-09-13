@@ -279,10 +279,10 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 	end)
 	
 	local ItemClasses = PlayerMain.Toolbar.CachedClasses[Item.Name] or {
-		Equip = function()
+		Equip = function() print("Equip func")
 			ItemEquip(ItemIcon)
 		end,
-		Unequip = function()
+		Unequip = function() print("Unequip func")
 			ItemUnequip(ItemIcon)
 		end,
 		Activate = function()
@@ -429,7 +429,7 @@ function ItemEquip(Item) print("ItemEquip")
 	
 	PlayerMain.Toolbar.UnSelect()
 
-	if PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) then
+	if PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) then print("Already hold")
 		ItemUnequip(Item)
 	end
 
