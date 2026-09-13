@@ -286,7 +286,7 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 			ItemUnequip(ItemIcon, true)
 		end,
 		Activate = function()
-			UI.Events.ItemOnInput:Fire(Item.Name, ItemAnim[Item.Name], {UserInputType = Enum.UserInputType.MouseButton1})
+			UI.Events.ItemOnInput:Fire(Item, ItemAnim[Item.Name], {UserInputType = Enum.UserInputType.MouseButton1})
 		end,
 		UnBindOffHandKey = function(UITo) print("UnBindOffHandKey Func")
 			UITo.Health.AuxItems.OffHandItem.Visible = false
@@ -413,7 +413,7 @@ function ItemRemove(Item, AllCopies)
 end
 
 function ItemEquip(Item, ByToolbar)
-	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") or not UI.Inventory:FindFirstChild(Item.Name) then
+	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") or not PlayerMain.Toolbar.CanEquip or not UI.Inventory:FindFirstChild(Item.Name) then
 		return
 	end
 
@@ -429,11 +429,6 @@ function ItemEquip(Item, ByToolbar)
 	
 	if not ByToolbar then
 		PlayerMain.Toolbar.UnSelect()
-
-		if PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) then
-			ItemUnequip(Item)
-		end
-		
 		PlayerMain.Toolbar.CurrentSelected = Item
 
 		game.TweenService:Create(Item, TweenInfo.new(0.2), {
@@ -458,6 +453,10 @@ function ItemEquip(Item, ByToolbar)
 	end
 
 	if ItemAnim[Item.Name] then
+		if ItemAnim[Item.Name].Unequip then
+			ItemAnim[Item.Name].Unequip:Stop()
+		end
+		
 		if ItemAnim[Item.Name].Equip then
 			ItemAnim[Item.Name].Equip:Play()
 		end
@@ -470,7 +469,7 @@ function ItemEquip(Item, ByToolbar)
 	UI.Events.ItemOnEquip:Fire(Item.Name, ItemAnim[Item.Name])
 end
 
-function ItemUnequip(Item)
+function ItemUnequip(Item, ByToolbar)
 	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") or not game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar:FindFirstChild(Item.Name) then
 		return
 	end
@@ -490,6 +489,10 @@ function ItemUnequip(Item)
 	end
 
 	if ItemAnim[Item.Name] then
+		if ItemAnim[Item.Name].Equip then
+			ItemAnim[Item.Name].Equip:Stop()
+		end
+		
 		if ItemAnim[Item.Name].Unequip then
 			ItemAnim[Item.Name].Unequip:Play()
 		end
@@ -498,13 +501,16 @@ function ItemUnequip(Item)
 			ItemAnim[Item.Name].Idle:Stop()
 		end
 	end
-
-	if PlayerMain.Toolbar.CurrentSelected == Item then
-		PlayerMain.Toolbar.CurrentSelected = nil
+	
+	if not ByToolbar then
+		if PlayerMain.Toolbar.CurrentSelected == Item then
+			PlayerMain.Toolbar.CurrentSelected = nil
+		end
+		
+		game.TweenService:Create(Item, TweenInfo.new(0.2), {
+			Size = UDim2.new(0.8, 0, 0.8, 0)
+		}):Play()
 	end
-	game.TweenService:Create(Item, TweenInfo.new(0.2), {
-		Size = UDim2.new(0.8, 0, 0.8, 0)
-	}):Play()
 
 	UI.Events.ItemOnUnequip:Fire(Item.Name, ItemAnim[Item.Name])
 end
@@ -522,9 +528,9 @@ function ItemDrop(Item)
 		local ItemModel = ItemFolder.Models.Drop:Clone()
 		ItemModel:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame)
 		ItemModel.PrimaryPart.AssemblyLinearVelocity = Vector3.new(
-			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector.X * 20
+			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector.X * 25
 			-1,
-			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector.Z * 20
+			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector.Z * 25
 		)
 		ItemModel.Parent = game.Workspace.GameplayFolder.DroppedItems
 		
@@ -589,7 +595,7 @@ game.UserInputService.InputBegan:Connect(function(Input, GameProcessed)
 		and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name)
 		and Input.UserInputType ~= Enum.UserInputType.MouseButton1
 		and not GameProcessed then
-		UI.Events.ItemOnInput:Fire(PlayerMain.Toolbar.CurrentSelected.Name, ItemAnim[PlayerMain.Toolbar.CurrentSelected.Name], Input)
+		UI.Events.ItemOnInput:Fire(PlayerMain.Toolbar.CurrentSelected, ItemAnim[PlayerMain.Toolbar.CurrentSelected.Name], Input)
 		
 		if Input.KeyCode == Enum.KeyCode.G and not game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") then
 			for _, Item in UI.Inventory:GetChildren() do
