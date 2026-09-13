@@ -31,6 +31,8 @@ UI.Events.ItemOnEquip.Event:Connect(function(Item, Anim)
 			"<font family='rbxasset://fonts/families/Zekton.json'><font color='rgb(255, 107, 164)'><b>"..game.Players.LocalPlayer.Name.." grabbed the plush...</b></font></font>",
 			6
 		):Show()
+		
+		PlushTimerStart()
 	end
 
 	if Anim then
@@ -252,9 +254,7 @@ function PlushTimerDecrease()
 end
 
 UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
-	if UI.Modifiers.TheDemon.Value then
-		PlushTimerStart()
-	else
+	if not UI.Modifiers.TheDemon.Value then
 		PlushTimer = nil
 		PlayerMain.SubTitles.new(
 			"<font family='rbxasset://fonts/families/Zekton.json'><font color='rgb(255, 107, 164)'><b>"..game.Players.LocalPlayer.Name.." refused the plush...</b></font></font>",
