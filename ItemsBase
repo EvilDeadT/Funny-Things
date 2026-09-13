@@ -368,6 +368,8 @@ UI.Inventory.ChildRemoved:Connect(function(Item)
 			game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar[ItemName]:Destroy()
 		end
 	end
+	
+	RefreshItemList()
 end)
 
 function ItemGive(Item, PickedUp)
@@ -408,11 +410,9 @@ function ItemRemove(Item, AllCopies)
 			end
 		end
 	end
-	
-	RefreshItemList()
 end
 
-function ItemEquip(Item)
+function ItemEquip(Item) print("ItemEquip")
 	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") or not UI.Inventory:FindFirstChild(Item.Name) then
 		return
 	end
@@ -468,7 +468,7 @@ function ItemEquip(Item)
 	UI.Events.ItemOnEquip:Fire(Item.Name, ItemAnim[Item.Name])
 end
 
-function ItemUnequip(Item)
+function ItemUnequip(Item) print("ItemUnequip")
 	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") or not game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar:FindFirstChild(Item.Name) then
 		return
 	end
