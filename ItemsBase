@@ -48,7 +48,7 @@ function GetOpenSlot(Min, Max)
 	return
 end
 
-function NewWheelSlot(Item)
+function NewWheelSlot(Item) print("NewWheelSlot")
 	local WheelSlot = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:FindFirstChild(Item.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts)
 	
 	if WheelSlot then
@@ -61,7 +61,7 @@ function NewWheelSlot(Item)
 	end
 end
 
-function ClearWheelSlot(Item)
+function ClearWheelSlot(Item) print("ClearWheelSlot")
 	local MissingItem = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:FindFirstChild(Item.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts)
 	
 	if MissingItem then
@@ -71,7 +71,7 @@ function ClearWheelSlot(Item)
 	end
 end
 
-function SetIconSlot(Item, Slot, RefreshWheel)
+function SetIconSlot(Item, Slot, RefreshWheel) print("SetIconSlot")
 	if Slot <= 9 then
 		Item.Number.TextLabel.Text = Slot
 	else
@@ -96,7 +96,7 @@ function SetIconSlot(Item, Slot, RefreshWheel)
 	return true
 end
 
-function AppendZeroSlotsToEnd(ItemList)
+function AppendZeroSlotsToEnd(ItemList) print("AppendZeroSlotsToEnd")
 	for Item, ItemIcon in ItemList do
 		if ItemIcon:GetAttribute("ZeroSlot") then
 			ItemList[Item] = nil
@@ -106,7 +106,7 @@ function AppendZeroSlotsToEnd(ItemList)
 	end
 end
 
-function OrderToolbar()
+function OrderToolbar() print("OrderToolbar USELESS")
 	PlayerMain.Toolbar.List = {}
 	
 	local function AddItemToList(ItemIcon)
@@ -146,7 +146,7 @@ function OrderToolbar()
 	end
 end
 
-function RefreshItemList()
+function RefreshItemList() print("RefreshItemList")
 	PlayerMain.Toolbar.List = {}
 	
 	for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
@@ -162,7 +162,7 @@ function RefreshItemList()
 	AppendZeroSlotsToEnd(PlayerMain.Toolbar.List)
 end
 
-function MoveSlotsDown(Offset)
+function MoveSlotsDown(Offset) print("MoveSlotsDown")
 	local ItemList = {}
 	
 	for _, ItemIcon in PlayerMain.Toolbar.List do
@@ -189,21 +189,21 @@ function MoveSlotsDown(Offset)
 end
 
 UI.Inventory.ChildAdded:Connect(function(Item)
-	local ItemIcon = game.ReplicatedStorage.CustomAssets.Player.UI.Pressure.temp:Clone()
+	local ItemIcon = game.ReplicatedStorage.CustomAssets.Player.UI.Pressure.ToolbarIcon:Clone()
 	ItemIcon.Name = Item.Name
 	
 	ItemIcon.frame.ImageColor3 = Color3.fromRGB(218, 145, 0)
 	ItemIcon.Number.UIStroke.Color = Color3.fromRGB(255, 170, 0)
 	
-	if game.ReplicatedStorage.CustomAssets.Items[Item.Name]:FindFirstChild("Icons") then
-		if game.ReplicatedStorage.CustomAssets.Items[Item.Name].Icons:FindFirstChild("Toolbar") then
-			ItemIcon.ImageLabel.Image = game.ReplicatedStorage.CustomAssets.Items[Item.Name].Icons.Toolbar.Image
-		end
+	if UI.Events.UIModule:Invoke("FindByThread", game.ReplicatedStorage.CustomAssets.Items[Item.Name], "Icons.Toolbar") then
+		ItemIcon.ImageLabel.Image = game.ReplicatedStorage.CustomAssets.Items[Item.Name].Icons.Toolbar.Image
 	end
+	
+	local ItemStats = game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats
 
-	if game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("MaxUses") then
+	if ItemStats:FindFirstChild("MaxUses") then
 		ItemIcon.Stack.Visible = true
-		ItemIcon.Stack.Text = "x"..game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats.MaxUses.Value
+		ItemIcon.Stack.Text = "x"..ItemStats.MaxUses.Value
 		Item.Changed:Connect(function()
 			ItemIcon.Stack.Text = "x"..Item.Value
 			
@@ -212,17 +212,17 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 				WheelIcon.Stack.Text = "x"..Item.Value
 			end
 		end)
-	elseif game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("MaxCharge") then
+	elseif ItemStats:FindFirstChild("MaxCharge") then
 		ItemIcon.Bar.Visible = true
 		local ChargeValue = Instance.new("IntValue")
 		ChargeValue.Changed:Connect(function()
 			if not (ItemIcon and ItemIcon.Parent) then
 				return
 			end
-			ItemIcon.Bar.TextLabel.Text = tostring((math.floor(ItemIcon.Value / game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats.MaxCharge.Value))) .. "%"
+			ItemIcon.Bar.TextLabel.Text = tostring((math.floor(ItemIcon.Value / ItemStats.MaxCharge.Value))) .. "%"
 		end)
 		ChargeValue.Value = Item.Value * 100
-		ItemIcon.Bar.TextLabel.Text = tostring((math.floor(ChargeValue.Value / game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats.MaxUses.Value))) .. "%"
+		ItemIcon.Bar.TextLabel.Text = tostring((math.floor(ChargeValue.Value / ItemStats.MaxUses.Value))) .. "%"
 		
 		Item.Changed:Connect(function()
 			game.TweenService:Create(ChargeValue, TweenInfo.new(0.6, Enum.EasingStyle.Linear),{
@@ -232,20 +232,20 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 			local WheelIcon = GetWheelItem(ItemIcon)
 			if WheelIcon then
 				game.TweenService:Create(WheelIcon.Bar.Frame, TweenInfo.new(0.6, Enum.EasingStyle.Linear), {
-					Size = UDim2.new(Item.Value / game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats.MaxUses.Value, 0, 1, 0)
+					Size = UDim2.new(Item.Value / ItemStats.MaxUses.Value, 0, 1, 0)
 				}):Play()
 			end
 		end)
 	end
 	
-	if game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("AlwaysLast") then
+	if ItemStats:FindFirstChild("AlwaysLast") then
 		ItemIcon:SetAttribute("AlwaysLast", true)
-	elseif game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("AlwaysFirst") then
+	elseif ItemStats:FindFirstChild("AlwaysFirst") then
 		PlayerMain.Toolbar.AlwaysFirsts = PlayerMain.Toolbar.AlwaysFirsts + 1
 		ItemIcon:SetAttribute("AlwaysFirst", true)
 	end
 	
-	if game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("AlwaysFirst") then
+	if ItemStats:FindFirstChild("AlwaysFirst") then
 		for _, ItemIconList in PlayerMain.Toolbar.List do
 			SetIconSlot(ItemIconList, ItemIconList.LayoutOrder + 1)
 		end
@@ -257,7 +257,7 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 		RefreshItemList()
 		
 		local Slot = GetOpenSlot()
-		if game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:GetAttribute("ZeroSlot") then
+		if ItemStats:GetAttribute("ZeroSlot") then
 			Slot = 10
 		end
 		
@@ -279,7 +279,7 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 		Unequip = function()
 			ItemUnequip(ItemIcon)
 		end,
-		Activate = function()
+		Activate = function() print("Activated Function")
 			UI.Events.ItemOnInput:Fire(Item.Name, ItemAnim[Item.Name], {UserInputType = Enum.UserInputType.MouseButton1})
 		end,
 		UnBindOffHandKey = function(UITo)
@@ -314,8 +314,8 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 	
 	ItemIcon.Parent = game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar
 	
-	if game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("EquipOnGive") then
-		--ItemEquip(ItemIcon)
+	if ItemStats:FindFirstChild("EquipOnGive") then
+		ItemEquip(ItemIcon)
 	end
 end)
 
@@ -366,11 +366,13 @@ function ItemGive(Item)
 	local ItemValue = Instance.new("NumberValue")
 	ItemValue.Name = Item
 	ItemValue.Value = -1
-
-	if game.ReplicatedStorage.CustomAssets.Items[Item].Stats:FindFirstChild("MaxUses") then
-		ItemValue.Value = game.ReplicatedStorage.CustomAssets.Items[Item].Stats.MaxUses.Value
-	elseif game.ReplicatedStorage.CustomAssets.Items[Item].Stats:FindFirstChild("MaxCharge") then
-		ItemValue.Value = game.ReplicatedStorage.CustomAssets.Items[Item].Stats.MaxCharge.Value
+	
+	local ItemStats = game.ReplicatedStorage.CustomAssets.Items[Item].Stats
+	
+	if ItemStats:FindFirstChild("MaxUses") then
+		ItemValue.Value = ItemStats.MaxUses.Value
+	elseif ItemStats:FindFirstChild("MaxCharge") then
+		ItemValue.Value = ItemStats.MaxCharge.Value
 	end
 
 	ItemValue.Parent = UI.Inventory
@@ -503,6 +505,8 @@ UI.Events.ItemDrop.Event:Connect(ItemDrop)
 game.UserInputService.InputBegan:Connect(function(Input, GameProcessed)
 	if PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) and GameProcessed then
 		UI.Events.ItemOnInput:Fire(PlayerMain.Toolbar.CurrentSelected.Name, ItemAnim[PlayerMain.Toolbar.CurrentSelected.Name], Input)
+		
+		print("Activated Input")
 		
 		if Input.KeyCode == Enum.KeyCode.G and not game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") then
 			ItemDrop(PlayerMain.Toolbar.CurrentSelected)
