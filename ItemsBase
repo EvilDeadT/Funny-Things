@@ -594,7 +594,7 @@ game.UserInputService.InputBegan:Connect(function(Input, GameProcessed)
 		if Input.KeyCode == Enum.KeyCode.G and not game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") then
 			for _, Item in UI.Inventory:GetChildren() do
 				if Item:FindFirstChild("ToolbarIcon") and Item.ToolbarIcon:IsA("ObjectValue") and Item.ToolbarIcon.Value == PlayerMain.Toolbar.CurrentSelected then
-					ItemDrop(Item.ToolbarIcon.Value)
+					ItemDrop(Item)
 				end
 			end
 		end
