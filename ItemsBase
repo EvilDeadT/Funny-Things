@@ -503,7 +503,10 @@ UI.Events.ItemUnequip.Event:Connect(ItemUnequip)
 UI.Events.ItemDrop.Event:Connect(ItemDrop)
 
 game.UserInputService.InputBegan:Connect(function(Input, GameProcessed)
-	if PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) and GameProcessed then
+	if PlayerMain.Toolbar.CurrentSelected
+		and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name)
+		and Input.UserInputType ~= Enum.UserInputType.MouseButton1
+		and not GameProcessed then
 		UI.Events.ItemOnInput:Fire(PlayerMain.Toolbar.CurrentSelected.Name, ItemAnim[PlayerMain.Toolbar.CurrentSelected.Name], Input)
 		
 		print("Activated Input")
