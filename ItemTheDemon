@@ -218,7 +218,7 @@ function PlushTimerStart()
 end
 
 function PlushTimerDecrease()
-	if PlushTimer > 0 then
+	if type(PlushTimer) == "number" and PlushTimer > 0 then
 		PlushTimerStatus = "Decrease"
 		PlushTimer = (math.round(PlushTimer * 10) - 1) / 10
 
