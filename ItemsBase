@@ -199,6 +199,10 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 		ItemIcon.ImageLabel.Image = game.ReplicatedStorage.CustomAssets.Items[Item.Name].Icons.Toolbar.Image
 	end
 	
+	local ObjectValue = Instance.new("ObjectValue", Item)
+	ObjectValue.Name = "ToolbarIcon"
+	ObjectValue.Value = ItemIcon
+	
 	ItemIcon.Parent = game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar
 	
 	local ItemStats = game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats
@@ -341,6 +345,10 @@ UI.Inventory.ChildRemoved:Connect(function(Item)
 		end
 	end
 	
+	if PlayerMain.Toolbar.CurrentSelected == Item.ToolbarIcon.Value then
+		ItemUnequip(PlayerMain.Toolbar.CurrentSelected)
+	end
+	
 	for ItemName, ItemNumber in ItemsToolbar do
 		if ItemsInventory[ItemName] then
 			if ItemNumber > ItemsInventory[ItemName] then
@@ -362,7 +370,7 @@ UI.Inventory.ChildRemoved:Connect(function(Item)
 	end
 end)
 
-function ItemGive(Item)
+function ItemGive(Item, PickedUp)
 	local ItemValue = Instance.new("NumberValue")
 	ItemValue.Name = Item
 	ItemValue.Value = -1
@@ -376,9 +384,18 @@ function ItemGive(Item)
 	end
 
 	ItemValue.Parent = UI.Inventory
+	
+	if PickedUp then
+		return ItemValue
+	end
 end
 
 function ItemRemove(Item, AllCopies)
+	if type(Item) ~= "string" and Item.Parent == UI.Inventory then
+		Item:Destroy()
+		return
+	end
+	
 	if UI.Inventory:FindFirstChild(Item) then
 		if not AllCopies then
 			UI.Inventory[Item]:Destroy()
@@ -413,15 +430,13 @@ function ItemEquip(Item)
 		ItemUnequip(Item)
 	end
 
-	if ItemFolder:FindFirstChild("Models") then
-		if ItemFolder.Models:FindFirstChild("Equip") then
-			local ItemModel = ItemFolder.Models.Equip:Clone()
-			ItemModel.Name = Item.Name
+	if UI.Events.UIModule:Invoke("FindByThread", ItemFolder, "Models.Equip") then
+		local ItemModel = ItemFolder.Models.Equip:Clone()
+		ItemModel.Name = Item.Name
 
-			if ItemModel:FindFirstChild("Handle") then
-				ItemModel.Handle.Part0 = game.Players.LocalPlayer.Character:WaitForChild("RightHand")
-				ItemModel.Parent = game.Players.LocalPlayer.Character
-			end
+		if ItemModel:FindFirstChild("Handle") then
+			ItemModel.Handle.Part0 = game.Players.LocalPlayer.Character:WaitForChild("RightHand")
+			ItemModel.Parent = game.Players.LocalPlayer.Character
 		end
 	end
 
@@ -490,7 +505,48 @@ function ItemUnequip(Item)
 end
 
 function ItemDrop(Item)
+	ItemRemove(Item)
 	
+	local ItemFolder = game.ReplicatedStorage.CustomAssets.Items[Item.Name]
+
+	if not ItemFolder then
+		return warn("No Item Folder For "..Item.Name)
+	end
+
+	if UI.Events.UIModule:Invoke("FindByThread", ItemFolder, "Models.Drop") then
+		local ItemModel = ItemFolder.Models.Drop:Clone()
+		ItemModel:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame)
+		ItemModel.PrimaryPart.AssemblyLinearVelocity = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector * Vector3.new(20, -1, 0)
+		ItemModel.Parent = game.Workspace.GameplayFolder.DroppedItems
+		
+		task.delay(5, function()
+			if ItemModel and ItemModel.Parent and ItemModel.PrimaryPart and ItemModel.PrimaryPart:IsA("BasePart") then
+				ItemModel.PrimaryPart.Anchored = true
+			end
+		end)
+		
+		local Prompt = ItemModel:FindFirstChildWhichIsA("ProximityPrompt", true)
+		Prompt:SetAttribute("Display", ItemModel:GetAttribute("DisplayName") or ItemModel.Name)
+		Prompt:SetAttribute("Custom", true)
+
+		Prompt.Triggered:Connect(function()
+			if PlayerMain.PlayerDead or PlayerMain.IsGhost or PlayerMain.HangerImmunity then
+				return
+			end
+			
+			game.ReplicatedStorage.CustomAssets.Sounds.Items.Base.Pickup:Play()
+			ItemModel:Destroy()
+			
+			local AddedItem = ItemGive(Item.Name, true)
+			
+			if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("Butterfingers") and math.random(1, 5) == 1 then
+				task.delay(0.2, function()
+					game.ReplicatedStorage.CustomAssets.Sounds.Items.Base.Butterfingers:Play()
+					ItemDrop(AddedItem)
+				end)
+			end
+		end)
+	end
 end
 
 UI.Events.ItemGive.Event:Connect(ItemGive)
@@ -498,6 +554,26 @@ UI.Events.ItemRemove.Event:Connect(ItemRemove)
 UI.Events.ItemEquip.Event:Connect(ItemEquip)
 UI.Events.ItemUnequip.Event:Connect(ItemUnequip)
 UI.Events.ItemDrop.Event:Connect(ItemDrop)
+
+PlayerMain.CharacterDied:Connect(function()
+	if PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) then
+		ItemUnequip(PlayerMain.Toolbar.CurrentSelected)
+	end
+	
+	for _, Item in UI.Inventory:GetChildren() do
+		if not (Item:FindFirstChild("ToolbarIcon") and Item.ToolbarIcon:IsA("ObjectValue")) then
+			print("No ObjectValue or ToolbarIcon is not a ObjectValue. Item: "..Item:GetFullName())
+			
+			continue
+		end
+		
+		if not game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("NoDrop") then
+			ItemDrop(Item)
+		else
+			ItemRemove(Item)
+		end
+	end
+end)
 
 game.UserInputService.InputBegan:Connect(function(Input, GameProcessed)
 	if PlayerMain.Toolbar.CurrentSelected
@@ -511,7 +587,6 @@ game.UserInputService.InputBegan:Connect(function(Input, GameProcessed)
 		end
 	end
 end)
-
 
 for _, Item in game.ReplicatedStorage.CustomAssets.Items:GetChildren() do
 	if not game.RunService:IsStudio() then
