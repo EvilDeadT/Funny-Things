@@ -199,6 +199,8 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 		ItemIcon.ImageLabel.Image = game.ReplicatedStorage.CustomAssets.Items[Item.Name].Icons.Toolbar.Image
 	end
 	
+	ItemIcon.Parent = game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar
+	
 	local ItemStats = game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats
 
 	if ItemStats:FindFirstChild("MaxUses") then
@@ -279,7 +281,7 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 		Unequip = function()
 			ItemUnequip(ItemIcon)
 		end,
-		Activate = function() print("Activated Function")
+		Activate = function()
 			UI.Events.ItemOnInput:Fire(Item.Name, ItemAnim[Item.Name], {UserInputType = Enum.UserInputType.MouseButton1})
 		end,
 		UnBindOffHandKey = function(UITo)
@@ -311,8 +313,6 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 			RefreshItemList()
 		end
 	end)
-	
-	ItemIcon.Parent = game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar
 	
 	if ItemStats:FindFirstChild("EquipOnGive") then
 		ItemEquip(ItemIcon)
@@ -508,8 +508,6 @@ game.UserInputService.InputBegan:Connect(function(Input, GameProcessed)
 		and Input.UserInputType ~= Enum.UserInputType.MouseButton1
 		and not GameProcessed then
 		UI.Events.ItemOnInput:Fire(PlayerMain.Toolbar.CurrentSelected.Name, ItemAnim[PlayerMain.Toolbar.CurrentSelected.Name], Input)
-		
-		print("Activated Input")
 		
 		if Input.KeyCode == Enum.KeyCode.G and not game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") then
 			ItemDrop(PlayerMain.Toolbar.CurrentSelected)
