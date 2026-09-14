@@ -528,10 +528,11 @@ function ItemDrop(Item)
 		local ItemModel = ItemFolder.Models.Drop:Clone()
 		ItemModel:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame)
 		ItemModel.PrimaryPart.AssemblyLinearVelocity = Vector3.new(
-			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector.X * 25
+			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector.X * 20
 			-1,
-			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector.Z * 25
+			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector.Z * 20
 		)
+		print(ItemModel.PrimaryPart.AssemblyLinearVelocity)
 		ItemModel.Parent = game.Workspace.GameplayFolder.DroppedItems
 		
 		task.delay(5, function()
