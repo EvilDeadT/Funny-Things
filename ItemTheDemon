@@ -206,7 +206,7 @@ function PlushTimerStart()
 							end
 						end
 					else
-						if not PlushContented and (PlayerMain.Toolbar.CanEquip and not PlayerMain.Locker) then
+						if not PlushContented and (PlayerMain.Toolbar.CanEquip or PlayerMain.Locker) then
 							PlushTimerStatus = "Decrease"
 							PlushTimerDecrease()
 						else
@@ -225,7 +225,7 @@ function PlushTimerStart()
 end
 
 function PlushTimerDecrease()
-	if type(PlushTimer) == "number" and PlushTimer > 0 and not PlushContented and (PlayerMain.Toolbar.CanEquip and not PlayerMain.Locker) then
+	if type(PlushTimer) == "number" and PlushTimer > 0 and not PlushContented and (PlayerMain.Toolbar.CanEquip or PlayerMain.Locker) then
 		PlushTimer = (math.round(PlushTimer * 10) - 1) / 10
 
 		if PlushTimer == 7.5 then
