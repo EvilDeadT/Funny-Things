@@ -7,7 +7,17 @@ local ActivateTimer = nil
 local AnimBusy = false
 
 local PlushContented = false
-local PlushContentTime = 6
+local PlushContentTime = {
+	[1] = 7,
+	[2] = 7,
+	[3] = 6,
+	[4] = 5,
+	[5] = 4,
+	[6] = 3,
+	[7] = 3,
+	[8] = 2
+}
+local PlushPetted = 0
 local PlushTimer = nil
 local PlushTimerStatus = "NoActive"
 local PlushTimerDelay = nil
@@ -102,6 +112,7 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 		ActivateTimer = task.delay(1, function()
 			ActivateTimer = nil
 			PlushContented = true
+			PlushPetted += 1
 			
 			if UI.Modifiers.TheDemon.Value then
 				PlayerMain.SubTitles.new(
@@ -111,8 +122,8 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 					true
 				):Show()
 			end
-
-			task.delay(PlushContentTime, function()
+			
+			task.delay(PlushContentTime[PlushPetted] or 1, function()
 				PlushContented = false
 				
 				if UI.Modifiers.TheDemon.Value then
@@ -124,7 +135,7 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 					):Show()
 				end
 			end)
-
+			
 			task.delay(ActivateCooldown - 1, function()
 				CanActivate = true
 			end)
