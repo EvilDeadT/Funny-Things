@@ -169,28 +169,24 @@ function PlushTimerStart()
 				
 				if type(PlushTimer) == "number" then
 					if PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon" then
-						if PlushTimerStatus ~= "Increase" then print("Early Equip")
+						if PlushTimerStatus ~= "Increase" then
 							if type(PlushTimerStatus) ~= "number" then
-								PlushTimerStatus = 0.7
+								PlushTimerStatus = 1
 							end
 
 							PlushTimerStatus = ((PlushTimerStatus * 10) - 1) / 10
 
-							print("PlushTimerStatus:", PlushTimerStatus)
-
 							PlushTimerDecrease()
 
 							if type(PlushTimerStatus) == "number" then
-								if PlushTimerStatus > 0 then
-									task.wait(0.1)
-								else print("Can Add")
+								if PlushTimerStatus <= 0 then
 									PlushTimerStatus = "Increase"
 								end
 							end
 						end
 
 						if PlushTimerStatus == "Increase" then
-							if PlushTimer < 10 then print("Add")
+							if PlushTimer < 10 then
 								PlushTimer = (math.round(PlushTimer * 10) + 1) / 10
 								task.wait(0.1)
 							else
@@ -199,7 +195,7 @@ function PlushTimerStart()
 							end
 						end
 					else
-						if not PlushContented and PlayerMain.Toolbar.CanEquip then print("Take")
+						if not PlushContented and PlayerMain.Toolbar.CanEquip then
 							PlushTimerStatus = "Decrease"
 							PlushTimerDecrease()
 						else
