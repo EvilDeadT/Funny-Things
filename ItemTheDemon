@@ -163,7 +163,7 @@ function PlushTimerStart()
 	if PlushTimerStatus == "NoActive" then
 		task.spawn(function()
 			while UI.Modifiers.TheDemon.Value do
-				if type(PlushTimer) ~= "number" then
+				if type(PlushTimer) == "number" then
 					if PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon" then
 						if PlushTimerStatus ~= "Increase" then print("Early Equip")
 							if type(PlushTimerStatus) ~= "number" then
@@ -198,9 +198,9 @@ function PlushTimerStart()
 							PlushTimerDecrease()
 						end
 					end
-
-					task.wait()
 				end
+				
+				task.wait()
 			end
 
 			PlushTimerStatus = "NoActive"
