@@ -703,4 +703,6 @@ for _, Item in game.ReplicatedStorage.CustomAssets.Items:GetChildren() do
 	else
 		game.Players.LocalPlayer.PlayerScripts:FindFirstChild("Item"..Item.Name, true).Enabled = true
 	end
+	
+	print("ItemScript "..Item.." loaded")
 end
