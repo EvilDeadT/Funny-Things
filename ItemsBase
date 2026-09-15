@@ -1,6 +1,7 @@
 local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
 local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main"):WaitForChild("Client"):WaitForChild("MainClient"))
 local ItemAnim = {}
+local CanButterfingers = true
 
 game.Players.LocalPlayer.CharacterAdded:Connect(function(Character)
 	ItemAnim = {}
@@ -370,6 +371,10 @@ UI.Inventory.ChildRemoved:Connect(function(Item)
 	end
 	
 	RefreshItemList()
+	
+	if Item:GetAttribute("ButterfingersDrop") then
+		CanButterfingers = true
+	end
 end)
 
 function ItemGive(Item, PickedUp)
@@ -519,13 +524,17 @@ function ItemEquip(Item, ByToolbar, OnGive)
 	
 	if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("Butterfingers")
 		and math.random(1, 5) == 1
+		and CanButterfingers
 		and not OnGive
 		and not game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") then
+		CanButterfingers = false
+		
 		task.delay(0.2, function()
 			game.ReplicatedStorage.CustomAssets.Items.Base.Sounds.Butterfingers:Play()
 			
 			for _, ItemFile in UI.Inventory:GetChildren() do
 				if ItemFile:FindFirstChild("ToolbarIcon") and ItemFile.ToolbarIcon:IsA("ObjectValue") and (ItemFile.ToolbarIcon.Value == Item or PlayerMain.Toolbar.CurrentSelected == Item) then
+					ItemFile:SetAttribute("ButterfingersDrop", true)
 					ItemDrop(ItemFile)
 				end
 			end
@@ -652,9 +661,15 @@ function ItemDrop(Item, Thrown)
 
 				local AddedItem = ItemGive(Item.Name, true)
 
-				if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("Butterfingers") and math.random(1, 5) == 1 and not game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") then
+				if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("Butterfingers")
+					and math.random(1, 5) == 1
+					and CanButterfingers
+					and not game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") then
+					CanButterfingers = false
+					
 					task.delay(0.2, function()
 						game.ReplicatedStorage.CustomAssets.Items.Base.Sounds.Butterfingers:Play()
+						ItemFile:SetAttribute("ButterfingersDrop", true)
 						ItemDrop(AddedItem)
 					end)
 				end
