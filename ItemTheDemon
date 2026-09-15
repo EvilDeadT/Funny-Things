@@ -46,7 +46,12 @@ UI.Events.ItemOnEquip.Event:Connect(function(Item, Anim)
 end)
 
 UI.Events.ItemOnUnequip.Event:Connect(function(Item, Anim)
-	print("onUnequip "..Item.Name)
+	print("onUnequip")
+	if Item then
+		print(Item.Name)
+	else
+		print("No Item")
+	end
 	if Item.Name ~= "TheDemon" then
 		return
 	end
