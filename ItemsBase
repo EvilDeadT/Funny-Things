@@ -571,6 +571,8 @@ function ItemUnequip(Item, ByToolbar)
 	end
 	
 	if not ByToolbar then
+		PlayerMain.Toolbar.SetUpKeys({}, {})
+		
 		if PlayerMain.Toolbar.CurrentSelected == Item then
 			PlayerMain.Toolbar.CurrentSelected = nil
 		end
