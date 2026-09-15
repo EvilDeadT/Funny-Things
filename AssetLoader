@@ -154,7 +154,7 @@ local Assets = {
 				Drop = {Name='Drop',ClassName='Model',Attributes={MaxCapacity=125,Charge=100,InteractionType='ItemBase',DisplayName='The Demon'},Tags={'CompilePrimaryObject 1'},Files={[1]={Name='ProxyPart',ClassName='MeshPart',RenderFidelity=Enum.RenderFidelity.Automatic,CanTouch=false,Size=Vector3.new(2.481,2.47,1.765),CollisionGroup='DroppedItem',MeshId=90272564580344,CanQuery=false,Orientation=Vector3.new(0,90,0),Position=Vector3.new(0,2.235,0),TextureID=88517258308777,Tags={'CompilePrimaryValue 1'},Files={[1]={Name='ProximityPrompt',ClassName='ProximityPrompt',MaxActivationDistance=6,Style=Enum.ProximityPromptStyle.Custom,UIOffset=Vector2.new(0,0.8)}}}}}
 			},
 			Sounds = {
-				Thrown = {Name='Thrown',ClassName='Sound',RollOffMaxDistance=50,RollOffMode=Enum.RollOffMode.InverseTapered,Volume=1,SoundId=136548893387722,Attributes={SoundStart=0.5},Tags={'Muffle'}}
+				Thrown = {Name='Thrown',ClassName='Sound',RollOffMaxDistance=50,RollOffMode=Enum.RollOffMode.InverseTapered,Volume=1,SoundId=136548893387722,Attributes={SoundStart=0.65},Tags={'Muffle'}}
 			},
 			Animations = {
 				Equip = {Name='Equip',ClassName='Animation',AnimationId=12895906881},
