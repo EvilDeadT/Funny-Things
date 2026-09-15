@@ -625,7 +625,10 @@ function ItemDrop(Item, Thrown)
 				end
 
 				game.ReplicatedStorage.CustomAssets.Items.Base.Sounds.Pickup:Play()
-				ItemModel:Destroy()
+				
+				if ItemModel and ItemModel.Parent then
+					ItemModel:Destroy()
+				end
 
 				local AddedItem = ItemGive(Item.Name, true)
 
