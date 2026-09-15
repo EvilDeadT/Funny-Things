@@ -470,20 +470,19 @@ function ItemEquip(Item, ByToolbar)
 	
 	for _, Anim in game.ReplicatedStorage.CustomAssets.Items.Base.Animations:GetChildren() do
 		local AlreadyLoaded = LoadAnimation(Item.Name, Anim)
-		print("Loading base anim: "..Anim.Name)
 		
 		if Anim.Name == "Throw" and not AlreadyLoaded then
-			print("Set Function for throw")
 			ItemAnim[Item.Name].Throw:GetMarkerReachedSignal("Throw"):Connect(function()
-				print("throw")
 				if not (PlayerMain.Toolbar.CurrentSelected and (game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("Throwable") or UI.Settings.CanThrowEveryItem.Value)) then
 					return
 				end
 				
-				print("throw 2")
-
 				for _, ItemFile in UI.Inventory:GetChildren() do
-					print("itemfiles "..ItemFile.Name)
+					print(ItemFile:FindFirstChild("ToolbarIcon"))
+					print(ItemFile.ToolbarIcon:IsA("ObjectValue"))
+					print(ItemFile.ToolbarIcon.Value == Item)
+					print(PlayerMain.Toolbar.CurrentSelected == Item)
+					
 					if ItemFile:FindFirstChild("ToolbarIcon")
 						and ItemFile.ToolbarIcon:IsA("ObjectValue")
 						and ItemFile.ToolbarIcon.Value == Item
