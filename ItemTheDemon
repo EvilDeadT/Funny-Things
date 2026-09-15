@@ -88,21 +88,17 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 
 				local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item.Name)
 
-				if ItemModel then
-					if ItemModel:FindFirstChild("Handle") then
-						game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-							C1 = CFrame.new(Vector3.new(0.7, 0, 0)) * ItemModel.Handle.C1.Rotation
-						}):Play()
-					end
+				if ItemModel and ItemModel:FindFirstChild("Handle") then
+					game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+						C1 = CFrame.new(Vector3.new(0.7, 0, 0)) * ItemModel.Handle.C1.Rotation
+					}):Play()
 				end
 
 				Anim.Pet.Stopped:Once(function()
-					if ItemModel then
-						if ItemModel:FindFirstChild("Handle") then
-							game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-								C1 = CFrame.new(Vector3.new(0, 0, 0)) * ItemModel.Handle.C1.Rotation
-							}):Play()
-						end
+					if ItemModel and ItemModel:FindFirstChild("Handle") then
+						game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+							C1 = CFrame.new(Vector3.new(0, 0, 0)) * ItemModel.Handle.C1.Rotation
+						}):Play()
 					end
 
 					game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
@@ -156,12 +152,18 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 				game.Players.LocalPlayer:SetAttribute("AnimBusy", true)
 
 				local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item.Name)
+				
+				if ItemModel and ItemModel:FindFirstChild("Handle") then
+					game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+						C1 = CFrame.new(Vector3.new(0, 0.55, 0)) * ItemModel.Handle.C1.Rotation
+					}):Play()
+				end
 
 				Anim.Inspect.Stopped:Once(function()
-					if ItemModel then
-						if ItemModel:FindFirstChild("Handle") then
-
-						end
+					if ItemModel and ItemModel:FindFirstChild("Handle") then
+						game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+							C1 = CFrame.new(Vector3.new(0, 0, 0)) * ItemModel.Handle.C1.Rotation
+						}):Play()
 					end
 
 					game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
