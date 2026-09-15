@@ -319,7 +319,7 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 	end)
 	
 	if ItemStats:FindFirstChild("EquipOnGive") then
-		ItemEquip(ItemIcon)
+		ItemEquip(ItemIcon, false, true)
 	end
 end)
 
@@ -412,7 +412,7 @@ function ItemRemove(Item, AllCopies)
 	end
 end
 
-function ItemEquip(Item, ByToolbar)
+function ItemEquip(Item, ByToolbar, OnGive)
 	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") or not PlayerMain.Toolbar.CanEquip or not UI.Inventory:FindFirstChild(Item.Name) then
 		return
 	end
@@ -522,7 +522,7 @@ function ItemEquip(Item, ByToolbar)
 
 	UI.Events.ItemOnEquip:Fire(Item.Name, ItemAnim[Item.Name])
 	
-	if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("Butterfingers") and math.random(1, 5) == 1 then
+	if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("Butterfingers") and math.random(1, 5) == 1 and not (game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") and OnGive) then
 		task.delay(0.2, function()
 			game.ReplicatedStorage.CustomAssets.Items.Base.Sounds.Butterfingers:Play()
 			
@@ -652,7 +652,7 @@ function ItemDrop(Item, Thrown)
 
 				local AddedItem = ItemGive(Item.Name, true)
 
-				if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("Butterfingers") and math.random(1, 5) == 1 then
+				if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("Butterfingers") and math.random(1, 5) == 1 and not game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") then
 					task.delay(0.2, function()
 						game.ReplicatedStorage.CustomAssets.Items.Base.Sounds.Butterfingers:Play()
 						ItemDrop(AddedItem)
