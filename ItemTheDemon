@@ -51,6 +51,8 @@ UI.Events.ItemOnUnequip.Event:Connect(function(Item, Anim)
 		return
 	end
 	
+	print("After check if not")
+	
 	PlushTimerStatus = "Unequiped"
 
 	if ActivateTimer then
