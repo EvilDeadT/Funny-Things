@@ -4,7 +4,6 @@ local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main
 local ActivateCooldown = 10
 local CanActivate = true
 local ActivateTimer = nil
-local AnimBusy = false
 
 local PlushContented = false
 local PlushContentTime = {
@@ -37,7 +36,7 @@ UI.Events.ItemOnEquip.Event:Connect(function(Item, Anim)
 	if Anim then
 		if Anim.Pet then
 			Anim.Pet:Stop()
-			AnimBusy = false
+			game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
 		end
 	end
 end)
@@ -59,18 +58,18 @@ UI.Events.ItemOnUnequip.Event:Connect(function(Item, Anim)
 	if Anim then
 		if Anim.Pet then
 			Anim.Pet:Stop()
-			AnimBusy = false
+			game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
 		end
 		if Anim.Inspect then
 			Anim.Inspect:Stop()
-			AnimBusy = false
+			game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
 		end
 	end
 end)
 
 UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 	if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-		if not CanActivate or AnimBusy then
+		if not CanActivate or game.Players.LocalPlayer:GetAttribute("AnimBusy") then
 			return
 		end
 
@@ -78,7 +77,7 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 
 		if Anim then
 			if Anim.Pet then
-				AnimBusy = true
+				game.Players.LocalPlayer:SetAttribute("AnimBusy", true)
 
 				local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item.Name)
 
@@ -99,7 +98,7 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 						end
 					end
 
-					AnimBusy = false
+					game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
 				end)
 				
 				if Anim.Equip then
@@ -141,13 +140,13 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 			end)
 		end)
 	elseif Input.UserInputType == Enum.UserInputType.MouseButton3 or Input.KeyCode == Enum.KeyCode.T then
-		if AnimBusy then
+		if game.Players.LocalPlayer:GetAttribute("AnimBusy") then
 			return
 		end
 
 		if Anim then
 			if Anim.Inspect then
-				AnimBusy = true
+				game.Players.LocalPlayer:SetAttribute("AnimBusy", true)
 
 				local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item.Name)
 
@@ -158,7 +157,7 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 						end
 					end
 
-					AnimBusy = false
+					game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
 				end)
 				
 				if Anim.Equip then
