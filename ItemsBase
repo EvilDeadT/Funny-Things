@@ -470,19 +470,25 @@ function ItemEquip(Item, ByToolbar)
 	
 	for _, Anim in game.ReplicatedStorage.CustomAssets.Items.Base.Animations:GetChildren() do
 		local AlreadyLoaded = LoadAnimation(Item.Name, Anim)
+		print("Loading base anim: "..Anim.Name)
 		
 		if Anim.Name == "Throw" and not AlreadyLoaded then
+			print("Set Function for throw")
 			ItemAnim[Item.Name].Throw:GetMarkerReachedSignal("Throw"):Connect(function()
+				print("throw")
 				if not (PlayerMain.Toolbar.CurrentSelected and (game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("Throwable") or UI.Settings.CanThrowEveryItem.Value)) then
 					return
 				end
+				
+				print("throw 2")
 
 				for _, ItemFile in UI.Inventory:GetChildren() do
+					print("itemfiles "..ItemFile.Name)
 					if ItemFile:FindFirstChild("ToolbarIcon")
 						and ItemFile.ToolbarIcon:IsA("ObjectValue")
 						and ItemFile.ToolbarIcon.Value == Item
 						and PlayerMain.Toolbar.CurrentSelected == Item
-						and game.Players.LocalPlayer.Character:FindFirstChild(Item.Name) then
+						and game.Players.LocalPlayer.Character:FindFirstChild(Item.Name) then print("dropping throw")
 						ItemDrop(ItemFile, {
 							Power = 200,
 							ModelCFrame = game.Players.LocalPlayer.Character[Item.Name].PrimaryPart.CFrame
@@ -496,16 +502,14 @@ function ItemEquip(Item, ByToolbar)
 			end)
 		end
 	end
-	
-	if ItemAnim.Base then
-		if ItemAnim[Item.Name].Throw then
-			ItemAnim[Item.Name].Throw:Stop()
-		end
-	end
 
 	if ItemAnim[Item.Name] then
 		if ItemAnim[Item.Name].Unequip then
 			ItemAnim[Item.Name].Unequip:Stop()
+		end
+		
+		if ItemAnim[Item.Name].Throw then
+			ItemAnim[Item.Name].Throw:Stop()
 		end
 		
 		if ItemAnim[Item.Name].Equip then
@@ -518,6 +522,18 @@ function ItemEquip(Item, ByToolbar)
 	end
 
 	UI.Events.ItemOnEquip:Fire(Item.Name, ItemAnim[Item.Name])
+	
+	if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("Butterfingers") and math.random(1, 5) == 1 then
+		task.delay(0.2, function()
+			game.ReplicatedStorage.CustomAssets.Items.Base.Sounds.Butterfingers:Play()
+			
+			for _, ItemFile in UI.Inventory:GetChildren() do
+				if ItemFile:FindFirstChild("ToolbarIcon") and ItemFile.ToolbarIcon:IsA("ObjectValue") and ItemFile.ToolbarIcon.Value == Item then
+					ItemDrop(ItemFile)
+				end
+			end
+		end)
+	end
 end
 
 function ItemUnequip(Item, ByToolbar)
@@ -538,16 +554,14 @@ function ItemUnequip(Item, ByToolbar)
 
 		ItemModel:Destroy()
 	end
-	
-	if ItemAnim.Base then
-		if ItemAnim[Item.Name].Throw then
-			ItemAnim[Item.Name].Throw:Stop()
-		end
-	end
 
 	if ItemAnim[Item.Name] then
 		if ItemAnim[Item.Name].Equip then
 			ItemAnim[Item.Name].Equip:Stop()
+		end
+		
+		if ItemAnim[Item.Name].Throw then
+			ItemAnim[Item.Name].Throw:Stop()
 		end
 		
 		if ItemAnim[Item.Name].Unequip then
