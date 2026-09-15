@@ -588,12 +588,6 @@ function UIAct(Type, Status)
 				for _, Modifier in UI.Modifiers:GetChildren() do
 					if table.find(SelectedModifiers, Modifier.Name) then
 						Modifier.Value = true
-						
-						if Modifier.Name == "TheDemon" then
-							if not game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar:FindFirstChild("TheDemon") then
-								UI.Events.ItemGive:Fire("TheDemon")
-							end
-						end
 					else
 						Modifier.Value = false
 						
