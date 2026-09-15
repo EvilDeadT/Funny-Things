@@ -1,719 +1,294 @@
 local UI = game.Players.LocalPlayer.PlayerGui.FunnyMenu
 local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main"):WaitForChild("Client"):WaitForChild("MainClient"))
-local ItemAnim = {}
+
+local ActivateCooldown = 10
+local CanActivate = true
+local ActivateTimer = nil
+
+local PlushContented = false
+local PlushContentTime = {
+	[1] = 7,
+	[2] = 7,
+	[3] = 6,
+	[4] = 5,
+	[5] = 4,
+	[6] = 3,
+	[7] = 3,
+	[8] = 2
+}
+local PlushPetted = 0
+local PlushTimer = nil
+local PlushTimerStatus = "NoActive"
+local PlushTimerDelay = nil
 
 game.Players.LocalPlayer.CharacterAdded:Connect(function(Character)
-	ItemAnim = {}
+	if UI.Modifiers.TheDemon.Value then
+		PlushTimer = 10
+		PlushTimerStart()
+	end
 end)
 
-function LoadAnimation(Item, Anim)
-	if ItemAnim[Item] then
-		if ItemAnim[Item][Anim.Name] then
-			return true
-		end
-	else
-		ItemAnim[Item] = {}
+UI.Events.ItemOnEquip.Event:Connect(function(Item, Anim)
+	if Item.Name ~= "TheDemon" then
+		return
 	end
 
-	local LoadedAnim = game.Players.LocalPlayer.Character.Humanoid.Animator:LoadAnimation(Anim)
-	ItemAnim[Item][Anim.Name] = LoadedAnim
-	
-	return
-end
+	if Anim then
+		if Anim.Pet then
+			Anim.Pet:Stop()
+			game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
+		end
+		if Anim.Inspect then
+			Anim.Inspect:Stop()
+			game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
+		end
+	end
+end)
 
-function GetWheelItem(Item)
-	for _, WheelItem in game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:GetChildren() do
-		if WheelItem.Name == tostring(Item.LayoutOrder) then
-			return WheelItem
-		end
+UI.Events.ItemOnUnequip.Event:Connect(function(Item, Anim)
+	if Item.Name ~= "TheDemon" then
+		return
 	end
 	
-	return
-end
+	PlushTimerStatus = "Unequiped"
 
-function GetOpenSlot(Min, Max)
-	for Slot = Min or 1, Max or 10 do
-		local TakenSlot = nil
-		for _, ItemIcon in PlayerMain.Toolbar.List do
-			if ItemIcon.LayoutOrder == Slot then
-				TakenSlot = ItemIcon
-				break
-			end
-		end
-		if not TakenSlot then
-			return Slot
-		end
-	end
-	
-	return
-end
+	if ActivateTimer then
+		task.cancel(ActivateTimer)
+		ActivateTimer = nil
 
-function NewWheelSlot(Item)
-	local WheelSlot = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:FindFirstChild(Item.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts)
-	
-	if WheelSlot then
-		WheelSlot.Icon.Image = Item.ImageLabel.Image
-		
-		if Item.Stack.Visible then
-			WheelSlot.Stack.Visible = true
-			WheelSlot.Stack.Text = Item.Stack.Text
-		end
+		CanActivate = true
 	end
-end
+	
+	print("unequip")
 
-function ClearWheelSlot(Item)
-	local MissingItem = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:FindFirstChild(Item.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts)
-	
-	if MissingItem then
-		MissingItem.Icon.Image = ""
-		MissingItem.Stack.Visible = false
-		MissingItem.Bar.Visible = false
+	if Anim then print("has anim")
+		if Anim.Pet then print("stop pet")
+			Anim.Pet:Stop()
+			game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
+		end
+		if Anim.Inspect then print("stop inspect")
+			Anim.Inspect:Stop()
+			game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
+		end
 	end
-end
+end)
 
-function SetIconSlot(Item, Slot, RefreshWheel)
-	if Slot <= 9 then
-		Item.Number.TextLabel.Text = Slot
-	else
-		Item.Number.TextLabel.Text = 10
-	end
-	
-	ClearWheelSlot(Item)
-	
-	if RefreshWheel then
-		for _, ItemIcon in PlayerMain.Toolbar.List do
-			if ItemIcon.LayoutOrder == Slot then
-				ClearWheelSlot(ItemIcon, Item.LayoutOrder)
-				break
-			end
-		end
-	end
-	
-	Item.LayoutOrder = Slot
-	
-	NewWheelSlot(Item)
-	
-	return true
-end
-
-function AppendZeroSlotsToEnd(ItemList)
-	for Item, ItemIcon in ItemList do
-		if ItemIcon:GetAttribute("ZeroSlot") then
-			ItemList[Item] = nil
-			ItemList[10] = ItemIcon
-			ItemIcon.LayoutOrder = 10
-		end
-	end
-end
-
-function OrderToolbar() print("OrderToolbar USELESS")
-	PlayerMain.Toolbar.List = {}
-	
-	local function AddItemToList(ItemIcon)
-		table.insert(PlayerMain.Toolbar.List, ItemIcon)
-
-		if #PlayerMain.Toolbar.List <= 9 then
-			ItemIcon.Number.TextLabel.Text = #PlayerMain.Toolbar.List
-		else
-			ItemIcon.Number.TextLabel.Text = "X"
-		end
-
-		ItemIcon.LayoutOrder = #PlayerMain.Toolbar.List
-	end
-	
-	for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
-		if ItemIcon.ClassName == "ImageButton" then
-			if ItemIcon:GetAttribute("AlwaysFirst") then
-				AddItemToList()
-			end
-		end
-	end
-	
-	for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
-		if ItemIcon.ClassName == "ImageButton" then
-			if not (ItemIcon:GetAttribute("AlwaysFirst") or ItemIcon:GetAttribute("AlwaysLast")) then
-				AddItemToList()
-			end
-		end
-	end
-	
-	for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
-		if ItemIcon.ClassName == "ImageButton" then
-			if ItemIcon:GetAttribute("AlwaysLast") then
-				AddItemToList()
-			end
-		end
-	end
-end
-
-function RefreshItemList()
-	PlayerMain.Toolbar.List = {}
-	
-	for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
-		if ItemIcon:IsA("ImageButton") then
-			table.insert(PlayerMain.Toolbar.List, ItemIcon)
-		end
-	end
-	
-	table.sort(PlayerMain.Toolbar.List, function(Icon1, Icon2)
-		return Icon1.LayoutOrder < Icon2.LayoutOrder
-	end)
-	
-	AppendZeroSlotsToEnd(PlayerMain.Toolbar.List)
-end
-
-function MoveSlotsDown(Offset)
-	local ItemList = {}
-	
-	for _, ItemIcon in PlayerMain.Toolbar.List do
-		if ItemIcon:IsA("ImageButton") and Offset < ItemIcon.LayoutOrder then
-			table.insert(ItemList, ItemIcon)
-		end
-	end
-	
-	table.sort(ItemList, function(Icon1, Icon2)
-		return Icon1.LayoutOrder < Icon2.LayoutOrder
-	end)
-	
-	AppendZeroSlotsToEnd(ItemList)
-	
-	for _, ItemIcon in ItemList do
-		local Slot = GetOpenSlot(Offset)
-		if ItemIcon.LayoutOrder >= Slot then
-			if ItemIcon:GetAttribute("ZeroSlot") then
-				Slot = 10
-			end
-			SetIconSlot(ItemIcon, Slot)
-		end
-	end
-end
-
-UI.Inventory.ChildAdded:Connect(function(Item)
-	local ItemIcon = game.ReplicatedStorage.CustomAssets.Player.UI.Pressure.ToolbarIcon:Clone()
-	ItemIcon.Name = Item.Name
-	
-	ItemIcon.frame.ImageColor3 = Color3.fromRGB(218, 145, 0)
-	ItemIcon.Number.UIStroke.Color = Color3.fromRGB(255, 170, 0)
-	
-	if UI.Events.UIModule:Invoke("FindByThread", game.ReplicatedStorage.CustomAssets.Items[Item.Name], "Icons.Toolbar") then
-		ItemIcon.ImageLabel.Image = game.ReplicatedStorage.CustomAssets.Items[Item.Name].Icons.Toolbar.Image
-	end
-	
-	local ObjectValue = Instance.new("ObjectValue", Item)
-	ObjectValue.Name = "ToolbarIcon"
-	ObjectValue.Value = ItemIcon
-	
-	ItemIcon.Parent = game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar
-	
-	local ItemStats = game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats
-
-	if ItemStats:FindFirstChild("MaxUses") then
-		ItemIcon.Stack.Visible = true
-		ItemIcon.Stack.Text = "x"..ItemStats.MaxUses.Value
-		Item.Changed:Connect(function()
-			ItemIcon.Stack.Text = "x"..Item.Value
-			
-			local WheelIcon = GetWheelItem(ItemIcon)
-			if WheelIcon then
-				WheelIcon.Stack.Text = "x"..Item.Value
-			end
-		end)
-	elseif ItemStats:FindFirstChild("MaxCharge") then
-		ItemIcon.Bar.Visible = true
-		local ChargeValue = Instance.new("IntValue")
-		ChargeValue.Changed:Connect(function()
-			if not (ItemIcon and ItemIcon.Parent) then
-				return
-			end
-			ItemIcon.Bar.TextLabel.Text = tostring((math.floor(ItemIcon.Value / ItemStats.MaxCharge.Value))) .. "%"
-		end)
-		ChargeValue.Value = Item.Value * 100
-		ItemIcon.Bar.TextLabel.Text = tostring((math.floor(ChargeValue.Value / ItemStats.MaxUses.Value))) .. "%"
-		
-		Item.Changed:Connect(function()
-			game.TweenService:Create(ChargeValue, TweenInfo.new(0.6, Enum.EasingStyle.Linear),{
-				Value = Item.Value * 100
-			}):Play()
-			
-			local WheelIcon = GetWheelItem(ItemIcon)
-			if WheelIcon then
-				game.TweenService:Create(WheelIcon.Bar.Frame, TweenInfo.new(0.6, Enum.EasingStyle.Linear), {
-					Size = UDim2.new(Item.Value / ItemStats.MaxUses.Value, 0, 1, 0)
-				}):Play()
-			end
-		end)
-	end
-	
-	if ItemStats:FindFirstChild("AlwaysLast") then
-		ItemIcon:SetAttribute("AlwaysLast", true)
-	elseif ItemStats:FindFirstChild("AlwaysFirst") then
-		PlayerMain.Toolbar.AlwaysFirsts = PlayerMain.Toolbar.AlwaysFirsts + 1
-		ItemIcon:SetAttribute("AlwaysFirst", true)
-	end
-	
-	if ItemStats:FindFirstChild("AlwaysFirst") then
-		for _, ItemIconList in PlayerMain.Toolbar.List do
-			SetIconSlot(ItemIconList, ItemIconList.LayoutOrder + 1)
-		end
-		RefreshItemList()
-		
-		SetIconSlot(ItemIcon, GetOpenSlot())
-		MoveSlotsDown(1)
-	else
-		RefreshItemList()
-		
-		local Slot = GetOpenSlot()
-		if ItemStats:GetAttribute("ZeroSlot") then
-			Slot = 10
-		end
-		
-		SetIconSlot(ItemIcon, Slot)
-	end
-	
-	ItemIcon.Activated:Connect(function()
-		if PlayerMain.Toolbar.CurrentSelected ~= ItemIcon then
-			ItemEquip(ItemIcon)
-		else
-			ItemUnequip(ItemIcon)
-		end
-	end)
-	
-	local ItemClasses = PlayerMain.Toolbar.CachedClasses[Item.Name] or {
-		Equip = function()
-			ItemEquip(ItemIcon, true)
-		end,
-		Unequip = function()
-			ItemUnequip(ItemIcon, true)
-		end,
-		Activate = function()
-			UI.Events.ItemOnInput:Fire(Item, ItemAnim[Item.Name], {UserInputType = Enum.UserInputType.MouseButton1})
-		end,
-		UnBindOffHandKey = function(UITo) print("UnBindOffHandKey Func")
-			UITo.Health.AuxItems.OffHandItem.Visible = false
-			for _, Connection in require(game.ReplicatedStorage.ToolsModule.ToolsBase).OffHandConnections do
-				Connection:Disconnect()
-			end
-			require(game.ReplicatedStorage.ToolsModule.ToolsBase).OffHandConnections = {}
-		end,
-	}
-	
-	PlayerMain.Toolbar.CachedClasses[Item.Name] = ItemClasses
-	PlayerMain.Toolbar.Classes[ItemIcon] = ItemClasses
-	
-	ItemIcon.TouchLongPress:Connect(function(TouchPositions, Input)
-		if PlayerMain.IsGhost then
+UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
+	if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+		if not CanActivate or game.Players.LocalPlayer:GetAttribute("AnimBusy") then
 			return
 		end
-		
-		if Input == Enum.UserInputState.Begin and (TouchPositions[1] and not PlayerMain.Toolbar.DropHeld) then
-			PlayerMain.Toolbar.DropHeld = ItemIcon
-			local IconDrag = ItemIcon:Clone()
-			IconDrag.Parent = PlayerMain.Toolbar.FollowUI
-			IconDrag.Position = UDim2.new(0, 0, 0, 0)
-			PlayerMain.Toolbar.FollowUI.Visible = true
-			ItemIcon.Visible = false
-		elseif Input == Enum.UserInputState.End and PlayerMain.Toolbar.DropHeld then
-			SetIconSlot(PlayerMain.Toolbar.DropHeld, ItemIcon.LayoutOrder, true)
-			RefreshItemList()
-		end
-	end)
-	
-	if ItemStats:FindFirstChild("EquipOnGive") then
-		ItemEquip(ItemIcon)
-	end
-end)
 
-UI.Inventory.ChildRemoved:Connect(function(Item)
-	local ItemsInventory = {}
-	local ItemsToolbar = {}
-	
-	for _, Inventory in UI.Inventory:GetChildren() do
-		if ItemsInventory[Inventory.Name] then
-			ItemsInventory[Inventory.Name] += 1
-		else
-			ItemsInventory[Inventory.Name] = 1
-		end
-	end
-	
-	for _, Toolbar in game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar:GetChildren() do
-		if game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(Toolbar.Name) then
-			if ItemsToolbar[Toolbar.Name] then
-				ItemsToolbar[Toolbar.Name] += 1
-			else
-				ItemsToolbar[Toolbar.Name] = 1
-			end
-		end
-	end
-	
-	if PlayerMain.Toolbar.CurrentSelected == Item.ToolbarIcon.Value then
-		ItemUnequip(PlayerMain.Toolbar.CurrentSelected)
-	end
-	
-	for ItemName, ItemNumber in ItemsToolbar do
-		if ItemsInventory[ItemName] then
-			if ItemNumber > ItemsInventory[ItemName] then
-				for _ = 1, (ItemNumber - ItemsInventory[ItemName]) do
-					if PlayerMain.Toolbar.CurrentSelected == game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar[ItemName] then
-						ItemUnequip(game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar[ItemName])
-					end
+		CanActivate = false
 
-					game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar[ItemName]:Destroy()
-				end
-			end
-		else
-			if PlayerMain.Toolbar.CurrentSelected == game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar[ItemName] then
-				ItemUnequip(game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar[ItemName])
-			end
+		if Anim then
+			if Anim.Pet then
+				game.Players.LocalPlayer:SetAttribute("AnimBusy", true)
 
-			game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar[ItemName]:Destroy()
-		end
-	end
-	
-	RefreshItemList()
-end)
+				local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item.Name)
 
-function ItemGive(Item, PickedUp)
-	local ItemValue = Instance.new("NumberValue")
-	ItemValue.Name = Item
-	ItemValue.Value = -1
-	
-	local ItemStats = game.ReplicatedStorage.CustomAssets.Items[Item].Stats
-	
-	if ItemStats:FindFirstChild("MaxUses") then
-		ItemValue.Value = ItemStats.MaxUses.Value
-	elseif ItemStats:FindFirstChild("MaxCharge") then
-		ItemValue.Value = ItemStats.MaxCharge.Value
-	end
-
-	ItemValue.Parent = UI.Inventory
-	
-	if PickedUp then
-		return ItemValue
-	end
-end
-
-function ItemRemove(Item, AllCopies)
-	if type(Item) ~= "string" then
-		if Item.Parent == UI.Inventory then
-			Item:Destroy()
-		else
-			warn("Item is not a Instance but not a string too")
-		end
-	elseif UI.Inventory:FindFirstChild(Item) then
-		if not AllCopies then
-			UI.Inventory[Item]:Destroy()
-		else
-			for _, ItemCopy in UI.Inventory:GetChildren() do
-				if ItemCopy.Name == Item then
-					ItemCopy:Destroy()
-				end
-			end
-		end
-	end
-end
-
-function ItemEquip(Item, ByToolbar)
-	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") or not PlayerMain.Toolbar.CanEquip or not UI.Inventory:FindFirstChild(Item.Name) then
-		return
-	end
-
-	if not (type(Item.Name) == "string" or type(Item.Name) == "number") then
-		return warn("Do normal request for item equip")
-	end
-
-	local ItemFolder = game.ReplicatedStorage.CustomAssets.Items[Item.Name]
-
-	if not ItemFolder then
-		return warn("No Item Folder For "..Item.Name)
-	end
-	
-	if not ByToolbar then
-		PlayerMain.Toolbar.UnSelect()
-		PlayerMain.Toolbar.CurrentSelected = Item
-
-		game.TweenService:Create(Item, TweenInfo.new(0.2), {
-			Size = UDim2.new(1, 0, 1, 0)
-		}):Play()
-	end
-	
-	local ToolbarKeys = {}
-	if ItemFolder.Stats:FindFirstChild("Throwable") or UI.Settings.CanThrowEveryItem.Value then
-		ToolbarKeys[Enum.KeyCode.F] = "Throw"
-		ToolbarKeys[Enum.KeyCode.ButtonL2] = "Throw"
-	end
-	if ItemFolder.Animations:FindFirstChild("Inspect") then
-		ToolbarKeys[Enum.KeyCode.T] = "Inspect"
-	end
-	
-	if next(ToolbarKeys) then
-		PlayerMain.Toolbar.SetUpKeys(
-			ToolbarKeys,
-			if ToolbarKeys[Enum.KeyCode.F] then {BindKey1 = "Throw"} else nil
-		)
-	end
-
-	if UI.Events.UIModule:Invoke("FindByThread", ItemFolder, "Models.Equip") then
-		local ItemModel = ItemFolder.Models.Equip:Clone()
-		ItemModel.Name = Item.Name
-
-		if ItemModel:FindFirstChild("Handle") then
-			ItemModel.Handle.Part0 = game.Players.LocalPlayer.Character:WaitForChild("RightHand")
-			ItemModel.Parent = game.Players.LocalPlayer.Character
-		end
-	end
-
-	if ItemFolder:FindFirstChild("Animations") then
-		for _, Anim in ItemFolder.Animations:GetChildren() do
-			LoadAnimation(Item.Name, Anim)
-		end
-	end
-	
-	for _, Anim in game.ReplicatedStorage.CustomAssets.Items.Base.Animations:GetChildren() do
-		local AlreadyLoaded = LoadAnimation(Item.Name, Anim)
-		print("Loading base anim: "..Anim.Name)
-		
-		if Anim.Name == "Throw" and not AlreadyLoaded then
-			print("Set Function for throw")
-			ItemAnim[Item.Name].Throw:GetMarkerReachedSignal("Throw"):Connect(function()
-				print("throw")
-				if not (PlayerMain.Toolbar.CurrentSelected and (game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("Throwable") or UI.Settings.CanThrowEveryItem.Value)) then
-					return
-				end
-				
-				print("throw 2")
-
-				for _, ItemFile in UI.Inventory:GetChildren() do
-					print("itemfiles "..ItemFile.Name)
-					if ItemFile:FindFirstChild("ToolbarIcon")
-						and ItemFile.ToolbarIcon:IsA("ObjectValue")
-						and ItemFile.ToolbarIcon.Value == Item
-						and PlayerMain.Toolbar.CurrentSelected == Item
-						and game.Players.LocalPlayer.Character:FindFirstChild(Item.Name) then print("dropping throw")
-						ItemDrop(ItemFile, {
-							Power = 200,
-							ModelCFrame = game.Players.LocalPlayer.Character[Item.Name].PrimaryPart.CFrame
-						})
+				if ItemModel then
+					if ItemModel:FindFirstChild("Handle") then
+						game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+							C1 = CFrame.new(Vector3.new(0.7, 0, 0)) * ItemModel.Handle.C1.Rotation
+						}):Play()
 					end
 				end
-			end)
-			
-			ItemAnim[Item.Name].Throw.Stopped:Connect(function()
-				game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
-			end)
-		end
-	end
-	
-	if ItemAnim.Base then
-		if ItemAnim[Item.Name].Throw then
-			ItemAnim[Item.Name].Throw:Stop()
-		end
-	end
 
-	if ItemAnim[Item.Name] then
-		if ItemAnim[Item.Name].Unequip then
-			ItemAnim[Item.Name].Unequip:Stop()
-		end
-		
-		if ItemAnim[Item.Name].Equip then
-			ItemAnim[Item.Name].Equip:Play()
-		end
-
-		if ItemAnim[Item.Name].Idle then
-			ItemAnim[Item.Name].Idle:Play()
-		end
-	end
-
-	UI.Events.ItemOnEquip:Fire(Item.Name, ItemAnim[Item.Name])
-end
-
-function ItemUnequip(Item, ByToolbar)
-	if game.Players.LocalPlayer:GetAttribute("ItemsRestricted") or not game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar:FindFirstChild(Item.Name) then
-		return
-	end
-
-	if not (type(Item.Name) == "string" or type(Item.Name) == "number") then
-		return warn("Do normal request for item unequip")
-	end
-
-	local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item.Name)
-
-	if ItemModel then
-		if ItemModel:FindFirstChild("Handle") then
-			ItemModel.Handle.Part0 = nil
-		end
-
-		ItemModel:Destroy()
-	end
-	
-	if ItemAnim.Base then
-		if ItemAnim[Item.Name].Throw then
-			ItemAnim[Item.Name].Throw:Stop()
-		end
-	end
-
-	if ItemAnim[Item.Name] then
-		if ItemAnim[Item.Name].Equip then
-			ItemAnim[Item.Name].Equip:Stop()
-		end
-		
-		if ItemAnim[Item.Name].Unequip then
-			ItemAnim[Item.Name].Unequip:Play()
-		end
-
-		if ItemAnim[Item.Name].Idle then
-			ItemAnim[Item.Name].Idle:Stop()
-		end
-	end
-	
-	if not ByToolbar then
-		if PlayerMain.Toolbar.CurrentSelected == Item then
-			PlayerMain.Toolbar.CurrentSelected = nil
-		end
-		
-		game.TweenService:Create(Item, TweenInfo.new(0.2), {
-			Size = UDim2.new(0.8, 0, 0.8, 0)
-		}):Play()
-	end
-
-	UI.Events.ItemOnUnequip:Fire(Item.Name, ItemAnim[Item.Name])
-end
-
-function ItemDrop(Item, Thrown)
-	ItemRemove(Item)
-	
-	local ItemFolder = game.ReplicatedStorage.CustomAssets.Items[Item.Name]
-
-	if not ItemFolder then
-		return warn("No Item Folder For "..Item.Name)
-	end
-
-	if UI.Events.UIModule:Invoke("FindByThread", ItemFolder, "Models.Drop") then
-		local ItemModel = ItemFolder.Models.Drop:Clone()
-		
-		if not Thrown then
-			ItemModel:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame)
-			ItemModel.PrimaryPart.AssemblyLinearVelocity = Vector3.new(
-				game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector.X * 20,
-				-1,
-				game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector.Z * 20
-			)
-
-			task.delay(5, function()
-				if ItemModel and ItemModel.Parent and ItemModel.PrimaryPart and ItemModel.PrimaryPart:IsA("BasePart") then
-					ItemModel.PrimaryPart.Anchored = true
-				end
-			end)
-		else
-			ItemModel:PivotTo(Thrown.ModelCFrame)
-			ItemModel.PrimaryPart.AssemblyLinearVelocity = game.Workspace.CurrentCamera.CFrame.LookVector * Thrown.Power
-			
-			if UI.Events.UIModule:Invoke("FindByThread", game.ReplicatedStorage.CustomAssets.Items[Item.Name], "Sounds.Thrown") then
-				local ThrownSound = game.ReplicatedStorage.CustomAssets.Items[Item.Name].Sounds.Thrown:Clone()
-				ThrownSound.TimePosition = ThrownSound:GetAttribute("SoundStart") or 0
-				ThrownSound.Parent = ThrownSound
-				ThrownSound.Ended:Once(function()
-					if ThrownSound and ThrownSound.Parent then
-						ThrownSound:Destroy()
+				Anim.Pet.Stopped:Once(function()
+					if ItemModel then
+						if ItemModel:FindFirstChild("Handle") then
+							game.TweenService:Create(ItemModel.Handle, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+								C1 = CFrame.new(Vector3.new(0, 0, 0)) * ItemModel.Handle.C1.Rotation
+							}):Play()
+						end
 					end
+
+					game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
 				end)
-				ThrownSound:Play()
+				
+				if Anim.Equip then
+					Anim.Equip:Stop()
+				end
+				Anim.Pet:Play()
 			end
 		end
-		
-		task.delay(if Thrown then 2 else 0, function()
-			local DisplayName = ItemModel.Name
-			if game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("DisplayName") then
-				DisplayName = game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats.DisplayName.Value
-			elseif ItemModel:GetAttribute("DisplayName") then
-				DisplayName = ItemModel:GetAttribute("DisplayName")
+
+		ActivateTimer = task.delay(1, function()
+			ActivateTimer = nil
+			PlushContented = true
+			PlushPetted += 1
+			
+			if UI.Modifiers.TheDemon.Value then
+				PlayerMain.SubTitles.new(
+					"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie is content for now...</font></font>",
+					6,
+					9999,
+					true
+				):Show()
 			end
 			
-			local Prompt = ItemModel:FindFirstChildWhichIsA("ProximityPrompt", true)
-			Prompt:SetAttribute("Display", DisplayName)
-			Prompt:SetAttribute("Custom", true)
-
-			Prompt.Triggered:Connect(function()
-				if PlayerMain.PlayerDead or PlayerMain.IsGhost or PlayerMain.HangerImmunity then
-					return
-				end
-
-				game.ReplicatedStorage.CustomAssets.Items.Base.Sounds.Pickup:Play()
+			task.delay(PlushContentTime[PlushPetted] or 1, function()
+				PlushContented = false
 				
-				if ItemModel and ItemModel.Parent then
-					ItemModel:Destroy()
+				if UI.Modifiers.TheDemon.Value then
+					PlayerMain.SubTitles.new(
+						"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie is no longer content...</font></font>",
+						6,
+						9999,
+						true
+					):Show()
 				end
-
-				local AddedItem = ItemGive(Item.Name, true)
-
-				if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("Butterfingers") and math.random(1, 5) == 1 then
-					task.delay(0.2, function()
-						game.ReplicatedStorage.CustomAssets.Items.Base.Sounds.Butterfingers:Play()
-						ItemDrop(AddedItem)
-					end)
-				end
+			end)
+			
+			task.delay(ActivateCooldown - 1, function()
+				CanActivate = true
 			end)
 		end)
-		
-		ItemModel.Parent = game.Workspace.GameplayFolder.DroppedItems
-	end
-end
-
-UI.Events.ItemGive.Event:Connect(ItemGive)
-UI.Events.ItemRemove.Event:Connect(ItemRemove)
-UI.Events.ItemEquip.Event:Connect(ItemEquip)
-UI.Events.ItemUnequip.Event:Connect(ItemUnequip)
-UI.Events.ItemDrop.Event:Connect(ItemDrop)
-
-PlayerMain.CharacterDied:Connect(function()
-	if PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) then
-		ItemUnequip(PlayerMain.Toolbar.CurrentSelected)
-	end
-	
-	for _, Item in UI.Inventory:GetChildren() do
-		if not (Item:FindFirstChild("ToolbarIcon") and Item.ToolbarIcon:IsA("ObjectValue")) then
-			print("No ObjectValue or ToolbarIcon is not a ObjectValue. Item: "..Item:GetFullName())
-			
-			continue
+	elseif Input.UserInputType == Enum.UserInputType.MouseButton3 or Input.KeyCode == Enum.KeyCode.T then
+		if game.Players.LocalPlayer:GetAttribute("AnimBusy") then
+			return
 		end
-		
-		if not game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("NoDrop") then
-			ItemDrop(Item)
-		else
-			ItemRemove(Item)
+
+		if Anim then
+			if Anim.Inspect then
+				game.Players.LocalPlayer:SetAttribute("AnimBusy", true)
+
+				local ItemModel = game.Players.LocalPlayer.Character:FindFirstChild(Item.Name)
+
+				Anim.Inspect.Stopped:Once(function()
+					if ItemModel then
+						if ItemModel:FindFirstChild("Handle") then
+
+						end
+					end
+
+					game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
+				end)
+				
+				if Anim.Equip then
+					Anim.Equip:Stop()
+				end
+				Anim.Inspect:Play()
+			end
 		end
 	end
 end)
 
-game.UserInputService.InputBegan:Connect(function(Input, GameProcessed)
-	if PlayerMain.Toolbar.CurrentSelected
-		and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name)
-		and Input.UserInputType ~= Enum.UserInputType.MouseButton1
-		and not GameProcessed then
-		UI.Events.ItemOnInput:Fire(PlayerMain.Toolbar.CurrentSelected, ItemAnim[PlayerMain.Toolbar.CurrentSelected.Name], Input)
-		
-		if Input.KeyCode == Enum.KeyCode.G and not game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") then
-			for _, Item in UI.Inventory:GetChildren() do
-				if Item:FindFirstChild("ToolbarIcon") and Item.ToolbarIcon:IsA("ObjectValue") and Item.ToolbarIcon.Value == PlayerMain.Toolbar.CurrentSelected then
-					ItemDrop(Item)
+function PlushTimerStart()
+	if PlushTimerStatus == "NoActive" then
+		task.spawn(function()
+			while UI.Modifiers.TheDemon.Value do
+				if PlayerMain.PlayerDead then
+					break
+				end
+				
+				if type(PlushTimer) == "number" then
+					if PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon" then
+						if PlushTimerStatus ~= "Increase" then
+							if type(PlushTimerStatus) ~= "number" then
+								PlushTimerStatus = 0.1
+							end
+
+							PlushTimerStatus = ((PlushTimerStatus * 10) - 1) / 10
+
+							PlushTimerDecrease()
+
+							if type(PlushTimerStatus) == "number" then
+								if PlushTimerStatus <= 0 then
+									PlushTimerStatus = "Increase"
+								end
+							end
+						end
+
+						if PlushTimerStatus == "Increase" then
+							if PlushTimer < 10 then
+								PlushTimer = (math.round(PlushTimer * 10) + 1) / 10
+								task.wait(0.1)
+							else
+								PlushTimer = 10
+								task.wait()
+							end
+						end
+					else
+						if not PlushContented and (PlayerMain.Toolbar.CanEquip or PlayerMain.Locker) then
+							PlushTimerStatus = "Decrease"
+							PlushTimerDecrease()
+						else
+							PlushTimerStatus = "NoDecrease"
+							task.wait()
+						end
+					end
+				else
+					task.wait()
 				end
 			end
-		elseif Input.KeyCode == Enum.KeyCode.F
-			and (game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("Throwable") or UI.Settings.CanThrowEveryItem.Value)
-			and not game.Players.LocalPlayer:GetAttribute("AnimBusy") then			
-			game.Players.LocalPlayer:SetAttribute("AnimBusy", true)
-			ItemAnim[PlayerMain.Toolbar.CurrentSelected.Name].Throw:Play()
-		end
-	end
-end)
 
-for _, Item in game.ReplicatedStorage.CustomAssets.Items:GetChildren() do
-	if Item.Name ~= "Base" then
-		if not game.RunService:IsStudio() then
-			loadstring(game:HttpGet("https://raw.githubusercontent.com/EvilDeadT/Funny-Things/refs/heads/main/Item"..Item.Name))()
-		else
-			game.Players.LocalPlayer.PlayerScripts:FindFirstChild("Item"..Item.Name, true).Enabled = true
-		end
-		
-		print("ItemScript "..Item.Name.." loaded")
+			PlushTimerStatus = "NoActive"
+		end)
 	end
 end
+
+function PlushTimerDecrease()
+	if type(PlushTimer) == "number" and PlushTimer > 0 and not PlushContented and (PlayerMain.Toolbar.CanEquip or PlayerMain.Locker) then
+		PlushTimer = (math.round(PlushTimer * 10) - 1) / 10
+
+		if PlushTimer == 7.5 then
+			PlayerMain.SubTitles.new(
+				"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie needs attention...</font></font>",
+				6,
+				9999,
+				true
+			):Show()
+		elseif PlushTimer == 5 then
+			PlayerMain.SubTitles.new(
+				"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie wants attention...</font></font>",
+				6,
+				9999,
+				true
+			):Show()
+		elseif PlushTimer == 2.5 then
+			PlayerMain.SubTitles.new(
+				"<font family='rbxasset://fonts/families/ComicNeueAngular.json'><font color='rgb(255, 107, 164)'>The plushie demands attention...</font></font>",
+				6,
+				9999,
+				true
+			):Show()
+		elseif PlushTimer <= 0 then
+			UI.Events.Atomize:Fire(game.Players.LocalPlayer.Character)
+		end
+
+		task.wait(0.1)
+	else
+		task.wait()
+	end
+end
+
+UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
+	if UI.Modifiers.TheDemon.Value then
+		if not (game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar:FindFirstChild("TheDemon") and game.Workspace.GameplayFolder.DroppedItems:FindFirstChild("TheDemon")) then
+			UI.Events.ItemGive:Fire("TheDemon")
+		end
+		
+		PlushTimer = 10
+		PlushTimerStart()
+		PlayerMain.SubTitles.new(
+			"<font family='rbxasset://fonts/families/Zekton.json'><font color='rgb(255, 107, 164)'><b>"..game.Players.LocalPlayer.Name.." grabbed the plush...</b></font></font>",
+			6
+		):Show()
+	else
+		for _, DroppedItem in game.Workspace.GameplayFolder.DroppedItems:GetChildren() do
+			if DroppedItem.Name == "TheDemon" then
+				DroppedItem:Destroy()
+			end
+		end
+		
+		UI.Events.ItemRemove:Fire("TheDemon", true)
+		
+		PlushTimer = nil
+		PlayerMain.SubTitles.new(
+			"<font family='rbxasset://fonts/families/Zekton.json'><font color='rgb(255, 107, 164)'><b>"..game.Players.LocalPlayer.Name.." refused the plush...</b></font></font>",
+			6
+		):Show()
+	end
+end)
