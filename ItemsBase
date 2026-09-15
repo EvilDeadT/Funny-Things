@@ -480,13 +480,11 @@ function ItemEquip(Item, ByToolbar, OnGive)
 				for _, ItemFile in UI.Inventory:GetChildren() do
 					print(ItemFile:FindFirstChild("ToolbarIcon"))
 					print(ItemFile.ToolbarIcon:IsA("ObjectValue"))
-					print(ItemFile.ToolbarIcon.Value == Item)
-					print(PlayerMain.Toolbar.CurrentSelected == Item)
+					print(ItemFile.ToolbarIcon.Value == PlayerMain.Toolbar.CurrentSelected)
 					
 					if ItemFile:FindFirstChild("ToolbarIcon")
 						and ItemFile.ToolbarIcon:IsA("ObjectValue")
-						and ItemFile.ToolbarIcon.Value == Item
-						and PlayerMain.Toolbar.CurrentSelected == Item
+						and ItemFile.ToolbarIcon.Value == PlayerMain.Toolbar.CurrentSelected
 						and game.Players.LocalPlayer.Character:FindFirstChild(Item.Name) then print("dropping throw")
 						ItemDrop(ItemFile, {
 							Power = 200,
@@ -581,7 +579,9 @@ function ItemUnequip(Item, ByToolbar)
 			Size = UDim2.new(0.8, 0, 0.8, 0)
 		}):Play()
 	end
-
+	
+	print("Before: "..Item.Name)
+	
 	UI.Events.ItemOnUnequip:Fire(Item.Name, ItemAnim[Item.Name])
 end
 
