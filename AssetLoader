@@ -166,8 +166,9 @@ local Assets = {
 				Toolbar = {Name='Toolbar',ClassName='ImageLabel',Image=134742905283877,Size=UDim2.new(0,100,0,100),BorderColor3=Color3.new(0.1059,0.1647,0.2078),BackgroundColor3=Color3.new(1,1,1)}
 			},
 			Stats = {
-				RealName = {Name='RealName',ClassName='StringValue',Value='The Demon'},
-				EquipOnGive = {Name='EquipOnGive',ClassName='BoolValue',Value=true}
+				DisplayName = {Name='DisplayName',ClassName='StringValue',Value='The Demon'},
+				EquipOnGive = {Name='EquipOnGive',ClassName='BoolValue',Value=true},
+				Throwable = {Name='Throwable',ClassName='BoolValue',Value=true}
 			}
 		}
 	}
