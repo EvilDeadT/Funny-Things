@@ -9,7 +9,7 @@ end)
 function LoadAnimation(Item, Anim)
 	if ItemAnim[Item] then
 		if ItemAnim[Item][Anim.Name] then
-			return
+			return true
 		end
 	else
 		ItemAnim[Item] = {}
@@ -17,7 +17,7 @@ function LoadAnimation(Item, Anim)
 
 	local LoadedAnim = game.Players.LocalPlayer.Character.Humanoid.Animator:LoadAnimation(Anim)
 	ItemAnim[Item][Anim.Name] = LoadedAnim
-
+	
 	return
 end
 
@@ -435,6 +435,22 @@ function ItemEquip(Item, ByToolbar)
 			Size = UDim2.new(1, 0, 1, 0)
 		}):Play()
 	end
+	
+	local ToolbarKeys = {}
+	if ItemFolder.Stats:FindFirstChild("Throwable") or UI.Settings.CanThrowEveryItem.Value then
+		ToolbarKeys[Enum.KeyCode.F] = "Throw"
+		ToolbarKeys[Enum.KeyCode.ButtonL2] = "Throw"
+	end
+	if ItemFolder.Animations:FindFirstChild("Inspect") then
+		ToolbarKeys[Enum.KeyCode.T] = "Inspect"
+	end
+	
+	if next(ToolbarKeys) then
+		PlayerMain.Toolbar.SetUpKeys(
+			ToolbarKeys,
+			if ToolbarKeys[Enum.KeyCode.F] then {BindKey1 = "Throw"} else nil
+		)
+	end
 
 	if UI.Events.UIModule:Invoke("FindByThread", ItemFolder, "Models.Equip") then
 		local ItemModel = ItemFolder.Models.Equip:Clone()
@@ -449,6 +465,41 @@ function ItemEquip(Item, ByToolbar)
 	if ItemFolder:FindFirstChild("Animations") then
 		for _, Anim in ItemFolder.Animations:GetChildren() do
 			LoadAnimation(Item.Name, Anim)
+		end
+	end
+	
+	for _, Anim in game.ReplicatedStorage.CustomAssets.Items.Base.Animations:GetChildren() do
+		local AlreadyLoaded = LoadAnimation("Base", Anim)
+		
+		if Anim.Name == "Throw" and not AlreadyLoaded then
+			ItemAnim.Base.Throw:GetMarkerReachedSignal("Throw"):Connect(function()
+				if not (PlayerMain.Toolbar.CurrentSelected and (game.ReplicatedStorage.CustomAssets.Items[Item.Name].Stats:FindFirstChild("Throwable") or UI.Settings.CanThrowEveryItem.Value)) then
+					return
+				end
+
+				for _, ItemFile in UI.Inventory:GetChildren() do
+					if ItemFile:FindFirstChild("ToolbarIcon")
+						and ItemFile.ToolbarIcon:IsA("ObjectValue")
+						and ItemFile.ToolbarIcon.Value == Item
+						and PlayerMain.Toolbar.CurrentSelected == Item
+						and game.Players.LocalPlayer.Character:FindFirstChild(Item.Name) then
+						ItemDrop(ItemFile, {
+							Power = 200,
+							ModelCFrame = game.Players.LocalPlayer.Character[Item.Name].PrimaryPart.CFrame
+						})
+					end
+				end
+			end)
+			
+			ItemAnim.Base.Throw.Stopped:Connect(function()
+				game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
+			end)
+		end
+	end
+	
+	if ItemAnim.Base then
+		if ItemAnim.Base.Throw then
+			ItemAnim.Base.Throw:Stop()
 		end
 	end
 
@@ -487,6 +538,12 @@ function ItemUnequip(Item, ByToolbar)
 
 		ItemModel:Destroy()
 	end
+	
+	if ItemAnim.Base then
+		if ItemAnim.Base.Throw then
+			ItemAnim.Base.Throw:Stop()
+		end
+	end
 
 	if ItemAnim[Item.Name] then
 		if ItemAnim[Item.Name].Equip then
@@ -515,7 +572,7 @@ function ItemUnequip(Item, ByToolbar)
 	UI.Events.ItemOnUnequip:Fire(Item.Name, ItemAnim[Item.Name])
 end
 
-function ItemDrop(Item)
+function ItemDrop(Item, Thrown)
 	ItemRemove(Item)
 	
 	local ItemFolder = game.ReplicatedStorage.CustomAssets.Items[Item.Name]
@@ -526,41 +583,62 @@ function ItemDrop(Item)
 
 	if UI.Events.UIModule:Invoke("FindByThread", ItemFolder, "Models.Drop") then
 		local ItemModel = ItemFolder.Models.Drop:Clone()
-		ItemModel:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame)
-		ItemModel.PrimaryPart.AssemblyLinearVelocity = Vector3.new(
-			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector.X * 20,
-			-1,
-			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector.Z * 20
-		)
-		ItemModel.Parent = game.Workspace.GameplayFolder.DroppedItems
 		
-		task.delay(5, function()
-			if ItemModel and ItemModel.Parent and ItemModel.PrimaryPart and ItemModel.PrimaryPart:IsA("BasePart") then
-				ItemModel.PrimaryPart.Anchored = true
-			end
-		end)
-		
-		local Prompt = ItemModel:FindFirstChildWhichIsA("ProximityPrompt", true)
-		Prompt:SetAttribute("Display", ItemModel:GetAttribute("DisplayName") or ItemModel.Name)
-		Prompt:SetAttribute("Custom", true)
+		if not Thrown then
+			ItemModel:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame)
+			ItemModel.PrimaryPart.AssemblyLinearVelocity = Vector3.new(
+				game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector.X * 20,
+				-1,
+				game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector.Z * 20
+			)
 
-		Prompt.Triggered:Connect(function()
-			if PlayerMain.PlayerDead or PlayerMain.IsGhost or PlayerMain.HangerImmunity then
-				return
-			end
+			task.delay(5, function()
+				if ItemModel and ItemModel.Parent and ItemModel.PrimaryPart and ItemModel.PrimaryPart:IsA("BasePart") then
+					ItemModel.PrimaryPart.Anchored = true
+				end
+			end)
+		else
+			ItemModel:PivotTo(Thrown.ModelCFrame)
+			ItemModel.PrimaryPart.AssemblyLinearVelocity = game.Workspace.CurrentCamera.CFrame.LookVector * Thrown.Power
 			
-			game.ReplicatedStorage.CustomAssets.Sounds.Items.Base.Pickup:Play()
-			ItemModel:Destroy()
-			
-			local AddedItem = ItemGive(Item.Name, true)
-			
-			if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("Butterfingers") and math.random(1, 5) == 1 then
-				task.delay(0.2, function()
-					game.ReplicatedStorage.CustomAssets.Sounds.Items.Base.Butterfingers:Play()
-					ItemDrop(AddedItem)
+			if UI.Events.UIModule:Invoke("FindByThread", game.ReplicatedStorage.CustomAssets.Items[Item.Name], "Sounds.Thrown") then
+				local ThrownSound = game.ReplicatedStorage.CustomAssets.Items[Item.Name].Sounds.Thrown:Clone()
+				ThrownSound.TimePosition = ThrownSound:GetAttribute("SoundStart") or 0
+				ThrownSound.Parent = ThrownSound
+				ThrownSound.Ended:Once(function()
+					if ThrownSound and ThrownSound.Parent then
+						ThrownSound:Destroy()
+					end
 				end)
+				ThrownSound:Play()
 			end
+		end
+		
+		task.delay(if Thrown then 2 else 0, function()
+			local Prompt = ItemModel:FindFirstChildWhichIsA("ProximityPrompt", true)
+			Prompt:SetAttribute("Display", ItemModel:GetAttribute("DisplayName") or ItemModel.Name)
+			Prompt:SetAttribute("Custom", true)
+
+			Prompt.Triggered:Connect(function()
+				if PlayerMain.PlayerDead or PlayerMain.IsGhost or PlayerMain.HangerImmunity then
+					return
+				end
+
+				game.ReplicatedStorage.CustomAssets.Items.Base.Sounds.Pickup:Play()
+				ItemModel:Destroy()
+
+				local AddedItem = ItemGive(Item.Name, true)
+
+				if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("Butterfingers") and math.random(1, 5) == 1 then
+					task.delay(0.2, function()
+						game.ReplicatedStorage.CustomAssets.Items.Base.Sounds.Butterfingers:Play()
+						ItemDrop(AddedItem)
+					end)
+				end
+			end)
 		end)
+		
+		ItemModel.Parent = game.Workspace.GameplayFolder.DroppedItems
 	end
 end
 
@@ -603,6 +681,15 @@ game.UserInputService.InputBegan:Connect(function(Input, GameProcessed)
 					ItemDrop(Item)
 				end
 			end
+		elseif Input.KeyCode == Enum.KeyCode.F
+			and (game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("Throwable") or UI.Settings.CanThrowEveryItem.Value)
+			and not game.Players.LocalPlayer:GetAttribute("AnimBusy") then
+			if not (ItemAnim.Base and ItemAnim.Base.Throw) then
+				return warn("No Throw Anim. Item: "..PlayerMain.Toolbar.CurrentSelected.Name)
+			end
+			
+			game.Players.LocalPlayer:SetAttribute("AnimBusy", true)
+			ItemAnim.Base.Throw:Play()
 		end
 	end
 end)
