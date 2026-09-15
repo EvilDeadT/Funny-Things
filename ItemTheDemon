@@ -185,7 +185,7 @@ function PlushTimerStart()
 					if PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon" then
 						if PlushTimerStatus ~= "Increase" then
 							if type(PlushTimerStatus) ~= "number" then
-								PlushTimerStatus = 1
+								PlushTimerStatus = 0.1
 							end
 
 							PlushTimerStatus = ((PlushTimerStatus * 10) - 1) / 10
