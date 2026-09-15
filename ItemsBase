@@ -490,7 +490,7 @@ function ItemEquip(Item, ByToolbar)
 						and game.Players.LocalPlayer.Character:FindFirstChild(Item.Name) then print("dropping throw")
 						ItemDrop(ItemFile, {
 							Power = 200,
-							ModelCFrame = game.Players.LocalPlayer.Character[Item.Name].PrimaryPart.CFrame
+							ModelCFrame = game.Players.LocalPlayer.Character[Item.Name]:GetPivot()
 						})
 					end
 				end
