@@ -709,5 +709,5 @@ for _, Item in game.ReplicatedStorage.CustomAssets.Items:GetChildren() do
 		end
 	end
 	
-	print("ItemScript "..Item.." loaded")
+	print("ItemScript "..Item.Name.." loaded")
 end
