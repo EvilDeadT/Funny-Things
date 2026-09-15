@@ -527,7 +527,7 @@ function ItemEquip(Item, ByToolbar)
 			game.ReplicatedStorage.CustomAssets.Items.Base.Sounds.Butterfingers:Play()
 			
 			for _, ItemFile in UI.Inventory:GetChildren() do
-				if ItemFile:FindFirstChild("ToolbarIcon") and ItemFile.ToolbarIcon:IsA("ObjectValue") and ItemFile.ToolbarIcon.Value == Item then
+				if ItemFile:FindFirstChild("ToolbarIcon") and ItemFile.ToolbarIcon:IsA("ObjectValue") and (ItemFile.ToolbarIcon.Value == Item or PlayerMain.Toolbar.CurrentSelected == Item) then
 					ItemDrop(ItemFile)
 				end
 			end
