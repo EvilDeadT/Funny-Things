@@ -666,4 +666,6 @@ for _, ScriptName in {
 	else
 		game.Players.LocalPlayer.PlayerScripts:FindFirstChild("Modifier"..ScriptName, true).Enabled = true
 	end
+	
+	print("ModifierScript "..ScriptName.." loaded")
 end
