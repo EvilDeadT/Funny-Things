@@ -318,7 +318,7 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 		end
 	end)
 	
-	if ItemStats:FindFirstChild("EquipOnGive") then
+	if ItemStats:FindFirstChild("EquipOnGive") and not Item:GetAttribute("PickedUp") then
 		ItemEquip(ItemIcon, false, true)
 	end
 end)
@@ -376,6 +376,7 @@ function ItemGive(Item, PickedUp)
 	local ItemValue = Instance.new("NumberValue")
 	ItemValue.Name = Item
 	ItemValue.Value = -1
+	ItemValue:SetAttribute("PickedUp", PickedUp)
 	
 	local ItemStats = game.ReplicatedStorage.CustomAssets.Items[Item].Stats
 	
@@ -477,15 +478,11 @@ function ItemEquip(Item, ByToolbar, OnGive)
 					return
 				end
 				
-				for _, ItemFile in UI.Inventory:GetChildren() do
-					print(ItemFile:FindFirstChild("ToolbarIcon"))
-					print(ItemFile.ToolbarIcon:IsA("ObjectValue"))
-					print(ItemFile.ToolbarIcon.Value == PlayerMain.Toolbar.CurrentSelected)
-					
+				for _, ItemFile in UI.Inventory:GetChildren() do					
 					if ItemFile:FindFirstChild("ToolbarIcon")
 						and ItemFile.ToolbarIcon:IsA("ObjectValue")
 						and ItemFile.ToolbarIcon.Value == PlayerMain.Toolbar.CurrentSelected
-						and game.Players.LocalPlayer.Character:FindFirstChild(Item.Name) then print("dropping throw")
+						and game.Players.LocalPlayer.Character:FindFirstChild(Item.Name) then
 						ItemDrop(ItemFile, {
 							Power = 200,
 							ModelCFrame = game.Players.LocalPlayer.Character[Item.Name]:GetPivot()
@@ -520,10 +517,10 @@ function ItemEquip(Item, ByToolbar, OnGive)
 
 	UI.Events.ItemOnEquip:Fire(Item, ItemAnim[Item.Name])
 	
-	print("OnGive:")
-	print(OnGive)
-	
-	if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("Butterfingers") and math.random(1, 5) == 1 and not (game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") and OnGive) then
+	if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("Butterfingers")
+		and math.random(1, 5) == 1
+		and not OnGive
+		and not game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") then
 		task.delay(0.2, function()
 			game.ReplicatedStorage.CustomAssets.Items.Base.Sounds.Butterfingers:Play()
 			
@@ -582,8 +579,6 @@ function ItemUnequip(Item, ByToolbar)
 			Size = UDim2.new(0.8, 0, 0.8, 0)
 		}):Play()
 	end
-	
-	print("Before: "..Item.Name)
 	
 	UI.Events.ItemOnUnequip:Fire(Item, ItemAnim[Item.Name])
 end
