@@ -38,6 +38,10 @@ UI.Events.ItemOnEquip.Event:Connect(function(Item, Anim)
 			Anim.Pet:Stop()
 			game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
 		end
+		if Anim.Inspect then
+			Anim.Inspect:Stop()
+			game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
+		end
 	end
 end)
 
