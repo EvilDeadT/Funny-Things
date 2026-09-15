@@ -46,17 +46,9 @@ UI.Events.ItemOnEquip.Event:Connect(function(Item, Anim)
 end)
 
 UI.Events.ItemOnUnequip.Event:Connect(function(Item, Anim)
-	print("onUnequip")
-	if Item then
-		print(Item.Name)
-	else
-		print("No Item")
-	end
 	if Item.Name ~= "TheDemon" then
 		return
 	end
-	
-	print("After check if not")
 	
 	PlushTimerStatus = "Unequiped"
 
@@ -66,15 +58,13 @@ UI.Events.ItemOnUnequip.Event:Connect(function(Item, Anim)
 
 		CanActivate = true
 	end
-	
-	print("unequip")
 
-	if Anim then print("has anim")
-		if Anim.Pet then print("stop pet")
+	if Anim then
+		if Anim.Pet then
 			Anim.Pet:Stop()
 			game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
 		end
-		if Anim.Inspect then print("stop inspect")
+		if Anim.Inspect then
 			Anim.Inspect:Stop()
 			game.Players.LocalPlayer:SetAttribute("AnimBusy", false)
 		end
