@@ -260,6 +260,10 @@ end
 
 UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
 	if UI.Modifiers.TheDemon.Value then
+		if not (game.Players.LocalPlayer.PlayerGui.Main.BotFrame.ToolBar:FindFirstChild("TheDemon") and game.Workspace.GameplayFolder.DroppedItems:FindFirstChild("TheDemon")) then
+			UI.Events.ItemGive:Fire("TheDemon")
+		end
+		
 		PlushTimer = 10
 		PlushTimerStart()
 		PlayerMain.SubTitles.new(
@@ -267,6 +271,14 @@ UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
 			6
 		):Show()
 	else
+		for _, DroppedItem in game.Workspace.GameplayFolder.DroppedItems:GetChildren() do
+			if DroppedItem.Name == "TheDemon" then
+				DroppedItem:Destroy()
+			end
+		end
+		
+		UI.Events.ItemRemove:Fire("TheDemon", true)
+		
 		PlushTimer = nil
 		PlayerMain.SubTitles.new(
 			"<font family='rbxasset://fonts/families/Zekton.json'><font color='rgb(255, 107, 164)'><b>"..game.Players.LocalPlayer.Name.." refused the plush...</b></font></font>",
