@@ -71,7 +71,7 @@ function UpdateWheel()
 	for Slot = 1, 7 do
 		for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
 			if ItemIcon.ClassName == "ImageButton" then
-				print("ItemIcon: "..ItemIcon)
+				print("ItemIcon: "..ItemIcon.Name)
 				local WheelSlot = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:FindFirstChild(ItemIcon.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts)
 				if WheelSlot then
 					print("WheelSlotExist")
