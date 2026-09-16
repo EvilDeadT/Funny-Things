@@ -68,29 +68,29 @@ function GetOpenSlot(Min, Max)
 end
 
 function UpdateWheel()
+	local ToolbarItems = {}
+	for _, ItemIcon in PlayerMain.Toolbar.List do
+		ToolbarItems[ItemIcon.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts] = ItemIcon
+	end
+	
 	for Slot = 1, 7 do
-		for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
-			if ItemIcon.ClassName == "ImageButton" then
-				local WheelSlot = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:FindFirstChild(ItemIcon.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts)
-				if WheelSlot then
-					if tonumber(WheelSlot.Name) == Slot then
-						print("Slot do", ItemIcon.Name, Slot)
-						WheelSlot.Icon.Image = ItemIcon.ImageLabel.Image
-						if ItemIcon.Stack.Visible then
-							WheelSlot.Stack.Text = ItemIcon.Stack.Text
-							WheelSlot.Stack.Visible = true
-						elseif ItemIcon.Bar.Visible then
-							WheelSlot.Bar.Frame.Size = UDim2.fromScale(tonumber(string.split(ItemIcon.Bar.TextLabel.Text, "%")[1]) / 100, 1)
-							WheelSlot.Bar.Visible = true
-						end
-					else
-						print("Slot not do", ItemIcon.Name, Slot)
-						WheelSlot.Icon.Image = ""
-						WheelSlot.Stack.Visible = false
-						WheelSlot.Bar.Visible = false
-					end
-				end
+		local WheelSlot = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel[Slot]
+		
+		if ToolbarItems[Slot] then
+			print("Slot do", ItemIcon.Name, Slot)
+			WheelSlot.Icon.Image = ItemIcon.ImageLabel.Image
+			if ItemIcon.Stack.Visible then
+				WheelSlot.Stack.Text = ItemIcon.Stack.Text
+				WheelSlot.Stack.Visible = true
+			elseif ItemIcon.Bar.Visible then
+				WheelSlot.Bar.Frame.Size = UDim2.fromScale(tonumber(string.split(ItemIcon.Bar.TextLabel.Text, "%")[1]) / 100, 1)
+				WheelSlot.Bar.Visible = true
 			end
+		else
+			print("Slot not do", ItemIcon.Name, Slot)
+			WheelSlot.Icon.Image = ""
+			WheelSlot.Stack.Visible = false
+			WheelSlot.Bar.Visible = false
 		end
 	end
 end
