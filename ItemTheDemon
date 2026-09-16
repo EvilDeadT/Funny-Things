@@ -24,6 +24,7 @@ local PlushTimerDelay = nil
 game.Players.LocalPlayer.CharacterAdded:Connect(function(Character)
 	if UI.Modifiers.TheDemon.Value then
 		PlushTimer = 10
+		PlushTimerStatus = "NoActive"
 		PlushTimerStart()
 	end
 end)
@@ -182,6 +183,7 @@ function PlushTimerStart()
 		task.spawn(function()
 			while UI.Modifiers.TheDemon.Value do
 				if PlayerMain.PlayerDead then
+					PlushTimerStatus = "NoActive"
 					break
 				end
 				
@@ -231,8 +233,6 @@ function PlushTimerStart()
 					task.wait()
 				end
 			end
-
-			PlushTimerStatus = "NoActive"
 		end)
 	end
 end
@@ -314,6 +314,8 @@ UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
 			"<font family='rbxasset://fonts/families/Zekton.json'><font color='rgb(255, 107, 164)'><b>"..game.Players.LocalPlayer.Name.." refused the plush...</b></font></font>",
 			6
 		):Show()
+		
+		PlushTimerStatus = "NoActive"
 	end
 end)
 
@@ -333,12 +335,15 @@ function SetShopExecution(Shop)
 		local InShop = false
 
 		KillTrigger.Touched:Connect(function(Hit)
-			if not InShop and PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon" then
+			if not InShop and PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon" and not (PlayerMain.PlayerDead
+				and PlayerMain.IsGhost
+				and game.Workspace:HasTag("TemporaryImmunity")
+				and game.Players.LocalPlayer:HasTag("GodMode")) then
 				for i = 1, 2 do
 					game.ReplicatedStorage.Events.FlashMode:FireServer("Flashed")
 				end
 
-				task.wait(0.5)
+				task.wait(0.75)
 
 				game.ReplicatedStorage.Events.LocalDamage:FireServer(99999, "SebastianKill", 1, "SebastianKill", true)
 			end	
