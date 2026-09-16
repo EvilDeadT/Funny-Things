@@ -19,8 +19,12 @@ end)
 
 if game.Players.LocalPlayer.Character then
 	game.Players.LocalPlayer.Character.ChildAdded:Connect(function(Keycard)
-		if Keycard.Name == "NormalKeyCard" and PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) then
-			ChangeKeycardHand(Keycard, game.Players.LocalPlayer.Character:WaitForChild("LeftHand"))
+		if (Keycard.Name == "NormalKeyCard" or Keycard.Name == "InnerKeyCard" or Keycard.Name == "RidgeKeyCard") then
+			if PlayerMain.Toolbar.CurrentSelected then
+				ChangeKeycardHand(Keycard, game.Players.LocalPlayer.Character:WaitForChild("LeftHand"))
+			else
+				ChangeKeycardHand(Keycard, game.Players.LocalPlayer.Character:WaitForChild("RightHand"))
+			end
 		end
 	end)
 end
