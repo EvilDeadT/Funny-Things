@@ -32,6 +32,8 @@ UI.Events.ItemOnEquip.Event:Connect(function(Item, Anim)
 	if Item.Name ~= "TheDemon" then
 		return
 	end
+	
+	PlayerMain.Device.UI.Mobile.BaseControls.Use.Icon.Image = "rbxassetid://91478997411552"
 
 	if Anim then
 		if Anim.Pet then
