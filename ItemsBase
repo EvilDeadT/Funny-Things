@@ -124,7 +124,7 @@ function AppendZeroSlotsToEnd(ItemList)
 	end
 end
 
-function OrderToolbar() print("OrderToolbar USELESS")
+function OrderToolbar()
 	PlayerMain.Toolbar.List = {}
 	
 	local function AddItemToList(ItemIcon)
@@ -388,7 +388,7 @@ UI.Inventory.ChildRemoved:Connect(function(Item)
 		end
 	end
 	
-	RefreshItemList()
+	OrderToolbar()
 	
 	if Item:GetAttribute("ButterfingersDrop") then print("Allow butterfingers")
 		CanButterfingers = true
