@@ -71,9 +71,12 @@ function UpdateWheel()
 	for Slot = 1, 7 do
 		for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
 			if ItemIcon.ClassName == "ImageButton" then
+				print("ItemIcon: "..ItemIcon)
 				local WheelSlot = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:FindFirstChild(ItemIcon.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts)
 				if WheelSlot then
+					print("WheelSlotExist")
 					if WheelSlot.Name == Slot then
+						print("Slot do")
 						WheelSlot.Icon.Image = ItemIcon.ImageLabel.Image
 						if ItemIcon.Stack.Visible then
 							WheelSlot.Stack.Text = ItemIcon.Stack.Text
@@ -83,6 +86,7 @@ function UpdateWheel()
 							WheelSlot.Bar.Visible = true
 						end
 					else
+						print("Slot not do")
 						WheelSlot.Icon.Image = ""
 						WheelSlot.Stack.Visible = false
 						WheelSlot.Bar.Visible = false
@@ -93,7 +97,7 @@ function UpdateWheel()
 	end
 end
 
-function SetIconSlot(Item, Slot) print("SetIconSlot")
+function SetIconSlot(Item, Slot)
 	if Slot <= 9 then
 		Item.Number.TextLabel.Text = Slot
 	else
@@ -155,7 +159,7 @@ function OrderToolbar() print("OrderToolbar USELESS")
 	end
 end
 
-function RefreshItemList() print("RefreshItemList")
+function RefreshItemList()
 	PlayerMain.Toolbar.List = {}
 	
 	for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
@@ -169,6 +173,7 @@ function RefreshItemList() print("RefreshItemList")
 	end)
 	
 	AppendZeroSlotsToEnd(PlayerMain.Toolbar.List)
+	UpdateWheel()
 end
 
 function MoveSlotsDown(Offset)
