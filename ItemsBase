@@ -67,52 +67,42 @@ function GetOpenSlot(Min, Max)
 	return
 end
 
-function NewWheelSlot(Item)
-	local WheelSlot = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:FindFirstChild(Item.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts)
-	
-	if WheelSlot then
-		WheelSlot.Icon.Image = Item.ImageLabel.Image
-		
-		if Item.Stack.Visible then
-			WheelSlot.Stack.Visible = true
-			WheelSlot.Stack.Text = Item.Stack.Text
+function UpdateWheel()
+	for Slot = 1, 7 do
+		for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
+			if ItemIcon.ClassName == "ImageButton" then
+				local WheelSlot = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:FindFirstChild(ItemIcon.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts)
+				if WheelSlot then
+					if WheelSlot.Name == Slot then
+						WheelSlot.Icon.Image = ItemIcon.ImageLabel.Image
+						if ItemIcon.Stack.Visible then
+							WheelSlot.Stack.Text = ItemIcon.Stack.Text
+							WheelSlot.Stack.Visible = true
+						elseif ItemIcon.Bar.Visible then
+							WheelSlot.Bar.Frame.Size = UDim2.fromScale(tonumber(string.split(ItemIcon.Bar.TextLabel.Text, "%")[1]) / 100, 1)
+							WheelSlot.Bar.Visible = true
+						end
+					else
+						WheelSlot.Icon.Image = ""
+						WheelSlot.Stack.Visible = false
+						WheelSlot.Bar.Visible = false
+					end
+				end
+			end
 		end
 	end
 end
 
-function ClearWheelSlot(Item)
-	local MissingItem = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:FindFirstChild(Item.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts)
-	
-	if MissingItem then
-		MissingItem.Icon.Image = ""
-		MissingItem.Stack.Visible = false
-		MissingItem.Bar.Visible = false
-	end
-end
-
-function SetIconSlot(Item, Slot, RefreshWheel)
+function SetIconSlot(Item, Slot)
 	if Slot <= 9 then
 		Item.Number.TextLabel.Text = Slot
 	else
 		Item.Number.TextLabel.Text = 10
 	end
 	
-	ClearWheelSlot(Item)
-	
-	if RefreshWheel then
-		for _, ItemIcon in PlayerMain.Toolbar.List do
-			if ItemIcon.LayoutOrder == Slot then
-				ClearWheelSlot(ItemIcon, Item.LayoutOrder)
-				break
-			end
-		end
-	end
-	
 	Item.LayoutOrder = Slot
 	
-	NewWheelSlot(Item)
-	
-	return true
+	UpdateWheel()
 end
 
 function AppendZeroSlotsToEnd(ItemList)
@@ -332,7 +322,7 @@ UI.Inventory.ChildAdded:Connect(function(Item)
 			PlayerMain.Toolbar.FollowUI.Visible = true
 			ItemIcon.Visible = false
 		elseif Input == Enum.UserInputState.End and PlayerMain.Toolbar.DropHeld then
-			SetIconSlot(PlayerMain.Toolbar.DropHeld, ItemIcon.LayoutOrder, true)
+			SetIconSlot(PlayerMain.Toolbar.DropHeld, ItemIcon.LayoutOrder)
 			RefreshItemList()
 		end
 	end)
