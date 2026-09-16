@@ -461,14 +461,8 @@ function ItemEquip(Item, ByToolbar, OnGive)
 		
 		game.Players.LocalPlayer.Character:SetAttribute("ToolName", Item.Name)
 		PlayerMain.Device.UI.PC.BaseControls.UseItem.Visible = true
-		PlayerMain.Device.UI.PC.BaseControls.InspectButton.Visible = if not ItemFolder.Animations:FindFirstChild("Inspect") then true else false
-		PlayerMain.Device.UI.PC.BaseControls.DropItem.Visible = if not ItemFolder.Stats:FindFirstChild("NoDrop") then true else false
-		PlayerMain.Device.UI.PC.BaseControls.ChargeItem.Visible = if ItemFolder.Stats:FindFirstChild("MaxCharge") then true else false
 		PlayerMain.Device.UI.PC.BaseControls.OpenWheel.Visible = true
 		PlayerMain.Device.UI.Mobile.BaseControls.Use.Visible = true
-		PlayerMain.Device.UI.Mobile.BaseControls.Batteries.Visible = if ItemFolder.Stats:FindFirstChild("MaxCharge") then true else false
-		PlayerMain.Device.UI.Controller.BaseControls.ChargeItem.Visible = if ItemFolder.Stats:FindFirstChild("MaxCharge") then true else false
-		PlayerMain.Device.UI.Controller.BaseControls.DropItem.Visible = if not ItemFolder.Stats:FindFirstChild("NoDrop") then true else false
 		PlayerMain.Device.UI.Controller.BaseControls.OpenWheel.Visible = true
 
 		game.TweenService:Create(Item, TweenInfo.new(0.2), {
@@ -476,13 +470,27 @@ function ItemEquip(Item, ByToolbar, OnGive)
 		}):Play()
 	end
 	
+	PlayerMain.Device.UI.PC.BaseControls.InspectButton.Visible = if not ItemFolder.Animations:FindFirstChild("Inspect") then true else false
+	PlayerMain.Device.UI.PC.BaseControls.DropItem.Visible = if not ItemFolder.Stats:FindFirstChild("NoDrop") then true else false
+	PlayerMain.Device.UI.PC.BaseControls.ChargeItem.Visible = if ItemFolder.Stats:FindFirstChild("MaxCharge") then true else false
+	PlayerMain.Device.UI.Mobile.BaseControls.Batteries.Visible = if ItemFolder.Stats:FindFirstChild("MaxCharge") then true else false
+	PlayerMain.Device.UI.Controller.BaseControls.ChargeItem.Visible = if ItemFolder.Stats:FindFirstChild("MaxCharge") then true else false
+	PlayerMain.Device.UI.Controller.BaseControls.DropItem.Visible = if not ItemFolder.Stats:FindFirstChild("NoDrop") then true else false
+	
 	local ToolbarKeys = {}
 	if ItemFolder.Stats:FindFirstChild("Throwable") or UI.Settings.CanThrowEveryItem.Value then
 		ToolbarKeys[Enum.KeyCode.F] = "Throw"
 		ToolbarKeys[Enum.KeyCode.ButtonL2] = "Throw"
+		
+		PlayerMain.Device.UI.PC.BaseControls.BindKey1.TextLabel.Text = "Throw Bunny"
+		PlayerMain.Device.UI.PC.BaseControls.BindKey1.ImageButton.ImageLabel.Image = ""
+		PlayerMain.Device.UI.PC.BaseControls.BindKey1.ImageButton.TextLabel.Text = "F"
+		PlayerMain.Device.UI.Mobile.BaseControls.BindKey1.Icon.Image = "rbxassetid://77046733419404"
+		PlayerMain.Device.UI.Controller.BaseControls.BindKey1.TextLabel.Text = "Throw Bunny"
 	end
+	
 	if ItemFolder.Animations:FindFirstChild("Inspect") then
-		ToolbarKeys[Enum.KeyCode.T] = "Inspect"
+		PlayerMain.Device.UI.PC.BaseControls.InspectButton.ImageButton.TextLabel.Text = "T"
 	end
 	
 	if next(ToolbarKeys) then
@@ -637,6 +645,10 @@ function ItemUnequip(Item, ByToolbar)
 			Size = UDim2.new(0.8, 0, 0.8, 0)
 		}):Play()
 	end
+	
+	PlayerMain.Device.UI.PC.BaseControls.InspectButton.ImageButton.TextLabel.Text = "M3"
+	PlayerMain.Device.UI.PC.BaseControls.BindKey1.ImageButton.ImageLabel.Image = "rbxassetid://15230742967"
+	PlayerMain.Device.UI.PC.BaseControls.BindKey1.ImageButton.TextLabel.Text = ""
 	
 	UI.Events.ItemOnUnequip:Fire(Item, ItemAnim[Item.Name])
 end
