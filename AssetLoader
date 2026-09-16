@@ -163,7 +163,7 @@ local Assets = {
 				Inspect = {Name='Inspect',ClassName='Animation',AnimationId=99511117738499}
 			},
 			Icons = {
-				Toolbar = {Name='Toolbar',ClassName='ImageLabel',Image=134742905283877,Size=UDim2.new(0,100,0,100),BorderColor3=Color3.new(0.1059,0.1647,0.2078),BackgroundColor3=Color3.new(1,1,1)}
+				Toolbar = {Name='Toolbar',ClassName='ImageLabel',Image=104777270964159,Size=UDim2.new(0,100,0,100),BorderColor3=Color3.new(0.1059,0.1647,0.2078),BackgroundColor3=Color3.new(1,1,1)}
 			},
 			Stats = {
 				DisplayName = {Name='DisplayName',ClassName='StringValue',Value='The Demon'},
