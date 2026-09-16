@@ -19,6 +19,10 @@ local AtomizeSounds = {
 }
 
 UI.Events.Atomize.Event:Connect(function(Object)
+	if Object:GetAttribute("Atomized") then
+		return
+	end
+	
 	local IsPlayer = false
 
 	local function AtomizePart(Part)
@@ -68,6 +72,7 @@ UI.Events.Atomize.Event:Connect(function(Object)
 	if Object:IsA("Model") then
 		if game.Players:GetPlayerFromCharacter(Object) then
 			IsPlayer = true
+			Object:SetAttribute("Atomized" , true)
 		end
 
 		if IsPlayer and (PlayerMain.PlayerDead
@@ -124,7 +129,7 @@ UI.Events.Atomize.Event:Connect(function(Object)
 			AtomizeReverb.Diffusion = 0
 			AtomizeReverb.DryLevel = 3
 
-			UI.Events.UIModule:Invoke("PlaySound", AtomizeSound)
+			AtomizeSound:Play()
 		end
 	elseif Object:IsA("BasePart") then
 		AtomizePart(Object)
