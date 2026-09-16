@@ -21,8 +21,8 @@ local PlushTimer = nil
 local PlushTimerStatus = "NoActive"
 local PlushTimerDelay = nil
 
-game.Players.LocalPlayer.CharacterAdded:Connect(function(Character) print("New Character")
-	if UI.Modifiers.TheDemon.Value then print("TheDemon On")
+game.Players.LocalPlayer.CharacterAdded:Connect(function(Character)
+	if UI.Modifiers.TheDemon.Value then
 		PlushTimer = 10
 		PlushTimerStatus = "NoActive"
 		PlushTimerStart()
@@ -179,9 +179,14 @@ UI.Events.ItemOnInput.Event:Connect(function(Item, Anim, Input)
 end)
 
 function PlushTimerStart()
-	print("PlushStatus:", PlushTimerStatus)
-	if PlushTimerStatus == "NoActive" then print("Is NoActive")
+	if PlushTimerStatus == "NoActive" then
 		task.spawn(function()
+			if PlayerMain.PlayerDead then
+				repeat
+					task.wait()
+				until not PlayerMain.PlayerDead
+			end
+			
 			while UI.Modifiers.TheDemon.Value do
 				if PlayerMain.PlayerDead then
 					PlushTimerStatus = "NoActive"
