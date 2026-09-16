@@ -323,7 +323,6 @@ function SetShopExecution(Shop)
 		local KillTrigger = Entrance:Clone()
 		KillTrigger.Name = "TheDemonKillTrigger"
 		KillTrigger.Parent = Entrance.Parent
-		
 		local Exit = Shop:WaitForChild("Exit", 10)
 
 		if not (Entrance or Exit) then
@@ -338,7 +337,11 @@ function SetShopExecution(Shop)
 				for i = 1, 2 do
 					game.ReplicatedStorage.Events.FlashMode:FireServer("Flashed")
 				end
-			end
+
+				task.wait(0.5)
+
+				game.ReplicatedStorage.Events.LocalDamage:FireServer(99999, "SebastianKill", 1, "SebastianKill", true)
+			end	
 
 			InShop = true
 		end)
