@@ -460,12 +460,12 @@ function ItemEquip(Item, ByToolbar, OnGive)
 		}):Play()
 	end
 	
-	PlayerMain.Device.UI.PC.BaseControls.InspectButton.Visible = if not ItemFolder.Animations:FindFirstChild("Inspect") then true else false
+	PlayerMain.Device.UI.PC.BaseControls.InspectButton.Visible = if ItemFolder.Animations:FindFirstChild("Inspect") then true else false
 	PlayerMain.Device.UI.PC.BaseControls.DropItem.Visible = if not ItemFolder.Stats:FindFirstChild("NoDrop") then true else false
 	PlayerMain.Device.UI.PC.BaseControls.ChargeItem.Visible = if ItemFolder.Stats:FindFirstChild("MaxCharge") then true else false
 	PlayerMain.Device.UI.Mobile.BaseControls.Batteries.Visible = if ItemFolder.Stats:FindFirstChild("MaxCharge") then true else false
-	PlayerMain.Device.UI.Controller.BaseControls.ChargeItem.Visible = if ItemFolder.Stats:FindFirstChild("MaxCharge") then true else false
 	PlayerMain.Device.UI.Controller.BaseControls.DropItem.Visible = if not ItemFolder.Stats:FindFirstChild("NoDrop") then true else false
+	PlayerMain.Device.UI.Controller.BaseControls.ChargeItem.Visible = if ItemFolder.Stats:FindFirstChild("MaxCharge") then true else false
 	
 	local ToolbarKeys = {}
 	if ItemFolder.Stats:FindFirstChild("Throwable") or UI.Settings.CanThrowEveryItem.Value then
@@ -627,8 +627,8 @@ function ItemUnequip(Item, ByToolbar)
 		PlayerMain.Device.UI.PC.BaseControls.OpenWheel.Visible = false
 		PlayerMain.Device.UI.Mobile.BaseControls.Use.Visible = false
 		PlayerMain.Device.UI.Mobile.BaseControls.Batteries.Visible = false
-		PlayerMain.Device.UI.Controller.BaseControls.ChargeItem.Visible = false
 		PlayerMain.Device.UI.Controller.BaseControls.DropItem.Visible = false
+		PlayerMain.Device.UI.Controller.BaseControls.ChargeItem.Visible = false
 		PlayerMain.Device.UI.Controller.BaseControls.OpenWheel.Visible = false
 		
 		game.TweenService:Create(Item, TweenInfo.new(0.2), {
