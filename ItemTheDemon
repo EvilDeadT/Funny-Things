@@ -213,6 +213,8 @@ function PlushTimerStart()
 							end
 						end
 					else
+						print("PlushContented TimerStart:")
+						print(PlushContented)
 						if not (PlayerMain.InCutscene
 							and game.Players.LocalPlayer:GetAttribute("PandeMinigame")
 							and game.Players.LocalPlayer:GetAttribute("ItemsRestricted")
@@ -238,6 +240,8 @@ function PlushTimerStart()
 end
 
 function PlushTimerDecrease()
+	print("PlushContented TimerDecrease:")
+	print(PlushContented)
 	if type(PlushTimer) == "number" and PlushTimer > 0 and not (
 		PlayerMain.InCutscene
 		and game.Players.LocalPlayer:GetAttribute("PandeMinigame")
