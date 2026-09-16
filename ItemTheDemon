@@ -213,14 +213,12 @@ function PlushTimerStart()
 							end
 						end
 					else
-						print("PlushContented TimerStart:")
-						print(PlushContented)
-						if not (PlayerMain.InCutscene
-							and game.Players.LocalPlayer:GetAttribute("PandeMinigame")
-							and game.Players.LocalPlayer:GetAttribute("ItemsRestricted")
-							and game.Players.LocalPlayer:GetAttribute("Parkour")
-							and game.Players.LocalPlayer:GetAttribute("AdDisplaying")
-							and PlushContented
+						if not (PlushContented
+							or PlayerMain.InCutscene
+							or game.Players.LocalPlayer:GetAttribute("PandeMinigame")
+							or game.Players.LocalPlayer:GetAttribute("ItemsRestricted")
+							or game.Players.LocalPlayer:GetAttribute("Parkour")
+							or game.Players.LocalPlayer:GetAttribute("AdDisplaying")
 							) then
 							PlushTimerStatus = "Decrease"
 							PlushTimerDecrease()
@@ -240,15 +238,12 @@ function PlushTimerStart()
 end
 
 function PlushTimerDecrease()
-	print("PlushContented TimerDecrease:")
-	print(PlushContented)
-	if type(PlushTimer) == "number" and PlushTimer > 0 and not (
-		PlayerMain.InCutscene
-		and game.Players.LocalPlayer:GetAttribute("PandeMinigame")
-		and game.Players.LocalPlayer:GetAttribute("ItemsRestricted")
-		and game.Players.LocalPlayer:GetAttribute("Parkour")
-		and game.Players.LocalPlayer:GetAttribute("AdDisplaying")
-		and PlushContented
+	if type(PlushTimer) == "number" and PlushTimer > 0 and not (PlushContented
+		or PlayerMain.InCutscene
+		or game.Players.LocalPlayer:GetAttribute("PandeMinigame")
+		or game.Players.LocalPlayer:GetAttribute("ItemsRestricted")
+		or game.Players.LocalPlayer:GetAttribute("Parkour")
+		or game.Players.LocalPlayer:GetAttribute("AdDisplaying")
 		) then
 		PlushTimer = (math.round(PlushTimer * 10) - 1) / 10
 
