@@ -290,6 +290,16 @@ UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
 			"<font family='rbxasset://fonts/families/Zekton.json'><font color='rgb(255, 107, 164)'><b>"..game.Players.LocalPlayer.Name.." grabbed the plush...</b></font></font>",
 			6
 		):Show()
+		
+		for _, Room in game.Workspace.GameplayFolder.Rooms:GetChildren() do
+			if Room:GetAttribute("Room") and Room:GetAttribute("SpecialTag") == "Shop" then
+				if Room:FindFirstChild("Shop") then
+					SetShopExecution(Room.Shop)
+				else
+					Room.ChildAdded:Connect(SetShopExecution)
+				end
+			end
+		end
 	else
 		for _, DroppedItem in game.Workspace.GameplayFolder.DroppedItems:GetChildren() do
 			if DroppedItem.Name == "TheDemon" then
@@ -304,5 +314,38 @@ UI.Modifiers.TheDemon:GetPropertyChangedSignal("Value"):Connect(function()
 			"<font family='rbxasset://fonts/families/Zekton.json'><font color='rgb(255, 107, 164)'><b>"..game.Players.LocalPlayer.Name.." refused the plush...</b></font></font>",
 			6
 		):Show()
+	end
+end)
+
+function SetShopExecution(Shop)
+	if Shop.Name == "Shop" and not Shop:GetAttribute("TheDemonExecution") then
+		local Entrance = Shop:WaitForChild("Entrance", 10)
+		local Exit = Shop:WaitForChild("Exit", 10)
+
+		if not Entrance or Exit then
+			return
+		end
+		
+		Shop:SetAttribute("TheDemonExecution", true)
+		local InShop = false
+
+		Entrance.Touched:Connect(function(Hit)
+			print("Entered in shop")
+			if not InShop and PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon" then
+				print("Entered Shop with TheDemon")
+			end
+
+			InShop = true
+		end)
+
+		Exit.Touched:Connect(function(Hit)
+			InShop = false
+		end)
+	end
+end
+
+game.Workspace.GameplayFolder.Rooms.ChildAdded:Connect(function(Room)
+	if Room:GetAttribute("Room") and Room:GetAttribute("SpecialTag") == "Shop" then
+		Room.ChildAdded:Connect(SetShopExecution)
 	end
 end)
