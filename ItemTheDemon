@@ -321,6 +321,9 @@ function SetShopExecution(Shop)
 	if Shop.Name == "Shop" and not Shop:GetAttribute("TheDemonExecution") then
 		local Entrance = Shop:WaitForChild("Entrance", 10)
 		local KillTrigger = Entrance:Clone()
+		KillTrigger.Name = "TheDemonKillTrigger"
+		KillTrigger.Parent = Entrance.Parent
+		
 		local Exit = Shop:WaitForChild("Exit", 10)
 
 		if not (Entrance or Exit) then
