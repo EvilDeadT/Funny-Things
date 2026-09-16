@@ -4,11 +4,7 @@ local ItemAnim = {}
 local CanButterfingers = true
 
 function ChangeKeycardHand(Keycard, Hand)
-	if not Keycard:FindFirstChild("Handle") then
-		return warn("Keycard does not have Handle")
-	end
-	
-	Keycard.Handle.Part0 = Hand
+	Keycard:WaitForChild("Handle").Part0 = Hand
 end
 
 game.Players.LocalPlayer.CharacterAdded:Connect(function(Character)
@@ -611,6 +607,17 @@ function ItemUnequip(Item, ByToolbar)
 		if PlayerMain.Toolbar.CurrentSelected == Item then
 			PlayerMain.Toolbar.CurrentSelected = nil
 		end
+		
+		PlayerMain.Toolbar.SelectionChangedEvent:Fire(nil)
+		game.Players.LocalPlayer.Character:SetAttribute("ToolName", "nil")
+		PlayerMain.Device.UI.Mobile.BaseControls.Use.Visible = false
+		PlayerMain.Device.UI.PC.BaseControls.DropItem.Visible = false
+		PlayerMain.Device.UI.PC.BaseControls.ChargeItem.Visible = false
+		PlayerMain.Device.UI.Mobile.BaseControls.Batteries.Visible = false
+		PlayerMain.Device.UI.Controller.BaseControls.ChargeItem.Visible = false
+		PlayerMain.Device.UI.Controller.BaseControls.DropItem.Visible = false
+		PlayerMain.Device.UI.PC.BaseControls.OpenWheel.Visible = false
+		PlayerMain.Device.UI.Controller.BaseControls.OpenWheel.Visible = false
 		
 		game.TweenService:Create(Item, TweenInfo.new(0.2), {
 			Size = UDim2.new(0.8, 0, 0.8, 0)
