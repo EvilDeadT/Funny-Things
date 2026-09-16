@@ -388,7 +388,7 @@ UI.Inventory.ChildRemoved:Connect(function(Item)
 		end
 	end
 	
-	OrderToolbar()
+	RefreshItemList()
 	
 	if Item:GetAttribute("ButterfingersDrop") then print("Allow butterfingers")
 		CanButterfingers = true
