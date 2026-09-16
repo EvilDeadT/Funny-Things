@@ -669,7 +669,7 @@ function ItemDrop(Item, Thrown)
 					
 					task.delay(0.2, function()
 						game.ReplicatedStorage.CustomAssets.Items.Base.Sounds.Butterfingers:Play()
-						ItemFile:SetAttribute("ButterfingersDrop", true)
+						AddedItem:SetAttribute("ButterfingersDrop", true)
 						ItemDrop(AddedItem)
 					end)
 				end
