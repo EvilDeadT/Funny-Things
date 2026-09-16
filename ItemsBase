@@ -458,6 +458,18 @@ function ItemEquip(Item, ByToolbar, OnGive)
 	if not ByToolbar then
 		PlayerMain.Toolbar.UnSelect()
 		PlayerMain.Toolbar.CurrentSelected = Item
+		
+		game.Players.LocalPlayer.Character:SetAttribute("ToolName", Item.Name)
+		PlayerMain.Device.UI.PC.BaseControls.UseItem.Visible = true
+		PlayerMain.Device.UI.PC.BaseControls.InspectButton.Visible = if not ItemFolder.Animations:FindFirstChild("Inspect") then true else false
+		PlayerMain.Device.UI.PC.BaseControls.DropItem.Visible = if not ItemFolder.Stats:FindFirstChild("NoDrop") then true else false
+		PlayerMain.Device.UI.PC.BaseControls.ChargeItem.Visible = if ItemFolder.Stats:FindFirstChild("MaxCharge") then true else false
+		PlayerMain.Device.UI.PC.BaseControls.OpenWheel.Visible = true
+		PlayerMain.Device.UI.Mobile.BaseControls.Use.Visible = true
+		PlayerMain.Device.UI.Mobile.BaseControls.Batteries.Visible = if ItemFolder.Stats:FindFirstChild("MaxCharge") then true else false
+		PlayerMain.Device.UI.Controller.BaseControls.ChargeItem.Visible = if ItemFolder.Stats:FindFirstChild("MaxCharge") then true else false
+		PlayerMain.Device.UI.Controller.BaseControls.DropItem.Visible = if not ItemFolder.Stats:FindFirstChild("NoDrop") then true else false
+		PlayerMain.Device.UI.Controller.BaseControls.OpenWheel.Visible = true
 
 		game.TweenService:Create(Item, TweenInfo.new(0.2), {
 			Size = UDim2.new(1, 0, 1, 0)
@@ -610,13 +622,15 @@ function ItemUnequip(Item, ByToolbar)
 		
 		PlayerMain.Toolbar.SelectionChangedEvent:Fire(nil)
 		game.Players.LocalPlayer.Character:SetAttribute("ToolName", "nil")
-		PlayerMain.Device.UI.Mobile.BaseControls.Use.Visible = false
+		PlayerMain.Device.UI.PC.BaseControls.UseItem.Visible = false
+		PlayerMain.Device.UI.PC.BaseControls.InspectButton.Visible = false
 		PlayerMain.Device.UI.PC.BaseControls.DropItem.Visible = false
 		PlayerMain.Device.UI.PC.BaseControls.ChargeItem.Visible = false
+		PlayerMain.Device.UI.PC.BaseControls.OpenWheel.Visible = false
+		PlayerMain.Device.UI.Mobile.BaseControls.Use.Visible = false
 		PlayerMain.Device.UI.Mobile.BaseControls.Batteries.Visible = false
 		PlayerMain.Device.UI.Controller.BaseControls.ChargeItem.Visible = false
 		PlayerMain.Device.UI.Controller.BaseControls.DropItem.Visible = false
-		PlayerMain.Device.UI.PC.BaseControls.OpenWheel.Visible = false
 		PlayerMain.Device.UI.Controller.BaseControls.OpenWheel.Visible = false
 		
 		game.TweenService:Create(Item, TweenInfo.new(0.2), {
