@@ -93,7 +93,7 @@ function UpdateWheel()
 	end
 end
 
-function SetIconSlot(Item, Slot)
+function SetIconSlot(Item, Slot) print("SetIconSlot")
 	if Slot <= 9 then
 		Item.Number.TextLabel.Text = Slot
 	else
@@ -155,7 +155,7 @@ function OrderToolbar() print("OrderToolbar USELESS")
 	end
 end
 
-function RefreshItemList()
+function RefreshItemList() print("RefreshItemList")
 	PlayerMain.Toolbar.List = {}
 	
 	for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
