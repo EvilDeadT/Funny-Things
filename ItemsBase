@@ -75,7 +75,7 @@ function UpdateWheel()
 				local WheelSlot = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:FindFirstChild(ItemIcon.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts)
 				if WheelSlot then
 					print("WheelSlotExist")
-					if WheelSlot.Name == Slot then
+					if tonumber(WheelSlot.Name) == Slot then
 						print("Slot do")
 						WheelSlot.Icon.Image = ItemIcon.ImageLabel.Image
 						if ItemIcon.Stack.Visible then
