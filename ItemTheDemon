@@ -319,9 +319,8 @@ end)
 
 function SetShopExecution(Shop)
 	if Shop.Name == "Shop" and not Shop:GetAttribute("TheDemonExecution") then
-		print("Can set")
-		local Entrance = Shop:WaitForChild("Entrance", 10)
-		local Exit = Shop:WaitForChild("Exit", 10)
+		local Entrance = Shop:WaitForChild("Entrance")
+		local Exit = Shop:WaitForChild("Exit")
 
 		if not Entrance or Exit then
 			return
@@ -347,7 +346,6 @@ end
 
 game.Workspace.GameplayFolder.Rooms.ChildAdded:Connect(function(Room)
 	if Room:GetAttribute("Room") and Room:GetAttribute("SpecialTag") == "Shop" then
-		print("Room Shop: "..Room.Name)
 		Room.ChildAdded:Connect(SetShopExecution)
 	end
 end)
