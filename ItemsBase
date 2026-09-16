@@ -14,7 +14,7 @@ end
 game.Players.LocalPlayer.CharacterAdded:Connect(function(Character)
 	ItemAnim = {}
 	
-	Character.ChildAdded:Connect(function(KeyCard)
+	Character.ChildAdded:Connect(function(Keycard)
 		if Keycard.Name == "NormalKeyCard" and PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) then
 			ChangeKeycardHand(Keycard, game.Players.LocalPlayer.Character:WaitForChild("LeftHand"))
 		end
@@ -372,6 +372,12 @@ UI.Inventory.ChildRemoved:Connect(function(Item)
 		ItemUnequip(PlayerMain.Toolbar.CurrentSelected)
 	end
 	
+	if Item:GetAttribute("ButterfingersDrop") then
+		CanButterfingers = true
+	end
+	
+	print(Item:GetAttribute("ButterfingersDrop"))
+	
 	for ItemName, ItemNumber in ItemsToolbar do
 		if ItemsInventory[ItemName] then
 			if ItemNumber > ItemsInventory[ItemName] then
@@ -394,9 +400,7 @@ UI.Inventory.ChildRemoved:Connect(function(Item)
 	
 	RefreshItemList()
 	
-	if Item:GetAttribute("ButterfingersDrop") then
-		CanButterfingers = true
-	end
+	print(Item:GetAttribute("ButterfingersDrop"))
 end)
 
 function ItemGive(Item, PickedUp)
