@@ -244,14 +244,16 @@ function PlushTimerStart()
 end
 
 function PlushTimerDecrease()
-	if type(PlushTimer) == "number" and PlushTimer > 0 and not (PlushContented
+	if type(PlushTimer) == "number" and not (PlushContented
 		or PlayerMain.InCutscene
 		or game.Players.LocalPlayer:GetAttribute("PandeMinigame")
 		or game.Players.LocalPlayer:GetAttribute("ItemsRestricted")
 		or game.Players.LocalPlayer:GetAttribute("Parkour")
 		or game.Players.LocalPlayer:GetAttribute("AdDisplaying")
 		) then
-		PlushTimer = (math.round(PlushTimer * 10) - 1) / 10
+		if PlushTimer > 0 then
+			PlushTimer = (math.round(PlushTimer * 10) - 1) / 10
+		end
 
 		if PlushTimer == 7.5 then
 			PlayerMain.SubTitles.new(
