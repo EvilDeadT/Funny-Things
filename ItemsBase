@@ -71,12 +71,10 @@ function UpdateWheel()
 	for Slot = 1, 7 do
 		for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
 			if ItemIcon.ClassName == "ImageButton" then
-				print("ItemIcon: "..ItemIcon.Name)
 				local WheelSlot = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel:FindFirstChild(ItemIcon.LayoutOrder - PlayerMain.Toolbar.AlwaysFirsts)
 				if WheelSlot then
-					print("WheelSlotExist")
 					if tonumber(WheelSlot.Name) == Slot then
-						print("Slot do")
+						print("Slot do", ItemIcon.Name, Slot)
 						WheelSlot.Icon.Image = ItemIcon.ImageLabel.Image
 						if ItemIcon.Stack.Visible then
 							WheelSlot.Stack.Text = ItemIcon.Stack.Text
@@ -86,7 +84,7 @@ function UpdateWheel()
 							WheelSlot.Bar.Visible = true
 						end
 					else
-						print("Slot not do")
+						print("Slot not do", ItemIcon.Name, Slot)
 						WheelSlot.Icon.Image = ""
 						WheelSlot.Stack.Visible = false
 						WheelSlot.Bar.Visible = false
