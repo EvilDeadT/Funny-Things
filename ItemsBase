@@ -631,6 +631,7 @@ function ItemDrop(Item, Thrown)
 
 	if UI.Events.UIModule:Invoke("FindByThread", ItemFolder, "Models.Drop") then
 		local ItemModel = ItemFolder.Models.Drop:Clone()
+		ItemModel.Name = Item.Name
 		
 		if not Thrown then
 			ItemModel:PivotTo(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame)
