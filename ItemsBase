@@ -142,7 +142,7 @@ function OrderToolbar()
 	for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
 		if ItemIcon.ClassName == "ImageButton" then
 			if ItemIcon:GetAttribute("AlwaysFirst") then
-				AddItemToList()
+				AddItemToList(ItemIcon)
 			end
 		end
 	end
@@ -150,7 +150,7 @@ function OrderToolbar()
 	for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
 		if ItemIcon.ClassName == "ImageButton" then
 			if not (ItemIcon:GetAttribute("AlwaysFirst") or ItemIcon:GetAttribute("AlwaysLast")) then
-				AddItemToList()
+				AddItemToList(ItemIcon)
 			end
 		end
 	end
@@ -158,7 +158,7 @@ function OrderToolbar()
 	for _, ItemIcon in PlayerMain.Toolbar.UI:GetChildren() do
 		if ItemIcon.ClassName == "ImageButton" then
 			if ItemIcon:GetAttribute("AlwaysLast") then
-				AddItemToList()
+				AddItemToList(ItemIcon)
 			end
 		end
 	end
