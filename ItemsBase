@@ -3,9 +3,31 @@ local PlayerMain = require(game.Players.LocalPlayer.PlayerGui:WaitForChild("Main
 local ItemAnim = {}
 local CanButterfingers = true
 
+function ChangeKeycardHand(Keycard, Hand)
+	if not Keycard:FindFirstChild("Handle") then
+		return warn("Keycard does not have Handle")
+	end
+	
+	Keycard.Handle.Part0 = Hand
+end
+
 game.Players.LocalPlayer.CharacterAdded:Connect(function(Character)
 	ItemAnim = {}
+	
+	Character.ChildAdded:Connect(function(KeyCard)
+		if Keycard.Name == "NormalKeyCard" and PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) then
+			ChangeKeycardHand(Keycard, game.Players.LocalPlayer.Character:WaitForChild("LeftHand"))
+		end
+	end)
 end)
+
+if game.Players.LocalPlayer.Character then
+	game.Players.LocalPlayer.Character.ChildAdded:Connect(function(Keycard)
+		if Keycard.Name == "NormalKeyCard" and PlayerMain.Toolbar.CurrentSelected and game.ReplicatedStorage.CustomAssets.Items:FindFirstChild(PlayerMain.Toolbar.CurrentSelected.Name) then
+			ChangeKeycardHand(Keycard, game.Players.LocalPlayer.Character:WaitForChild("LeftHand"))
+		end
+	end)
+end
 
 function LoadAnimation(Item, Anim)
 	if ItemAnim[Item] then
