@@ -77,17 +77,17 @@ function UpdateWheel()
 		local WheelSlot = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel[Slot]
 		
 		if ToolbarItems[Slot] then
-			print("Slot do", ItemIcon.Name, Slot)
-			WheelSlot.Icon.Image = ItemIcon.ImageLabel.Image
-			if ItemIcon.Stack.Visible then
-				WheelSlot.Stack.Text = ItemIcon.Stack.Text
+			print("Slot do", ToolbarItems[Slot].Name, Slot)
+			WheelSlot.Icon.Image = ToolbarItems[Slot].ImageLabel.Image
+			if ToolbarItems[Slot].Stack.Visible then
+				WheelSlot.Stack.Text = ToolbarItems[Slot].Stack.Text
 				WheelSlot.Stack.Visible = true
-			elseif ItemIcon.Bar.Visible then
-				WheelSlot.Bar.Frame.Size = UDim2.fromScale(tonumber(string.split(ItemIcon.Bar.TextLabel.Text, "%")[1]) / 100, 1)
+			elseif ToolbarItems[Slot].Bar.Visible then
+				WheelSlot.Bar.Frame.Size = UDim2.fromScale(tonumber(string.split(ToolbarItems[Slot].Bar.TextLabel.Text, "%")[1]) / 100, 1)
 				WheelSlot.Bar.Visible = true
 			end
 		else
-			print("Slot not do", ItemIcon.Name, Slot)
+			print("Slot not do", Slot)
 			WheelSlot.Icon.Image = ""
 			WheelSlot.Stack.Visible = false
 			WheelSlot.Bar.Visible = false
