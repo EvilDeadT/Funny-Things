@@ -77,7 +77,6 @@ function UpdateWheel()
 		local WheelSlot = game.Players.LocalPlayer.PlayerGui.Main.InventoryWheel.Wheel[Slot]
 		
 		if ToolbarItems[Slot] then
-			print("Slot do", ToolbarItems[Slot].Name, Slot)
 			WheelSlot.Icon.Image = ToolbarItems[Slot].ImageLabel.Image
 			if ToolbarItems[Slot].Stack.Visible then
 				WheelSlot.Stack.Text = ToolbarItems[Slot].Stack.Text
@@ -87,7 +86,6 @@ function UpdateWheel()
 				WheelSlot.Bar.Visible = true
 			end
 		else
-			print("Slot not do", Slot)
 			WheelSlot.Icon.Image = ""
 			WheelSlot.Stack.Visible = false
 			WheelSlot.Bar.Visible = false
@@ -361,12 +359,6 @@ UI.Inventory.ChildRemoved:Connect(function(Item)
 		ItemUnequip(PlayerMain.Toolbar.CurrentSelected)
 	end
 	
-	if Item:GetAttribute("ButterfingersDrop") then
-		CanButterfingers = true
-	end
-	
-	print(Item:GetAttribute("ButterfingersDrop"))
-	
 	for ItemName, ItemNumber in ItemsToolbar do
 		if ItemsInventory[ItemName] then
 			if ItemNumber > ItemsInventory[ItemName] then
@@ -389,7 +381,9 @@ UI.Inventory.ChildRemoved:Connect(function(Item)
 	
 	RefreshItemList()
 	
-	print(Item:GetAttribute("ButterfingersDrop"))
+	if Item:GetAttribute("ButterfingersDrop") then print("Allow butterfingers")
+		CanButterfingers = true
+	end
 end)
 
 function ItemGive(Item, PickedUp)
@@ -561,7 +555,7 @@ function ItemEquip(Item, ByToolbar, OnGive)
 		and math.random(1, 5) == 1
 		and CanButterfingers
 		and not OnGive
-		and not game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") then
+		and not game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") then print("Butterfingers Equip")
 		CanButterfingers = false
 		
 		task.delay(0.2, function()
@@ -717,7 +711,7 @@ function ItemDrop(Item, Thrown)
 				if game.ReplicatedStorage.GameSettings.Modifier:FindFirstChild("Butterfingers")
 					and math.random(1, 5) == 1
 					and CanButterfingers
-					and not game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") then
+					and not game.ReplicatedStorage.CustomAssets.Items[PlayerMain.Toolbar.CurrentSelected.Name].Stats:FindFirstChild("NoDrop") then print("Butterfingers Pickup")
 					CanButterfingers = false
 					
 					task.delay(0.2, function()
