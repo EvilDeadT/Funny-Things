@@ -320,6 +320,7 @@ end)
 function SetShopExecution(Shop)
 	if Shop.Name == "Shop" and not Shop:GetAttribute("TheDemonExecution") then
 		local Entrance = Shop:WaitForChild("Entrance", 10)
+		local KillTrigger = Entrance:Clone()
 		local Exit = Shop:WaitForChild("Exit", 10)
 
 		if not (Entrance or Exit) then
@@ -329,17 +330,34 @@ function SetShopExecution(Shop)
 		Shop:SetAttribute("TheDemonExecution", true)
 		local InShop = false
 
-		Entrance.Touched:Connect(function(Hit)
-			print("Entered in shop")
+		KillTrigger.Touched:Connect(function(Hit)
 			if not InShop and PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon" then
-				print("Entered Shop with TheDemon")
+				for i = 1, 2 do
+					game.ReplicatedStorage.Events.FlashMode:FireServer("Flashed")
+				end
 			end
 
+			InShop = true
+		end)
+		
+		Entrance.Touched:Connect(function(Hit)
 			InShop = true
 		end)
 
 		Exit.Touched:Connect(function(Hit)
 			InShop = false
+		end)
+		
+		task.spawn(function()
+			while Entrance and Entrance.Parent do
+				if PlayerMain.Toolbar.CurrentSelected and PlayerMain.Toolbar.CurrentSelected.Name == "TheDemon" then
+					Entrance.Position = KillTrigger.Position + Vector3.new(0, 20, 0)
+				else
+					Entrance.Position = KillTrigger.Position
+				end
+				
+				task.wait()
+			end
 		end)
 	end
 end
