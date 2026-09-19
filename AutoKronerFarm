@@ -1,3 +1,16 @@
+local SoloFarm = true
+local KittyClockInSolo = true
+local CollectMoney = true
+local TimeOutKill = true
+
+local Currency = {
+	MinCurrency = 0,
+	MaxCurrency = 0,
+
+	CurrentProxyPart = nil,
+	CurrentProxyPartCFrame = nil
+}
+
 function WaitFiles(Start, FileTo)
 	if not Start:FindFirstChild(FileTo) then
 		repeat
@@ -38,25 +51,48 @@ if game.PlaceId == 12411473842 then
 	WaitFiles(game.ReplicatedStorage.Events, "CreateLobby")
 	WaitFiles(game.ReplicatedStorage.Events, "InvitePlayer")
 	
+	task.delay(750, function()
+		print("TimeOut. Attempt to rejoin")
+		
+		while true do
+			local PlayerLobby = game.ReplicatedStorage.ActiveLobbies:FindFirstChild(game.Players.LocalPlayer.Name)
+
+			if PlayerLobby then
+				local PlayersCount = PlayerLobby.SubModel.Value.Players
+				local SubTimer = PlayerLobby.SubModel.Value.Timer
+				if SubTimer.Value <= 0 then
+					break
+				end
+				
+				if PlayersCount.Value <= 1 then
+					game:GetService("TeleportService"):Teleport(12411473842, game.Players.LocalPlayer)
+				end
+			else
+				game:GetService("TeleportService"):Teleport(12411473842, game.Players.LocalPlayer)
+			end
+			task.wait()
+		end
+	end)
+
 	while true do
 		local PlayerLobby = game.ReplicatedStorage.ActiveLobbies:FindFirstChild(game.Players.LocalPlayer.Name)
-		
+
 		if PlayerLobby then
 			local PlayersCount = PlayerLobby.SubModel.Value.Players
-			if PlayersCount.Value == 1 and not PlayerLobby.TimerPaused.Value then
+			if (PlayersCount.Value == 1 and not PlayerLobby.TimerPaused.Value) and not SoloFarm then
 				PlayerLobby.PauseTimer:FireServer(true)
 			elseif PlayersCount.Value > 1 and PlayerLobby.TimerPaused.Value then
 				PlayerLobby.PauseTimer:FireServer(false)
 			end
-			
+
 			for _, FriendPlayer in game.Players:GetPlayers() do
 				if FriendPlayer:IsFriendsWithAsync(game.Players.LocalPlayer.UserId) then
 					game.ReplicatedStorage.Events.InvitePlayer:FireServer(FriendPlayer)
 				end
 			end
-			
+
 			task.wait(0.5)
-		else
+		else			
 			local ChoisenModifiers = {
 				"UpTheHate",
 				"SoMuchVariety",
@@ -72,9 +108,11 @@ if game.PlaceId == 12411473842 then
 				"OneTimeUse",
 				"TurretUpgrades",
 				"FreeTrial",
+				"GuestStarsRooms",
 				"EdenTrees",
 				"BigTopper",
 				"Coagulates",
+				"BobberFisher",
 				"SkinlessCorpse",
 				"EnragedEyefestation",
 				"NAVIgationMalfunction",
@@ -110,14 +148,28 @@ if game.PlaceId == 12411473842 then
 				"AllOrNothing"
 			}
 
+			if SoloFarm and KittyClockInSolo then
+				table.insert(ChoisenModifiers, "KittyClock")
+			end
+
+			local LobbySize = 8
+
+			if game.Players.LocalPlayer.Data.Gamepasses:FindFirstChild("50PlayerLobby") or game.Players.LocalPlayer.Data.GiftedGamepasses:FindFirstChild("50PlayerLobby") then
+				LobbySize = 9
+			end
+
+			if SoloFarm then
+				LobbySize = 1
+			end
+
 			game.ReplicatedStorage.Events.CreateLobby:InvokeServer({
 				Gamemode = "Modifiers",
-				LobbySize = 8,
+				LobbySize = LobbySize,
 				LobbyAccess = "Friends",
 				ChosenSub = nil,
 				Modifiers = ChoisenModifiers
 			})
-			
+
 			task.wait(1.5)
 		end
 	end
@@ -620,56 +672,115 @@ local RoomSkip = {
 	}
 }
 
-local Currency = {
-	MinCurrency = 0,
-	MaxCurrency = 0,
-
-	CurrentProxyPart = nil,
-	CurrentProxyPartCFrame = nil,
-	CurrentProxyPartPrompt = nil
-}
-
-function PartInFrontOfCamera(Part, LookVectorOffset)
-	Part.CFrame = CFrame.new(
-		Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * LookVectorOffset
-	) * CFrame.fromOrientation(0, 0, 0)
-end
-
-function GetMoneyFrom(Folder)
-	if Script.Settings.AutoPickCurrency == true then
-		for _, Drawer in Folder:GetChildren() do
-			if Drawer:FindFirstChild("SpawnLocations") then
-				for _, SpawnLocation in Drawer.SpawnLocations:GetChildren() do
-					for _, Money in SpawnLocation:GetChildren() do
-						if Money:FindFirstChild("ProxyPart") and Money:GetAttribute("InteractionType") and Money:GetAttribute("Amount") then
-							Currency.CurrentProxyPart = Money.ProxyPart
-							Currency.CurrentProxyPartCFrame = Money.ProxyPart.CFrame
-							for _, Prompt in Money.ProxyPart:GetChildren() do
-								if Prompt:IsA("ProximityPrompt") then
-									if Prompt.Exclusivity == Enum.ProximityPromptExclusivity.OnePerButton then
-										Currency.CurrentProxyPartPrompt = Prompt
-									end
-								end
-							end
-							return
-						end
-					end
+function PromptClearPrompts()
+	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
+		for _, UsedPrompt in game.Workspace.PartInFrontOfCamera:GetChildren() do
+			UsedPrompt.KeyboardKeyCode = Enum.KeyCode.E
+			for _, Info in UsedPrompt:GetChildren() do
+				if string.find(Info.Name, "Prompt") then
+					UsedPrompt[string.split(Info.Name, "Prompt")[2]] = Info.Value
 				end
+
+				Info:Destroy()
 			end
 		end
 	end
+end
 
-	Currency.CurrentProxyPart = nil
-	Currency.CurrentProxyPartCFrame = nil
-	Currency.CurrentProxyPartPrompt = nil
+function PromptSetInfo(Prompt)
+	if Prompt then
+		for _, Info in {"MaxActivationDistance", "RequiresLineOfSight", "HoldDuration", "Enabled", "Parent"} do
+			local PromptInfo = nil
+
+			if Info == "RequiresLineOfSight" or Info == "Enabled" then
+				PromptInfo = Instance.new("BoolValue")
+			elseif Info == "MaxActivationDistance" or Info == "HoldDuration" then
+				PromptInfo = Instance.new("NumberValue")
+			elseif Info == "Parent" then
+				PromptInfo = Instance.new("ObjectValue")
+			end
+
+			PromptInfo.Name = "Prompt"..Info
+			PromptInfo.Value = Prompt[Info]
+			PromptInfo.Parent = Prompt
+		end
+	end
+end
+
+function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
+	if PromptPart == nil then
+		print("PromptInFrontOfCamera No Prompt")
+
+		return
+	end
+
+	local Prompt = PromptPart:FindFirstChildWhichIsA("ProximityPrompt")
+	local PartOffset = LookVectorOffset or 7
+
+	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
+		if game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt") then
+			if game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt"):FindFirstChild("PromptParent") then
+				if game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt").PromptParent.Value == PromptPart then
+					Prompt = game.Workspace.PartInFrontOfCamera:FindFirstChildWhichIsA("ProximityPrompt")
+				else
+					PromptSetInfo(Prompt)
+				end
+			else
+				PromptSetInfo(Prompt)
+			end
+		else
+			PromptSetInfo(Prompt)
+		end
+	else
+		PromptSetInfo(Prompt)
+	end
+
+	if Prompt == nil then
+		return
+	end
+
+	local PartInFrontOfCamera = game.Workspace:FindFirstChild("PartInFrontOfCamera")
+	if not PartInFrontOfCamera then
+		PartInFrontOfCamera = Instance.new("Part", game.Workspace)
+		PartInFrontOfCamera.Name = "PartInFrontOfCamera"
+		PartInFrontOfCamera.Transparency = 1
+		PartInFrontOfCamera.Anchored = true
+		PartInFrontOfCamera.CanCollide = true
+		PartInFrontOfCamera.CastShadow = false
+		PartInFrontOfCamera.Size = Vector3.new(0.5, 0.5, 0.5)
+	end
+
+	PartInFrontOfCamera.CFrame = CFrame.new(
+		Main.CurrentCamera.CFrame.Position + Main.CurrentCamera.CFrame.LookVector * PartOffset
+	) * CFrame.fromOrientation(0, 0, 0)
+
+	if Prompt.Parent ~= PartInFrontOfCamera then
+		PromptClearPrompts()
+	end
+
+	Prompt.MaxActivationDistance = 100
+	Prompt.RequiresLineOfSight = false
+	Prompt.HoldDuration = 0
+	Prompt.Enabled = true
+	Prompt.KeyboardKeyCode = Enum.KeyCode.KeypadZero
+	Prompt.Parent = PartInFrontOfCamera
+	Prompt:InputHoldBegin()
+	Prompt:InputHoldEnd()
 end
 
 function FindMoney()
-	for _, Room in Main.RoomsFolder:GetChildren() do
-		GetMoneyFrom(Room)
-		if Room:FindFirstChild("Interactables") then
-			GetMoneyFrom(Room.Interactables)
+	for _, Money in Main.GameplayFolder:GetDescendants() do
+		if Money:FindFirstChild("ProxyPart")
+			and Money:GetAttribute("InteractionType")
+			and (type(Money:GetAttribute("Amount")) == "number" and Money:GetAttribute("Amount") >= Currency.MinCurrency)
+			and Money.Name ~= "Blueprint" then
+			Currency.CurrentProxyPart = Money.ProxyPart
+			Currency.CurrentProxyPartCFrame = Money.ProxyPart.CFrame
+			return
 		end
+
+		Currency.CurrentProxyPart = nil
+		Currency.CurrentProxyPartCFrame = nil
 	end
 end
 
@@ -1100,14 +1211,9 @@ function ChangePipes(Room)
 
 														while PromptPressed == false do
 															PipePart.Parent.Highlight.Anchored = true
-															PartInFrontOfCamera(PipePart.Parent.Highlight, 3)
-															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").MaxActivationDistance = 100
-															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt").Enabled = true
-															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldBegin()
-															PipePart.Parent.Highlight:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldEnd()
+															PromptInFrontOfCamera(PipePart.Parent.Highlight, 3)
 															task.wait()
 														end
-
 													end
 												end
 												Finished = false	
@@ -1183,13 +1289,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 					end
 					if game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt") then
 						ScriptActionNow = "Press ElevatorPrompt"
-						PartInFrontOfCamera(game.Workspace.Elevator.ElevatorKey.Highlight, 7)
-
-						game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt")
-						game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt").MaxActivationDistance = 100
-						game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt").RequiresLineOfSight = false
-						game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldBegin()
-						game.Workspace.Elevator.ElevatorKey.Highlight:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldEnd()
+						PromptInFrontOfCamera(game.Workspace.Elevator.ElevatorKey.Highlight, 7)
 
 						local TeleportCFrame = RoomSkip.ElevatorHighlightCFrame
 						UnCollisionAll(TeleportCFrame)
@@ -1232,10 +1332,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 				elseif RoomSkip.Exit.Value.Name == "ModifierEnding" then
 					if RoomSkip.EndRunButtonHighlight ~= nil and RoomSkip.EndRunButtonHighlightPrompt ~= nil then
 						ScriptActionNow = "Run Finish"
-						PartInFrontOfCamera(RoomSkip.EndRunButtonHighlight, 7)
-						RoomSkip.EndRunButtonHighlightPrompt.MaxActivationDistance = 100
-						RoomSkip.EndRunButtonHighlightPrompt:InputHoldBegin()
-						RoomSkip.EndRunButtonHighlightPrompt:InputHoldEnd()
+						PromptInFrontOfCamera(RoomSkip.EndRunButtonHighlight, 7)
 
 						local TeleportCFrame = RoomSkip.EndRunButtonHighlightCFrame
 						UnCollisionAll(TeleportCFrame)
@@ -1245,37 +1342,32 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			end
 
 			if ScriptActionNow ~= "Run Finish" and Script.Action ~= "Teleport LastOpened ProgressDoor" and ScriptActionNow ~= "Press ElevatorPrompt" then
-				FindMoney()
-				if Currency.CurrentProxyPart ~= nil and Currency.CurrentProxyPartCFrame ~= nil and Currency.CurrentProxyPartPrompt ~= nil then
+				if CollectMoney then
+					FindMoney()
+				end
+				if Currency.CurrentProxyPart ~= nil and Currency.CurrentProxyPartCFrame ~= nil then
 					ScriptActionNow = "Pick Currency"
-					PartInFrontOfCamera(Currency.CurrentProxyPart, 7)
-					Currency.CurrentProxyPartPrompt.MaxActivationDistance = 100
-					Currency.CurrentProxyPartPrompt.RequiresLineOfSight = false
-					Currency.CurrentProxyPartPrompt:InputHoldBegin()
-					Currency.CurrentProxyPartPrompt:InputHoldEnd()
-
-					local TeleportCFrame = Currency.CurrentProxyPartCFrame
+					PromptInFrontOfCamera(Currency.CurrentProxyPart, 7)
+					
+					local Offset = -10
+					if Currency.CurrentProxyPart.Parent and Currency.CurrentProxyPart.Parent.Name == "Blueprint" then
+						Offset = -9
+					end
+					
+					local TeleportCFrame = Currency.CurrentProxyPartCFrame + Vector3.new(0, Offset, 0)
 					UnCollisionAll(TeleportCFrame)
 					Main.CharacterRoot.CFrame = TeleportCFrame
 				else
 					if RoomSkip.DoorRoot ~= nil and RoomSkip.DoorRootPrompt ~= nil then
 						ScriptActionNow = "Open ProgressDoor Root"
-						PartInFrontOfCamera(RoomSkip.DoorRoot, 7)
-						RoomSkip.DoorRootPrompt.MaxActivationDistance = 100
-						RoomSkip.DoorRootPrompt.Enabled = true
-						RoomSkip.DoorRootPrompt:InputHoldBegin()
-						RoomSkip.DoorRootPrompt:InputHoldEnd()
+						PromptInFrontOfCamera(RoomSkip.DoorRoot, 7)
 					end
 
 					if RoomSkip.Keycard ~= nil then
 						if game.Players.LocalPlayer.PlayerGui.Main.Health.AuxItems.NormalKeyCard.Visible == false then
 							if RoomSkip.KeycardParentPartCFrame ~= nil and RoomSkip.KeycardProxyPart ~= nil and RoomSkip.KeycardProxyPartPrompt ~= nil then
 								ScriptActionNow = "Pick Keycard"
-								PartInFrontOfCamera(RoomSkip.KeycardProxyPart, 7)
-								RoomSkip.KeycardProxyPartPrompt.MaxActivationDistance = 100
-								RoomSkip.KeycardProxyPartPrompt.RequiresLineOfSight = false
-								RoomSkip.KeycardProxyPartPrompt:InputHoldBegin()
-								RoomSkip.KeycardProxyPartPrompt:InputHoldEnd()
+								PromptInFrontOfCamera(RoomSkip.KeycardProxyPart, 7)
 
 								local TeleportCFrame = RoomSkip.KeycardParentPartCFrame + Vector3.new(0, -10, 0)
 								UnCollisionAll(TeleportCFrame)
@@ -1293,11 +1385,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 								RoomSkip.KeycardProxyPart = nil
 								RoomSkip.KeycardProxyPartPrompt = nil
 
-								PartInFrontOfCamera(RoomSkip.LockMain, 7)
-								RoomSkip.LockPrompt.MaxActivationDistance = 100
-								RoomSkip.LockPrompt.HoldDuration = 0
-								RoomSkip.LockPrompt:InputHoldBegin()
-								RoomSkip.LockPrompt:InputHoldEnd()
+								PromptInFrontOfCamera(RoomSkip.LockMain, 7)
 							end
 						end
 					else
@@ -1341,6 +1429,7 @@ game.UserInputService.InputBegan:Connect(function(Input)
 			if RoomSkip.NextUngeneratedRoom == nil then
 				print("WARNING | No NextUngeneratedRoom")
 			end
+			PromptClearPrompts()
 			ClearAllStats(true)
 		end
 		if Input.KeyCode == Enum.KeyCode.K then
@@ -1368,6 +1457,8 @@ game.UserInputService.InputBegan:Connect(function(Input)
 			Script.AutoRoomSkip = not Script.AutoRoomSkip
 			if Script.AutoRoomSkip == true then
 				TeleportToDoor()
+			else
+				PromptClearPrompts()
 			end
 		end
 	end
@@ -1382,42 +1473,98 @@ task.spawn(function()
 			and (game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.Parent ~= game.Workspace)
 			and (RoomSkip.NextUngeneratedRoom and RoomSkip.NextUngeneratedRoom:GetAttribute("RoomFamily") == "BackArea") then
 			game.ReplicatedStorage.Events.LocalDamage:FireServer(9999, "BackArea", 1, "BackArea", true)
-			
+
 			task.wait(1)
-			
+
 			game.Players.LocalPlayer.PlayerGui.Main:WaitForChild("AfterDeathModifier"):WaitForChild("Document"):WaitForChild("DeathFrame"):WaitForChild("EntityName").Text = "BACKAREA"
 		end
-		
+
 		if game.Workspace:FindFirstChild("Root") and game.Workspace.Root:FindFirstChild("RemoteEvent") then
 			game.Workspace.Root.RemoteEvent:FireServer("Death")
 		end
-		
+
+		if game.Workspace:FindFirstChild("EyefestationSpawn", true) then
+			game.Workspace:FindFirstChild("EyefestationSpawn", true):Destroy()
+		end
+
+		if game.Workspace.CurrentCamera:FindFirstChild("Coagulate") then
+			require(game.Players.LocalPlayer.PlayerGui.Main:WaitForChild("Client"):WaitForChild("MainClient"):WaitForChild("LocalCoagulate")).Despawn()
+		end
+
+		if game.Players.LocalPlayer.Character:FindFirstChild("Fish") then
+			game.Players.LocalPlayer.Character.Fish:Destroy()
+		end
+
+		if game.Workspace:FindFirstChild("NoGood") then
+			game.Workspace.NoGood:Destroy()
+		end
+
+		if game.Workspace:FindFirstChild("SkinlessCorpse") then
+			game.Workspace.SkinlessCorpse:Destroy()
+		end
+
+
+		for _, Room in game.Workspace.GameplayFolder.Rooms:GetChildren() do
+			local FoldersToDelete = {"Parts", "Lights", "EmergencyLights", "EntityNodes", "Floors"}
+			for _, RoomFolder in FoldersToDelete do
+				if Room:FindFirstChild(RoomFolder) then
+					Room[RoomFolder]:Destroy()
+				end
+			end
+
+			for _, RoomFile in Room:GetChildren() do
+				if RoomFile:IsA("Model") then
+					if RoomFile:FindFirstChild("TreeRootsAnchored") then
+						RoomFile:Destroy()
+					end
+
+					if RoomFile:GetAttribute("RoomType") == "SideRooms" or RoomFile:GetAttribute("RoomType") == "DeadEnds" then
+						for _, SideRoomFolder in FoldersToDelete do
+							if RoomFile:FindFirstChild(SideRoomFolder) then
+								RoomFile[SideRoomFolder]:Destroy()
+							end
+						end
+					end
+				end
+			end
+		end
+
 		task.wait()
 	end
 end)
 
-
-
-task.delay(180, function()
-	while true do
-		if Script.AutoRoomSkip and (game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.Parent ~= game.Workspace) then
-			game.ReplicatedStorage.Events.LocalDamage:FireServer(9999, "Time Out", 1, "Time Out", true)
-			
+task.spawn(function()
+	if game.ReplicatedStorage:WaitForChild("GameSettings"):WaitForChild("Modifier"):FindFirstChild("KittyClock") then
+		while game.ReplicatedStorage:WaitForChild("GameSettings"):WaitForChild("Modifier"):FindFirstChild("KittyClock") do
+			game.ReplicatedStorage.Events:WaitForChild("Activate"):FireServer("KittyClock", "WindUp")
+			game.ReplicatedStorage.Events:WaitForChild("Equip"):FireServer("KittyClock")
 			task.wait(1)
-			
-			game.Players.LocalPlayer.PlayerGui.Main:WaitForChild("AfterDeathModifier"):WaitForChild("Document"):WaitForChild("DeathFrame"):WaitForChild("EntityName").Text = "TIME OUT"
 		end
-		
-		task.wait(1)
 	end
 end)
+
+if TimeOutKill then
+	task.delay(300, function()
+		while true do
+			if Script.AutoRoomSkip and (game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.Parent ~= game.Workspace) then
+				game.ReplicatedStorage.Events.LocalDamage:FireServer(9999, "Time Out", 1, "Time Out", true)
+
+				task.wait(1)
+
+				game.Players.LocalPlayer.PlayerGui.Main:WaitForChild("AfterDeathModifier"):WaitForChild("Document"):WaitForChild("DeathFrame"):WaitForChild("EntityName").Text = "TIME OUT"
+			end
+
+			task.wait(1)
+		end
+	end)
+end
 
 while true do
 	if (not game.Players.LocalPlayer.Character) or (game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.Parent == game.Workspace) then
 		local LocalPlayerPressed = false
 		local AllOtherPlayersPressed = false
 		local OtherPlayersPressed = 0
-		
+
 		for _, PlayAgainFrame in {game.Players.LocalPlayer.PlayerGui:WaitForChild("Main"):WaitForChild("AfterDeath"), game.Players.LocalPlayer.PlayerGui:WaitForChild("Main"):WaitForChild("AfterDeathModifier")} do
 			for _, PlayerIcon in PlayAgainFrame:WaitForChild("PlayAgain"):WaitForChild("ImportantStuff"):WaitForChild("List"):GetChildren() do
 				if PlayerIcon:IsA("ImageLabel") then
@@ -1433,9 +1580,11 @@ while true do
 		if (#game.Players:GetPlayers() - 1) == OtherPlayersPressed then
 			AllOtherPlayersPressed = true
 		end
-		
+
 		if #game.Players:GetPlayers() == 1 and not LocalPlayerPressed then
-			game:GetService("TeleportService"):Teleport(12411473842, game.Players.LocalPlayer)
+			if not SoloFarm then
+				game:GetService("TeleportService"):Teleport(12411473842, game.Players.LocalPlayer)
+			end
 			game.ReplicatedStorage.Events.PlayAgain:FireServer()
 			task.wait(3)
 		elseif #game.Players:GetPlayers() > 1 and ((not LocalPlayerPressed and AllOtherPlayersPressed) or (LocalPlayerPressed and not AllOtherPlayersPressed)) then
