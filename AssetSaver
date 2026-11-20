@@ -1749,6 +1749,12 @@ else
 		end
 
 		if InstancePath then
+			for _, FrameTo in ResultFrame:GetChildren() do
+				if FrameTo:IsA("Frame") then
+					FrameTo:Destroy()
+				end
+			end
+			
 			Compile(InstancePath, true)
 		else
 			TextBoxError("No Instance To Save!")
