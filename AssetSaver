@@ -1,0 +1,1711 @@
+local InstanceToCompile = nil
+
+
+
+local DeleteOldSaveGui = true
+
+if game.Players.LocalPlayer.PlayerGui:FindFirstChild("InstanceSaveGui") then
+	if DeleteOldSaveGui then
+		game.Players.LocalPlayer.PlayerGui.InstanceSaveGui:Destroy()
+	else
+		print("InstanceSaveGui Already Exist")
+		return
+	end
+end
+
+local ScreenGui = nil
+local TextBoxForInstance = nil
+local TextError = nil
+
+local StartButton = nil
+local ResultFrame = nil
+
+if game.RunService:IsStudio() then
+	StartButton = game.Workspace:WaitForChild("Compile"):WaitForChild("Start"):WaitForChild("SurfaceGui"):WaitForChild("TextButton")
+	ResultFrame = game.Workspace:WaitForChild("Compile"):WaitForChild("Result"):WaitForChild("SurfaceGui")
+else
+	ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
+	ScreenGui.Name = "InstanceSaveGui"
+	
+	TextBoxForInstance = Instance.new("TextBox")
+	TextBoxForInstance.Position = UDim2.new(0.25, 0, 0.65, 0)
+	TextBoxForInstance.Size = UDim2.new(0.5, 0, 0.25, 0)
+	TextBoxForInstance.BackgroundColor3 = Color3.fromRGB(36, 36, 36)
+	TextBoxForInstance.TextColor3 = Color3.new(1, 1, 1)
+	TextBoxForInstance.TextScaled = true
+	TextBoxForInstance.PlaceholderColor3 = Color3.new(0.8, 0.8, 0.8)
+	TextBoxForInstance.PlaceholderText = "Instance Path\nWorkspace.Baseplate.Texture"
+	TextBoxForInstance.ClearTextOnFocus = false
+	TextBoxForInstance.Text = ""
+	TextBoxForInstance.ZIndex = 2
+
+	TextError = Instance.new("TextLabel")
+	TextError.Position = UDim2.new(0.35, 0, 0.5, 0)
+	TextError.Size = UDim2.new(0.3, 0, 0.15, 0)
+	TextError.BackgroundColor3 = Color3.fromRGB(36, 36, 36)
+	TextError.TextColor3 = Color3.new(1, 1, 1)
+	TextError.TextScaled = true
+	TextError.Text = ""
+	TextError.Parent = ScreenGui
+end
+
+local TextLimit = 200000
+
+local AllProperties = {
+	["AnimationController"] = {},
+	["Animation"] = {
+		AnimationId = ""
+	},
+	["Animator"] = {
+		PreferLodEnabled = true
+	},
+	["Attachment"] = {
+		Visible = false,
+		Position = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		Orientation = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		}
+	},
+	["Beam"] = {
+		Brightness = 1,
+		Color = {
+			Type = "ColorSequence",
+			Default = {
+				[0] = Color3.new(1, 1, 1),
+				[1] = Color3.new(1, 1, 1)
+			}
+		},
+		Enabled = true,
+		LightEmission = 0,
+		LightInfluence = 0,
+		Texture = "",
+		TextureLength = 1,
+		TextureMode = Enum.TextureMode.Stretch,
+		TextureSpeed = 1,
+		Transparency = {
+			Type = "NumberSequence",
+			Default = {
+				[0] = 0.5,
+				[1] = 0.5
+			}
+		},
+		ZOffset = 0,
+		Attachment0 = {
+			Type = "Instance",
+			Default = nil
+		},
+		Attachment1 = {
+			Type = "Instance",
+			Default = nil
+		},
+		CurveSize0 = 0,
+		CurveSize1 = 0,
+		FaceCamera = false,
+		Segments = 10,
+		Width0 = 1,
+		Width1 = 1
+	},
+	["BillboardGui"] = {
+		Active = false,
+		Adornee = {
+			Type = "Instance",
+			Default = nil
+		},
+		AlwaysOnTop = false,
+		Brightness = 1,
+		Enabled = true,
+		ExtentsOffset = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		ExtentsOffsetWorldSpace = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		LightInfluence = 0,
+		MaxDistance = math.huge,
+		PlayerToHideFrom = {
+			Type = "Instance",
+			Default = nil
+		},
+		ResetOnSpawn = true,
+		Size = {
+			Type = "UDim2",
+			Default = UDim2.new()
+		},
+		SizeOffset = {
+			Type = "Vector2",
+			Default = Vector2.zero
+		},
+		StudsOffset = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		StudsOffsetWorldSpace = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		ZIndexBehavior = Enum.ZIndexBehavior.Global,
+		ClipsDescendants = false,
+		AutoLocalize = true
+	},
+	["BindableEvent"] = {},
+	["BindableFunction"] = {},
+	["BoolValue"] = {
+		Value = false
+	},
+	["Color3Value"] = {
+		Value = {
+			Type = "Color3",
+			Default = Color3.new(0, 0, 0)
+		}
+	},
+	["CornerWedgePart"] = {
+		CastShadow = true,
+		Color = {
+			Type = "Color3",
+			Default = Color3.fromRGB(163, 162, 165)
+		},
+		Material = Enum.Material.Plastic,
+		Reflectance = 0,
+		Transparency = 0,
+		Locked = false,
+		Size = {
+			Type = "Vector3",
+			Default = Vector3.new(2, 2, 2)
+		},
+		Position = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		Orientation = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		EnableFluidForces = true,
+		CanCollide = true,
+		CanQuery = true,
+		CanTouch = true,
+		AudioCanCollide = true,
+		CollisionGroup = "Default",
+		Anchored = false,
+		--CustomPhysicalProperties = false,
+		Massless = false,
+		RootPriority = 0,
+		AssemblyLinearVelocity = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		AssemblyAngularVelocity = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		}
+	},
+	["Decal"] = {
+		Color3 = {
+			Type = "Color3",
+			Default = Color3.new(1, 1, 1)
+		},
+		ColorMapContent = {
+			Type = "ColorMapContent",
+			Default = ""
+		},
+		Rotation = 0,
+		Transparency = 0,
+		UVOffset = {
+			Type = "Vector2",
+			Default = Vector2.zero
+		},
+		UVScale = {
+			Type = "Vector2",
+			Default = Vector2.new(1, 1)
+		},
+		Face = Enum.NormalId.Front
+	},
+	["EqualizerSoundEffect"] = {
+		Enabled = true,
+		HighGain = 0,
+		LowGain = -20,
+		MidGain = -10,
+		Priority = 0
+	},
+	["Folder"] = {},
+	["Frame"] = {
+		Active = false,
+		AnchorPoint = {
+			Type = "Vector2",
+			Default = Vector2.zero
+		},
+		AutomaticSize = Enum.AutomaticSize.None,
+		BackgroundColor3 = {
+			Type = "Color3",
+			Default = Color3.fromRGB(163, 162, 165)
+		},
+		BackgroundTransparency = 0,
+		BorderColor3 = {
+			Type = "Color3",
+			Default = Color3.fromRGB(27, 42, 53)
+		},
+		BorderMode = Enum.BorderMode.Outline,
+		BorderSizePixel = 1,
+		Interactable = true,
+		LayoutOrder = 0,
+		Position = {
+			Type = "UDim2",
+			Default = UDim2.new()
+		},
+		Rotation = 0,
+		Size = {
+			Type = "UDim2",
+			Default = UDim2.new()
+		},
+		SizeConstraint = Enum.SizeConstraint.RelativeXY,
+		Style = Enum.FrameStyle.Custom,
+		Visible = true,
+		ZIndex = 1,
+		ClipsDescendants = false,
+		AutoLocalize = true,
+		Selectable = false,
+		SelectionGroup = false,
+		SelectionOrder = 0
+	},
+	["Highlight"] = {
+		Adornee = {
+			Type = "Instance",
+			Default = nil
+		},
+		DepthMode = Enum.HighlightDepthMode.AlwaysOnTop,
+		Enabled = true,
+		FillColor = {
+			Type = "Color3",
+			Default = Color3.fromRGB(255, 0, 0)
+		},
+		FillTransparency = 0.5,
+		OutlineColor = {
+			Type = "Color3",
+			Default = Color3.fromRGB(255, 255, 255)
+		},
+		OutlineTransparency = 0
+	},
+	["ImageButton"] = {
+		Active = false,
+		AnchorPoint = {
+			Type = "Vector2",
+			Default = Vector2.zero
+		},
+		AutoButtonColor = true,
+		AutomaticSize = Enum.AutomaticSize.None,
+		BackgroundColor3 = {
+			Type = "Color3",
+			Default = Color3.fromRGB(163, 162, 165)
+		},
+		BackgroundTransparency = 0,
+		BorderColor3 = {
+			Type = "Color3",
+			Default = Color3.fromRGB(27, 42, 53)
+		},
+		BorderMode = Enum.BorderMode.Outline,
+		BorderSizePixel = 1,
+		Interactable = true,
+		LayoutOrder = 0,
+		Modal = false,
+		Position = {
+			Type = "UDim2",
+			Default = UDim2.new()
+		},
+		Rotation = 0,
+		Size = {
+			Type = "UDim2",
+			Default = UDim2.new()
+		},
+		SizeConstraint = Enum.SizeConstraint.RelativeXY,
+		Style = Enum.ButtonStyle.Custom,
+		Visible = true,
+		ZIndex = 1,
+		ClipsDescendants = false,
+		HoverImage = "",
+		Image = "",
+		ImageColor3 = {
+			Type = "Color3",
+			Default = Color3.new(1, 1, 1)
+		},
+		ImageRectOffset = {
+			Type = "Vector2",
+			Default = Vector2.zero
+		},
+		ImageRectSize = {
+			Type = "Vector2",
+			Default = Vector2.zero
+		},
+		ImageTransparency = 0,
+		PressedImage = "",
+		ResampleMode = Enum.ResamplerMode.Default,
+		ScaleType = Enum.ScaleType.Stretch,
+		SliceCenter = {
+			Type = "Rect",
+			Default = Rect.new()
+		},
+		SliceScale = 1,
+		TileSize = {
+			Type = "UDim2",
+			Default = UDim2.new(1, 0, 1, 0)
+		},
+		AutoLocalize = true,
+		Selectable = true,
+		Selected = false,
+		SelectionGroup = false,
+		SelectionOrder = 0
+	},
+	["ImageLabel"] = {
+		Active = false,
+		AnchorPoint = {
+			Type = "Vector2",
+			Default = Vector2.zero
+		},
+		AutomaticSize = Enum.AutomaticSize.None,
+		BackgroundColor3 = {
+			Type = "Color3",
+			Default = Color3.fromRGB(163, 162, 165)
+		},
+		BackgroundTransparency = 0,
+		BorderColor3 = {
+			Type = "Color3",
+			Default = Color3.fromRGB(27, 42, 53)
+		},
+		BorderMode = Enum.BorderMode.Outline,
+		BorderSizePixel = 1,
+		Interactable = true,
+		LayoutOrder = 0,
+		Position = {
+			Type = "UDim2",
+			Default = UDim2.new()
+		},
+		Rotation = 0,
+		Size = {
+			Type = "UDim2",
+			Default = UDim2.new()
+		},
+		SizeConstraint = Enum.SizeConstraint.RelativeXY,
+		Visible = true,
+		ZIndex = 1,
+		ClipsDescendants = false,
+		Image = "",
+		ImageColor3 = {
+			Type = "Color3",
+			Default = Color3.new(1, 1, 1)
+		},
+		ImageRectOffset = {
+			Type = "Vector2",
+			Default = Vector2.zero
+		},
+		ImageRectSize = {
+			Type = "Vector2",
+			Default = Vector2.zero
+		},
+		ImageTransparency = 0,
+		ResampleMode = Enum.ResamplerMode.Default,
+		ScaleType = Enum.ScaleType.Stretch,
+		SliceCenter = {
+			Type = "Rect",
+			Default = Rect.new()
+		},
+		SliceScale = 1,
+		TileSize = {
+			Type = "UDim2",
+			Default = UDim2.new(1, 0, 1, 0)
+		},
+		AutoLocalize = true,
+		Selectable = false,
+		SelectionGroup = false,
+		SelectionOrder = 0
+	},
+	["IntValue"] = {
+		Value = 0
+	},
+	["ManualWeld"] = {
+		C0 = {
+			Type = "CFrame",
+			Default = CFrame.new()
+		},
+		C1 = {
+			Type = "CFrame",
+			Default = CFrame.new()
+		},
+		Part0 = {
+			Type = "Instance",
+			Default = nil
+		},
+		Part1 = {
+			Type = "Instance",
+			Default = nil
+		},
+		Enabled = true
+	},
+	["MeshPart"] = {
+		CastShadow = true,
+		Color = {
+			Type = "Color3",
+			Default = Color3.fromRGB(163, 162, 165)
+		},
+		DoubleSided = false,
+		Material = Enum.Material.Plastic,
+		MeshId = "",
+		Reflectance = 0,
+		RenderFidelity = Enum.RenderFidelity.Precise,
+		CollisionFidelity = Enum.CollisionFidelity.Box,
+		TextureID = "",
+		Transparency = 0,
+		Locked = false,
+		Size = {
+			Type = "Vector3",
+			Default = Vector3.new(4, 1.2, 2)
+		},
+		Position = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		Orientation = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		EnableFluidForces = true,
+		CanCollide = true,
+		CanQuery = true,
+		CanTouch = true,
+		AudioCanCollide = true,
+		CollisionGroup = "Default",
+		Anchored = false,
+		--CustomPhysicalProperties = false,
+		Massless = false,
+		RootPriority = 0,
+		AssemblyLinearVelocity = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		AssemblyAngularVelocity = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		}
+	},
+	["Model"] = {
+		PrimaryPart = {
+			Type = "Instance",
+			Default = nil
+		},
+		Scale = {
+			Type = "ModelScale",
+			Default = 1
+		},
+		ModelStreamingMode = Enum.ModelStreamingMode.Default
+	},
+	["Motor6D"] = {
+		C0 = {
+			Type = "CFrame",
+			Default = CFrame.new()
+		},
+		C1 = {
+			Type = "CFrame",
+			Default = CFrame.new()
+		},
+		CurrentAngle = 0,
+		DesiredAngle = 0,
+		MaxVelocity = 0,
+		Part0 = {
+			Type = "Instance",
+			Default = nil
+		},
+		Part1 = {
+			Type = "Instance",
+			Default = nil
+		}
+	},
+	["ObjectValue"] = {
+		Value = {
+			Type = "Instance",
+			Default = nil
+		}
+	},
+	["Part"] = {
+		CastShadow = true,
+		Color = {
+			Type = "Color3",
+			Default = Color3.fromRGB(163, 162, 165)
+		},
+		Material = Enum.Material.Plastic,
+		Reflectance = 0,
+		Transparency = 0,
+		Locked = false,
+		Size = {
+			Type = "Vector3",
+			Default = Vector3.new(4, 1.2, 2)
+		},
+		Position = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		Orientation = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		EnableFluidForces = true,
+		CanCollide = true,
+		CanQuery = true,
+		CanTouch = true,
+		AudioCanCollide = true,
+		CollisionGroup = "Default",
+		Anchored = false,
+		--CustomPhysicalProperties = false,
+		Massless = false,
+		RootPriority = 0,
+		Shape = Enum.PartType.Block,
+		AssemblyLinearVelocity = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		AssemblyAngularVelocity = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		}
+	},
+	["ParticleEmitter"] = {
+		Brightness = 1,
+		Color = {
+			Type = "ColorSequence",
+			Default = {
+				[0] = Color3.new(1, 1, 1),
+				[1] = Color3.new(1, 1, 1)
+			}
+		},
+		LightEmission = 0,
+		LightInfluence = 0,
+		Orientation = Enum.ParticleOrientation.FacingCamera,
+		Size = {
+			Type = "NumberSequence",
+			Default = {
+				[0] = 1,
+				[1] = 1
+			}
+		},
+		Squash = {
+			Type = "NumberSequence",
+			Default = {
+				[0] = 0,
+				[1] = 0
+			}
+		},
+		Texture = "",
+		Transparency = {
+			Type = "NumberSequence",
+			Default = {
+				[0] = 0.5,
+				[1] = 0.5
+			}
+		},
+		ZOffset = 0,
+		EmissionDirection = Enum.NormalId.Top,
+		Enabled = true,
+		Lifetime = {
+			Type = "NumberRange",
+			Default = {
+				[0] = 5,
+				[1] = 10
+			}
+		},
+		Rate = 20,
+		Rotation = {
+			Type = "NumberRange",
+			Default = {
+				[0] = 0,
+				[1] = 0
+			}
+		},
+		RotSpeed = {
+			Type = "NumberRange",
+			Default = {
+				[0] = 0,
+				[1] = 0
+			}
+		},
+		Speed = {
+			Type = "NumberRange",
+			Default = {
+				[0] = 5,
+				[1] = 5
+			}
+		},
+		SpreadAngle = {
+			Type = "Vector2",
+			Default = Vector2.zero
+		},
+		Shape = Enum.ParticleEmitterShape.Box,
+		ShapeInOut = Enum.ParticleEmitterShapeInOut.Outward,
+		ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume,
+		FlipbookLayout = Enum.ParticleFlipbookLayout.None,
+		Acceleration = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		Drag = 0,
+		LockedToPart = false,
+		TimeScale = 1,
+		VelocityInheritance = 0,
+		WindAffectsDrag = false
+	},
+	["PointLight"] = {
+		Brightness = 1,
+		Color = {
+			Type = "Color3",
+			Default = Color3.new(1, 1, 1)
+		},
+		Enabled = true,
+		Range = 8,
+		Shadows = false
+	},
+	["ProximityPrompt"] = {
+		ActionText = "Interact",
+		ClickablePrompt = true,
+		Enabled = true,
+		Exclusivity = Enum.ProximityPromptExclusivity.OnePerButton,
+		GamepadKeyCode = Enum.KeyCode.ButtonX,
+		HoldDuration = 0,
+		KeyboardKeyCode = Enum.KeyCode.E,
+		MaxActivationDistance = 10,
+		MaxIndicatorDistance = 0,
+		ObjectText = "",
+		RequiresLineOfSight = true,
+		Style = Enum.ProximityPromptStyle.Default,
+		UIOffset = {
+			Type = "Vector2",
+			Default = Vector2.zero
+		}
+	},
+	["RemoteEvent"] = {},
+	["RemoteFunction"] = {},
+	["ReverbSoundEffect"] = {
+		DecayTime = 1.5,
+		Density = 1,
+		Diffusion = 1,
+		DryLevel = -6,
+		Enabled = true,
+		Priority = 0,
+		WetLevel = 0
+	},
+	["RopeConstraint"] = {
+		Color = {
+			Type = "BrickColor",
+			Default = "Earth orange"
+		},
+		Thickness = 0.1,
+		Visible = false,
+		Enabled = true,
+		Attachment0 = {
+			Type = "Instance",
+			Default = nil
+		},
+		Attachment1 = {
+			Type = "Instance",
+			Default = nil
+		}
+	},
+	["ScreenGui"] = {
+		ClipToDeviceSafeArea = true,
+		SafeAreaCompatibility = Enum.SafeAreaCompatibility.FullscreenExtension,
+		ScreenInsets = Enum.ScreenInsets.CoreUISafeInsets,
+		DisplayOrder = 0,
+		Enabled = true,
+		IgnoreGuiInset = false,
+		ResetOnSpawn = true,
+		ZIndexBehavior = Enum.ZIndexBehavior.Global,
+		AutoLocalize = true
+	},
+	["ScrollingFrame"] = {
+		Active = false,
+		AnchorPoint = {
+			Type = "Vector2",
+			Default = Vector2.zero
+		},
+		AutomaticSize = Enum.AutomaticSize.None,
+		BackgroundColor3 = {
+			Type = "Color3",
+			Default = Color3.fromRGB(163, 162, 165)
+		},
+		BackgroundTransparency = 0,
+		BorderColor3 = {
+			Type = "Color3",
+			Default = Color3.fromRGB(27, 42, 53)
+		},
+		BorderMode = Enum.BorderMode.Outline,
+		BorderSizePixel = 1,
+		Interactable = true,
+		LayoutOrder = 0,
+		Position = {
+			Type = "UDim2",
+			Default = UDim2.new()
+		},
+		Rotation = 0,
+		Size = {
+			Type = "UDim2",
+			Default = UDim2.new()
+		},
+		SizeConstraint = Enum.SizeConstraint.RelativeXY,
+		Visible = true,
+		ZIndex = 1,
+		ClipsDescendants = false,
+		AutoLocalize = true,
+		AutomaticCanvasSize = Enum.AutomaticSize.None,
+		BottomImage = "rbxasset://textures/ui/Scroll/scroll-bottom.png",
+		CanvasPosition = {
+			Type = "Vector2",
+			Default = Vector2.zero
+		},
+		CanvasSize = {
+			Type = "UDim2",
+			Default = UDim2.new(0, 0, 2, 0)
+		},
+		ElasticBehavior = Enum.ElasticBehavior.WhenScrollable,
+		HorizontalScrollBarInset = Enum.ScrollBarInset.None,
+		MidImage = "rbxasset://textures/ui/Scroll/scroll-middle.png",
+		ScrollBarImageColor3 = {
+			Type = "Color3",
+			Default = Color3.new(1, 1, 1)
+		},
+		ScrollBarImageTransparency = 0,
+		ScrollBarThickness = 12,
+		ScrollingDirection = Enum.ScrollingDirection.XY,
+		ScrollingEnabled = true,
+		TopImage = "rbxasset://textures/ui/Scroll/scroll-top.png",
+		VerticalScrollBarInset = Enum.ScrollBarInset.None,
+		VerticalScrollBarPosition = Enum.VerticalScrollBarPosition.Right,
+		Selectable = false,
+		SelectionGroup = false,
+		SelectionOrder = 0
+	},
+	["Sound"] = {
+		PlayOnRemove = false,
+		SoundId = "",
+		RollOffMaxDistance = 10000,
+		RollOffMinDistance = 10,
+		RollOffMode = Enum.RollOffMode.Inverse,
+		Looped = false,
+		PlaybackRegionsEnabled = false,
+		PlaybackSpeed = 1,
+		Playing = false,
+		TimePosition = 0,
+		Volume = 0.5
+	},
+	["SpotLight"] = {
+		Angle = 90,
+		Brightness = 1,
+		Color = {
+			Type = "Color3",
+			Default = Color3.new(1, 1, 1)
+		},
+		Enabled = true,
+		Face = Enum.NormalId.Front,
+		Range = 16,
+		Shadows = false
+	},
+	["StringValue"] = {
+		Value = ""
+	},
+	["SurfaceGui"] = {
+		ZOffset = 0,
+		Active = true,
+		Adornee = {
+			Type = "Instance",
+			Default = nil
+		},
+		AlwaysOnTop = false,
+		Brightness = 1,
+		Enabled = true,
+		Face = Enum.NormalId.Front,
+		LightInfluence = 0,
+		MaxDistance = 0,
+		ResetOnSpawn = true,
+		ToolPunchThroughDistance = 0,
+		ZIndexBehavior = Enum.ZIndexBehavior.Global,
+		ClipsDescendants = false,
+		AutoLocalize = true,
+		SelectionGroup = false,
+		PixelsPerStud = 50,
+		SizingMode = Enum.SurfaceGuiSizingMode.FixedSize
+	},
+	["SurfaceLight"] = {
+		Angle = 90,
+		Brightness = 1,
+		Color = {
+			Type = "Color3",
+			Default = Color3.new(1, 1, 1)
+		},
+		Enabled = true,
+		Face = Enum.NormalId.Front,
+		Range = 16,
+		Shadows = false
+	},
+	["TextButton"] = {
+		Active = true,
+		AnchorPoint = {
+			Type = "Vector2",
+			Default = Vector2.zero
+		},
+		AutoButtonColor = true,
+		AutomaticSize = Enum.AutomaticSize.None,
+		BackgroundColor3 = {
+			Type = "Color3",
+			Default = Color3.fromRGB(163, 162, 165)
+		},
+		BackgroundTransparency = 0,
+		BorderColor3 = {
+			Type = "Color3",
+			Default = Color3.fromRGB(27, 42, 53)
+		},
+		BorderMode = Enum.BorderMode.Outline,
+		BorderSizePixel = 1,
+		Interactable = true,
+		LayoutOrder = 0,
+		Modal = false,
+		Position = {
+			Type = "UDim2",
+			Default = UDim2.new()
+		},
+		Rotation = 0,
+		Size = {
+			Type = "UDim2",
+			Default = UDim2.new()
+		},
+		SizeConstraint = Enum.SizeConstraint.RelativeXY,
+		Style = Enum.FrameStyle.Custom,
+		Visible = true,
+		ZIndex = 1,
+		ClipsDescendants = false,
+		AutoLocalize = true,
+		Selectable = true,
+		Selected = false,
+		SelectionGroup = false,
+		SelectionOrder = 0,
+		FontFace = {
+			Type = "FontFace",
+			Default = Font.fromName("LegacyArial", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+		},
+		LineHeight = 1,
+		MaxVisibleGraphemes = -1,
+		OpenTypeFeatures = "",
+		RichText = false,
+		Text = "Button",
+		TextColor3 = {
+			Type = "Color3",
+			Default = Color3.fromRGB(27, 42, 53)
+		},
+		TextDirection = Enum.TextDirection.Auto,
+		TextScaled = false,
+		TextSize = 8,
+		TextStrokeColor3 = {
+			Type = "Color3",
+			Default = Color3.new(0, 0, 0)
+		},
+		TextStrokeTransparency = 1,
+		TextTransparency = 0,
+		TextTruncate = Enum.TextTruncate.None,
+		TextWrapped = false,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		TextYAlignment = Enum.TextYAlignment.Center
+	},
+	["TextLabel"] = {
+		Active = true,
+		AnchorPoint = {
+			Type = "Vector2",
+			Default = Vector2.zero
+		},
+		AutomaticSize = Enum.AutomaticSize.None,
+		BackgroundColor3 = {
+			Type = "Color3",
+			Default = Color3.fromRGB(163, 162, 165)
+		},
+		BackgroundTransparency = 0,
+		BorderColor3 = {
+			Type = "Color3",
+			Default = Color3.fromRGB(27, 42, 53)
+		},
+		BorderMode = Enum.BorderMode.Outline,
+		BorderSizePixel = 1,
+		Interactable = true,
+		LayoutOrder = 0,
+		Position = {
+			Type = "UDim2",
+			Default = UDim2.new()
+		},
+		Rotation = 0,
+		Size = {
+			Type = "UDim2",
+			Default = UDim2.new()
+		},
+		SizeConstraint = Enum.SizeConstraint.RelativeXY,
+		Visible = true,
+		ZIndex = 1,
+		ClipsDescendants = false,
+		AutoLocalize = true,
+		Selectable = false,
+		SelectionGroup = false,
+		SelectionOrder = 0,
+		FontFace = {
+			Type = "FontFace",
+			Default = Font.fromName("LegacyArial", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+		},
+		LineHeight = 1,
+		MaxVisibleGraphemes = -1,
+		OpenTypeFeatures = "",
+		RichText = false,
+		Text = "Label",
+		TextColor3 = {
+			Type = "Color3",
+			Default = Color3.fromRGB(27, 42, 53)
+		},
+		TextDirection = Enum.TextDirection.Auto,
+		TextScaled = false,
+		TextSize = 8,
+		TextStrokeColor3 = {
+			Type = "Color3",
+			Default = Color3.new(0, 0, 0)
+		},
+		TextStrokeTransparency = 1,
+		TextTransparency = 0,
+		TextTruncate = Enum.TextTruncate.None,
+		TextWrapped = false,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		TextYAlignment = Enum.TextYAlignment.Center
+	},
+	["Texture"] = {
+		Color3 = {
+			Type = "Color3",
+			Default = Color3.new(1, 1, 1)
+		},
+		ColorMapContent = {
+			Type = "ColorMapContent",
+			Default = ""
+		},
+		OffsetStudsU = 0,
+		OffsetStudsV = 0,
+		Rotation = 0,
+		StudsPerTileU = 2,
+		StudsPerTileV = 2,
+		Transparency = 0,
+		ZIndex = 1,
+		Face = Enum.NormalId.Front
+	},
+	["UIAspectRatioConstraint"] = {
+		AspectRatio = 1,
+		AspectType = Enum.AspectType.FitWithinMaxSize,
+		DominantAxis = Enum.DominantAxis.Width
+	},
+	["UICorner"] = {
+		BottomLeftRadius = {
+			Type = "UDim",
+			Default = UDim.new(0, 8)
+		},
+		BottomRightRadius = {
+			Type = "UDim",
+			Default = UDim.new(0, 8)
+		},
+		TopLeftRadius = {
+			Type = "UDim",
+			Default = UDim.new(0, 8)
+		},
+		TopRightRadius = {
+			Type = "UDim",
+			Default = UDim.new(0, 8)
+		}
+	},
+	["UIGradient"] = {
+		Color = {
+			Type = "ColorSequence",
+			Default = {
+				[0] = Color3.new(1, 1, 1),
+				[1] = Color3.new(1, 1, 1)
+			}
+		},
+		Enabled = true,
+		Offset = {
+			Type = "Vector2",
+			Default = Vector2.zero
+		},
+		Rotation = 0,
+		Transparency = {
+			Type = "NumberSequence",
+			Default = {
+				[0] = 0,
+				[1] = 0
+			}
+		}
+	},
+	["UIListLayout"] = {
+		Padding = {
+			Type = "UDim",
+			Default = UDim.new()
+		},
+		FillDirection = Enum.FillDirection.Vertical,
+		SortOrder = Enum.SortOrder.Name,
+		Wraps = false,
+		HorizontalAlignment = Enum.HorizontalAlignment.Left,
+		HorizontalFlex = Enum.UIFlexAlignment.None,
+		ItemLineAlignment = Enum.ItemLineAlignment.Automatic,
+		VerticalAlignment = Enum.VerticalAlignment.Top,
+		VerticalFlex = Enum.UIFlexAlignment.None
+	},
+	["UIPadding"] = {
+		PaddingBottom = {
+			Type = "UDim",
+			Default = UDim.new()
+		},
+		PaddingLeft = {
+			Type = "UDim",
+			Default = UDim.new()
+		},
+		PaddingRight = {
+			Type = "UDim",
+			Default = UDim.new()
+		},
+		PaddingTop = {
+			Type = "UDim",
+			Default = UDim.new()
+		}
+	},
+	["UIStroke"] = {
+		ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
+		BorderOffset = {
+			Type = "UDim",
+			Default = UDim.new()
+		},
+		BorderStrokePosition = Enum.BorderStrokePosition.Outer,
+		Color = {
+			Type = "Color3",
+			Default = Color3.new(0, 0, 0)
+		},
+		LineJoinMode = Enum.LineJoinMode.Round,
+		StrokeSizingMode = Enum.StrokeSizingMode.FixedSize,
+		Thickness = 1,
+		Transparency = 0,
+		ZIndex = 1,
+		Enabled = true
+	},
+	["UnreliableRemoteEvent"] = {},
+	["WedgePart"] = {
+		CastShadow = true,
+		Color = {
+			Type = "Color3",
+			Default = Color3.fromRGB(163, 162, 165)
+		},
+		Material = Enum.Material.Plastic,
+		Reflectance = 0,
+		Transparency = 0,
+		Locked = false,
+		Size = {
+			Type = "Vector3",
+			Default = Vector3.new(4, 1.2, 2)
+		},
+		Position = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		Orientation = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		EnableFluidForces = true,
+		CanCollide = true,
+		CanQuery = true,
+		CanTouch = true,
+		AudioCanCollide = true,
+		CollisionGroup = "Default",
+		Anchored = false,
+		--CustomPhysicalProperties = false,
+		Massless = false,
+		RootPriority = 0,
+		AssemblyLinearVelocity = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		},
+		AssemblyAngularVelocity = {
+			Type = "Vector3",
+			Default = Vector3.zero
+		}
+	},
+	["Weld"] = {
+		C0 = {
+			Type = "CFrame",
+			Default = CFrame.new()
+		},
+		C1 = {
+			Type = "CFrame",
+			Default = CFrame.new()
+		},
+		Part0 = {
+			Type = "Instance",
+			Default = nil
+		},
+		Part1 = {
+			Type = "Instance",
+			Default = nil
+		},
+		Enabled = true
+	},
+	["WeldConstraint"] = {
+		Enabled = true,
+		Part0 = {
+			Type = "Instance",
+			Default = nil
+		},
+		Part1 = {
+			Type = "Instance",
+			Default = nil
+		}
+	}
+}
+
+local RestrictedProperties = {
+	"SurfaceAppearance",
+	"LocalScript",
+	"ModuleScript",
+	"Seat",
+	"Script",
+}
+
+function Compile(Object, StarterCompile, FileNumber)
+	if table.find(RestrictedProperties, Object.ClassName) then
+		return
+	end
+
+	if not AllProperties[Object.ClassName] then
+		return print("Unknown ClassName: "..Object.ClassName)
+	end
+
+	local Text = "{"
+
+	if type(FileNumber) == "number" then
+		Text = "["..FileNumber.."]={"
+	end
+
+	if StarterCompile then
+		local ObjectPropertyNum = 0
+
+		local function InstanceSet(InstanceTo)
+			if not AllProperties[InstanceTo.ClassName] then
+				return
+			end
+
+			for _, PropertyInitial in {"Part", "Attachment"} do
+				local Property1 = PropertyInitial.."0"
+				local Property2 = PropertyInitial.."1"
+
+				if AllProperties[InstanceTo.ClassName][Property1] and AllProperties[InstanceTo.ClassName][Property2] then
+					if InstanceTo[Property1] or InstanceTo[Property2] then
+						ObjectPropertyNum += 1
+						InstanceTo:AddTag("CompileWeld "..ObjectPropertyNum)
+
+						if InstanceTo[Property1] then
+							if InstanceTo[Property1]:IsDescendantOf(Object) or InstanceTo[Property1] == Object then
+								InstanceTo[Property1]:AddTag("CompileInstance1 "..ObjectPropertyNum)
+							end
+						end
+
+						if InstanceTo[Property2] then
+							if InstanceTo[Property2]:IsDescendantOf(Object) or InstanceTo[Property2] == Object then
+								InstanceTo[Property2]:AddTag("CompileInstance2 "..ObjectPropertyNum)
+							end
+						end
+					end
+				end
+			end
+
+			for ClassName, Property in {
+				["Model"] = "PrimaryPart",
+				["ObjectValue"] = "Value",
+				["SurfaceGui"] = "Adornee"
+				} do
+				if InstanceTo.ClassName == ClassName then
+					if InstanceTo[Property] then
+						if InstanceTo[Property]:IsDescendantOf(Object) then
+							ObjectPropertyNum += 1
+
+							InstanceTo:AddTag("CompilePrimaryObject "..ObjectPropertyNum)
+							InstanceTo[Property]:AddTag("CompilePrimaryValue "..ObjectPropertyNum)
+						end
+					end
+				end
+			end
+		end
+
+		InstanceSet(Object)
+
+		for _, Child in Object:GetDescendants() do
+			InstanceSet(Child)
+		end
+	end
+
+	local function RoundNumber(Number)
+		if Number == -0 then
+			return 0
+		end
+
+		return math.round(Number * 10000) / 10000
+	end
+
+	local function TextAdd(TextValue)
+		Text = Text..TextValue
+	end
+
+	local function TextBoxNew()
+		local TextBox = script.Frame:Clone()
+
+		TextBox.Parent = ResultFrame
+		TextBox.TextLabel.Text = #ResultFrame:GetChildren() - 1
+
+		if string.len(Text) >= TextLimit then
+			TextBox.TextBox.Text = string.sub(Text, 1, TextLimit - 1)
+
+			Text = string.sub(Text, TextLimit, string.len(Text))
+
+			TextBoxNew()
+		else
+			TextBox.TextBox.Text = Text
+		end
+	end
+
+	local function CheckComma()
+		if string.sub(Text, -1, -1) ~= "," then
+			TextAdd(",")
+		end
+	end
+
+	local function InstanceTableEnd(TextTo)
+		if not TextTo then
+			if string.sub(Text, -1, -1) == "," then
+				Text = string.sub(Text, 1, -2)
+			end
+
+			TextAdd("}")
+		else
+			if string.sub(TextTo, -1, -1) == "," then
+				TextTo = string.sub(TextTo, 1, -2)
+			end
+
+			return TextTo.."}"
+		end
+	end
+
+	local function PropertyCompile(Property, PropertyType)
+		local TextValue = tostring(Property)
+
+		if PropertyType == "CFrame" then
+			if Object.ClassName == "Model" then
+				TextValue = "CFrame.new("..tostring(Object:GetPivot())..")"
+			else
+				TextValue = "CFrame.new("..tostring(Property)..")"
+			end
+		elseif PropertyType == "Color3" then
+			TextValue = "Color3.new("..RoundNumber(Property.R)..","..RoundNumber(Property.G)..","..RoundNumber(Property.B)..")"
+		elseif PropertyType == "ColorSequence" then
+			TextValue = "{"
+
+			for _, Keypoint in Property.Keypoints do
+				TextValue = TextValue.."ColorSequenceKeypoint.new("..Keypoint.Time..",Color3.new("..RoundNumber(Keypoint.Value.R)..","..RoundNumber(Keypoint.Value.G)..","..RoundNumber(Keypoint.Value.B)..")),"
+			end
+
+			TextValue = InstanceTableEnd(TextValue)
+		elseif PropertyType == "NumberSequence" then
+			TextValue = "{"
+
+			for _, Keypoint in Property.Keypoints do
+				TextValue = TextValue.."NumberSequenceKeypoint.new("..Keypoint.Time..","..Keypoint.Value.."),"
+			end
+
+			TextValue = InstanceTableEnd(TextValue)
+		elseif PropertyType == "NumberRange" then
+			TextValue = "NumberRange.new("..Property.Min..","..Property.Max..")"
+		elseif PropertyType == "Vector3" then
+			TextValue = "Vector3.new("..RoundNumber(Property.X)..","..RoundNumber(Property.Y)..","..RoundNumber(Property.Z)..")"
+		elseif PropertyType == "Vector2" then
+			TextValue = "Vector2.new("..RoundNumber(Property.X)..","..RoundNumber(Property.Y)..")"
+		elseif PropertyType == "UDim2" then
+			TextValue = "UDim2.new("..RoundNumber(Property.X.Scale)..","..RoundNumber(Property.X.Offset)..","..RoundNumber(Property.Y.Scale)..","..RoundNumber(Property.Y.Offset)..")"
+		elseif PropertyType == "UDim" then
+			TextValue = "UDim.new("..RoundNumber(Property.Scale)..","..RoundNumber(Property.Offset)..")"
+		elseif PropertyType == "Rect" then
+			TextValue = "Rect.new("..RoundNumber(Property.Min.X)..","..RoundNumber(Property.Min.Y)..","..RoundNumber(Property.Max.X)..","..RoundNumber(Property.Max.Y)..")"
+		elseif PropertyType == "FontFace" then
+			TextValue = "Font.fromName('"..string.match(Property.Family, "([^/]+)%.json$").."',"..tostring(Property.Weight)..","..tostring(Property.Style)..")"
+		elseif PropertyType == "ColorMapContent" then
+			if Property.Uri then
+				TextValue = "'"..string.split(Property.Uri, "rbxassetid://")[2].."'"
+			else
+				return "''"
+			end
+		else
+			if type(Property) == "string" then
+				if string.find(tostring(Property), "rbxassetid://") then
+					TextValue = string.split(tostring(Property), "rbxassetid://")[2]
+				elseif string.find(tostring(Property), "id=") then
+					TextValue = string.split(tostring(Property), "id=")[2]
+				else
+					TextValue = "'"..Property.."'"
+				end
+			elseif type(Property) == "number" then
+				TextValue = RoundNumber(Property)
+			else
+				local IsBrickColor, BrickColorName = pcall(function()
+					return BrickColor.new(tostring(Property))
+				end)
+
+				if IsBrickColor and BrickColorName.Name == tostring(Property) then
+					TextValue = "BrickColor.new('"..tostring(Property).."')"
+				end
+			end
+		end
+
+		return TextValue
+	end
+
+	local IsRoomAsset = false
+
+	if not StarterCompile then
+		if game.ReplicatedStorage:FindFirstChild("ScriptAssets") then
+			if game.ReplicatedStorage.ScriptAssets:FindFirstChild("RoomAssets") then
+				for _, RoomAsset in game.ReplicatedStorage.ScriptAssets.RoomAssets:GetDescendants() do
+					if Object:IsA("Model") and Object.Name == RoomAsset.Name and RoomAsset.Parent.Parent.Parent == game.ReplicatedStorage.ScriptAssets.RoomAssets then
+						if RoomAsset.Parent.Parent.Name == "Interactables" or RoomAsset.Parent.Parent.Name == "Decor" then
+							IsRoomAsset = true
+
+							TextAdd("Name='"..Object.Name.."',")
+							TextAdd("ClassName='Part',")
+							TextAdd("Anchored=true,")
+
+							local AssetPosition = Vector3.zero
+							local AssetOrientation = Vector3.zero
+
+							if Object:IsA("BasePart") then
+								AssetPosition = Object.Position
+								AssetOrientation = Object.Orientation
+							elseif Object:IsA("Model") then
+								if Object.PrimaryPart then
+									if Object.PrimaryPart:IsA("BasePart") then
+										AssetPosition = Object.PrimaryPart.Position
+										AssetOrientation = Object.PrimaryPart.Orientation
+									end
+								else
+									AssetPosition = Object.WorldPivot.Position
+
+									local X, Y, Z = Object.WorldPivot:ToOrientation()
+									AssetOrientation = Vector3.new(math.deg(X), math.deg(Y), math.deg(Z))
+								end
+							end
+
+							TextAdd("Position="..PropertyCompile(AssetPosition, "Vector3")..",")
+							TextAdd("Orientation="..PropertyCompile(AssetOrientation, "Vector3")..",")
+
+							TextAdd("Attributes={")
+							TextAdd("CompileAssetCategory='"..RoomAsset.Parent.Parent.Name.."',")
+							TextAdd("CompileAssetType='"..RoomAsset.Parent.Name.."'")
+
+							if Object:IsA("Model") then
+								TextAdd(",CompileAssetScale="..RoundNumber(Object:GetScale()))
+							end
+
+							if Object.Name == "NormalDoor" then
+								if Object:FindFirstChild("Frame") then
+									if Object.Frame:FindFirstChild("Frame") then
+										if Object.Frame.Frame:IsA("BasePart") then
+											TextAdd(",CompileAssetColor="..PropertyCompile(Object.Frame.Frame.Color, "Color3"))
+										end
+									end
+								end
+							elseif Object.Name == "BigDoor" then
+								if Object:FindFirstChild("Door") then
+									if Object.Door:FindFirstChild("BigRoomDoor") then
+										if Object.Door.BigRoomDoor:FindFirstChild("Frame") then
+											if Object.Door.BigRoomDoor.Frame:FindFirstChild("Frane") then
+												if Object.Door.BigRoomDoor.Frame.Frane:IsA("BasePart") then
+													TextAdd(",CompileAssetColor="..PropertyCompile(Object.Door.BigRoomDoor.Frame.Frane.Color, "Color3"))
+												end
+											end
+										end
+									end
+								end
+							end
+
+							TextAdd("}")
+						end
+					end
+				end
+			end
+		end
+	end
+
+	if not IsRoomAsset then
+		TextAdd("Name='"..Object.Name.."',")
+		TextAdd("ClassName='"..Object.ClassName.."',")
+
+		for Name, Property in AllProperties[Object.ClassName] do
+			if type(Property) == "table" then
+				if Name == "Scale" then
+					if Object:GetScale() ~= Property.Default then
+						TextAdd(Name.."="..Object:GetScale()..",")
+					end
+				elseif Property.Type == "ColorSequence" then
+					local HasDefault = true
+
+					for _, Keypoint in Object[Name].Keypoints do
+						if Property.Default[Keypoint.Time] ~= Keypoint.Value then
+							HasDefault = false
+						end
+					end
+
+					if not HasDefault then
+						TextAdd(Name.."="..PropertyCompile(Object[Name], Property.Type)..",")
+					end
+				elseif Property.Type == "NumberSequence" then
+					local HasDefault = true
+
+					for _, Keypoint in Object[Name].Keypoints do
+						if Property.Default[Keypoint.Time] ~= Keypoint.Value then
+							HasDefault = false
+						end
+					end
+
+					if not HasDefault then
+						TextAdd(Name.."="..PropertyCompile(Object[Name], Property.Type)..",")
+					end
+				elseif Property.Type == "NumberRange" then
+					if Property.Default[0] ~= Object[Name].Min and Property.Default[1] ~= Object[Name].Max then
+						TextAdd(Name.."="..PropertyCompile(Object[Name], Property.Type)..",")
+					end
+				else
+					if Object[Name] ~= Property.Default and Property.Type ~= "Instance" then
+						TextAdd(Name.."="..PropertyCompile(Object[Name], Property.Type)..",")
+					end
+				end
+			else
+				if Object[Name] ~= Property then
+					TextAdd(Name.."="..PropertyCompile(Object[Name])..",")
+				end
+			end
+		end
+
+
+
+		local HasAttributes = false
+		local HasTags = false
+
+		for AttributeName, AttributeValue in Object:GetAttributes() do
+			if not HasAttributes then
+				HasAttributes = true
+
+				CheckComma()
+				TextAdd("Attributes={")
+			end
+
+			local IsColor3 = pcall(function()
+				return AttributeValue.R
+			end)
+
+			if IsColor3 and type(AttributeValue) == "userdata" then
+				TextAdd(AttributeName.."="..PropertyCompile(AttributeValue, "Color3")..",")
+			elseif type(AttributeValue) == "vector" then
+				TextAdd(AttributeName.."="..PropertyCompile(AttributeValue, "Vector3")..",")
+			else
+				local IsVector2, Vector2Result = pcall(function()
+					return Vector2.new(AttributeValue.X, AttributeValue.Y)
+				end)
+
+				if IsVector2 and AttributeValue == Vector2Result then
+					TextAdd(AttributeName.."="..PropertyCompile(AttributeValue, "Vector2")..",")
+				else
+					local IsUDim, UDimResult = pcall(function()
+						return UDim.new(AttributeValue.Scale, AttributeValue.Offset)
+					end)
+
+					if IsUDim and AttributeValue == UDimResult then
+						TextAdd(AttributeName.."="..PropertyCompile(AttributeValue, "UDim")..",")
+					else
+						local IsUDim2, UDim2Result = pcall(function()
+							return UDim2.new(AttributeValue.X.Scale, AttributeValue.X.Offset, AttributeValue.Y.Scale, AttributeValue.Y.Offset)
+						end)
+
+						if IsUDim2 and AttributeValue == UDim2Result then
+							TextAdd(AttributeName.."="..PropertyCompile(AttributeValue, "UDim2")..",")
+						else
+							local IsCFrame, _ = pcall(function()
+								return AttributeValue.Position.Unit
+							end)
+
+							if IsCFrame then
+								TextAdd(AttributeName.."="..PropertyCompile(AttributeValue, "CFrame")..",")
+							else
+								TextAdd(AttributeName.."="..PropertyCompile(AttributeValue)..",")
+							end
+						end
+					end
+				end
+			end
+		end
+
+		if HasAttributes then
+			InstanceTableEnd()
+		end
+
+		for TagNumber, TagName in Object:GetTags() do
+			if not HasTags then
+				HasTags = true
+
+				CheckComma()
+				TextAdd("Tags={")
+			end
+
+			TextAdd("'"..TagName.."',")
+		end
+
+		if HasTags then
+			InstanceTableEnd()
+		end
+
+		if #Object:GetChildren() >= 1 then
+			if string.sub(Text, -1, -1) ~= "," then
+				TextAdd(",")
+			end
+
+			TextAdd("Files={")
+
+			local CompilitedFile = false
+
+			for ObjectNumber, ObjectChild in Object:GetChildren() do
+				local CompiledChild = Compile(ObjectChild, false, ObjectNumber)
+
+				if CompiledChild then
+					CompilitedFile = true
+
+					TextAdd(CompiledChild..",")
+				end
+			end
+
+			if CompilitedFile then
+				InstanceTableEnd()
+			else
+				Text = string.sub(Text, 1, string.len(Text) - 8)
+			end
+		end
+	end
+
+	InstanceTableEnd()
+
+	if StarterCompile then
+		print("COMPILE FINISHED | Text Length: "..string.len(Text))
+		
+		if game.RunService:IsStudio() then
+			TextBoxNew()
+		else
+			local Copy = setclipboard or toclipboard or (Clipboard and Clipboard.set)
+			Copy(Text)
+			
+			if game.Players.LocalPlayer.PlayerGui:FindFirstChild("InstanceSaveGui") then
+				game.Players.LocalPlayer.PlayerGui.InstanceSaveGui:Destroy()
+			end
+		end
+	else
+		return Text
+	end
+end
+
+if game.RunService:IsStudio() then
+	StartButton.MouseButton1Click:Connect(function()
+		Compile(InstanceToCompile, true)
+	end)
+else
+	local CurrentTable = nil
+	
+	TextBoxForInstance.FocusLost:Connect(function(Enter)
+		if not Enter then
+			return
+		end
+
+		local function TextBoxError(Message)
+			local UniqueTable = {}
+			CurrentTable = UniqueTable
+
+			TextError.Text = Message
+
+			task.delay(5, function()
+				if CurrentTable == UniqueTable then
+					TextError.Text = ""
+				end
+			end)
+		end
+
+		if TextBoxForInstance.Text == nil or TextBoxForInstance.Text == "" then
+			TextBoxError("Empty Field!")
+			return
+		end
+
+		local InstancePath = nil
+
+		for _, TextSplit in string.split(TextBoxForInstance.Text, ".") do
+			if TextSplit == "Workspace" then
+				if not InstancePath then
+					InstancePath = game.Workspace
+				else
+					TextBoxError(TextSplit .. " Must Be First!")
+					return
+				end
+			elseif TextSplit == "Players" then
+				if not InstancePath then
+					InstancePath = game.Players
+				else
+					TextBoxError(TextSplit .. " Must Be First!")
+					return
+				end
+			elseif TextSplit == "ReplicatedStorage" then
+				if not InstancePath then
+					InstancePath = game.ReplicatedStorage
+				else
+					TextBoxError(TextSplit .. " Must Be First!")
+					return
+				end
+			elseif TextSplit == "StarterGui" then
+				if not InstancePath then
+					InstancePath = game.StarterGui
+				else
+					TextBoxError(TextSplit .. " Must Be First!")
+					return
+				end
+			elseif TextSplit == "LocalPlayer" then
+				if InstancePath == game.Players or not InstancePath then
+					InstancePath = game.Players.LocalPlayer
+				else
+					TextBoxError(TextSplit .. " Must Be First Or After Players!")
+					return
+				end
+			else
+				if InstancePath then
+					if InstancePath:FindFirstChild(TextSplit) then
+						InstancePath = InstancePath[TextSplit]
+					else
+						TextBoxError(TextSplit .. " Does Not Exist!")
+						return
+					end
+				else
+					TextBoxError("Make Start Instance!")
+					return
+				end
+			end
+		end
+
+		if InstancePath then
+			Compile(InstancePath, true)
+		else
+			TextBoxError("No Instance To Save!")
+		end
+	end)
+
+	TextBoxForInstance.Parent = ScreenGui
+end
