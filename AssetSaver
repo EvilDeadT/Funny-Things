@@ -19,18 +19,21 @@ local TextError = nil
 
 local StartButton = nil
 local ResultFrame = nil
+local TextBoxFrame = nil
 
 if game.RunService:IsStudio() then
 	StartButton = game.Workspace:WaitForChild("Compile"):WaitForChild("Start"):WaitForChild("SurfaceGui"):WaitForChild("TextButton")
 	ResultFrame = game.Workspace:WaitForChild("Compile"):WaitForChild("Result"):WaitForChild("SurfaceGui")
+	TextBoxFrame = script.Frame
 else
 	ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
 	ScreenGui.Name = "InstanceSaveGui"
 	
 	TextBoxForInstance = Instance.new("TextBox")
-	TextBoxForInstance.Position = UDim2.new(0.25, 0, 0.65, 0)
-	TextBoxForInstance.Size = UDim2.new(0.5, 0, 0.25, 0)
+	TextBoxForInstance.Position = UDim2.new(0, 0, 0.65, 0)
+	TextBoxForInstance.Size = UDim2.new(0.25, 0, 0.25, 0)
 	TextBoxForInstance.BackgroundColor3 = Color3.fromRGB(36, 36, 36)
+	TextBoxForInstance.BorderSizePixel = 0
 	TextBoxForInstance.TextColor3 = Color3.new(1, 1, 1)
 	TextBoxForInstance.TextScaled = true
 	TextBoxForInstance.PlaceholderColor3 = Color3.new(0.8, 0.8, 0.8)
@@ -40,13 +43,63 @@ else
 	TextBoxForInstance.ZIndex = 2
 
 	TextError = Instance.new("TextLabel")
-	TextError.Position = UDim2.new(0.35, 0, 0.5, 0)
-	TextError.Size = UDim2.new(0.3, 0, 0.15, 0)
+	TextError.Name = "TextError"
+	TextError.Position = UDim2.new(0.05, 0, 0.5, 0)
+	TextError.Size = UDim2.new(0.15, 0, 0.15, 0)
 	TextError.BackgroundColor3 = Color3.fromRGB(36, 36, 36)
+	TextError.BorderSizePixel = 0
 	TextError.TextColor3 = Color3.new(1, 1, 1)
 	TextError.TextScaled = true
 	TextError.Text = ""
 	TextError.Parent = ScreenGui
+	
+	ResultFrame = Instance.new("Frame")
+	ResultFrame.Name = "ResultFrame"
+	ResultFrame.Position = UDim2.new(0.7, 0, 0, 0)
+	ResultFrame.Size = UDim2.new(0.3, 0, 1, 0)
+	ResultFrame.BackgroundTransparency = 1
+	ResultFrame.Parent = ScreenGui
+	
+	local UIListLayout = Instance.new("UIListLayout")
+	UIListLayout.Wraps = true
+	UIListLayout.Parent = ResultFrame
+	
+	TextBoxFrame = Instance.new("Frame")
+	TextBoxFrame.Size = UDim2.new(0.5, 0, 0.1, 0)
+	TextBoxFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+	
+	local TextBoxTextBox = Instance.new("TextBox")
+	TextBoxTextBox.Position = UDim2.new(0.15, 0, 0, 0)
+	TextBoxTextBox.Size = UDim2.new(0.85, 0, 1, 0)
+	TextBoxTextBox.BackgroundTransparency = 1
+	TextBoxTextBox.BorderSizePixel = 0
+	TextBoxTextBox.ClearTextOnFocus = false
+	TextBoxTextBox.TextColor3 = Color3.fromRGB(7, 189, 10)
+	TextBoxTextBox.TextSize = 70
+	TextBoxTextBox.TextWrapped = true
+	TextBoxTextBox.TextXAlignment = Enum.TextXAlignment.Left
+	TextBoxTextBox.Text = ""
+	TextBoxTextBox.Parent = TextBoxFrame
+	
+	local TextBoxNumber = Instance.new("TextLabel")
+	TextBoxNumber.Position = UDim2.new(0, 0, 0, 0)
+	TextBoxNumber.Size = UDim2.new(0.1, 0, 1, 0)
+	TextBoxNumber.BackgroundTransparency = 1
+	TextBoxNumber.BorderSizePixel = 0
+	TextBoxNumber.TextColor3 = Color3.fromRGB(7, 189, 10)
+	TextBoxNumber.TextScaled = true
+	TextBoxNumber.Text = ""
+	TextBoxNumber.Parent = TextBoxFrame
+	
+	local UIStroke = Instance.new("UIStroke")
+	UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	UIStroke.BorderOffset = UDim.new(0, 0)
+	UIStroke.BorderStrokePosition = Enum.BorderStrokePosition.Inner
+	UIStroke.Color = Color3.fromRGB(7, 189, 10)
+	UIStroke.LineJoinMode = Enum.LineJoinMode.Miter
+	UIStroke.StrokeSizingMode = Enum.StrokeSizingMode.ScaledSize
+	UIStroke.Thickness = 0.05
+	UIStroke.Parent = TextBoxNumber
 end
 
 local TextLimit = 200000
@@ -1258,7 +1311,7 @@ function Compile(Object, StarterCompile, FileNumber)
 	end
 
 	local function TextBoxNew()
-		local TextBox = script.Frame:Clone()
+		local TextBox = TextBoxFrame:Clone()
 
 		TextBox.Parent = ResultFrame
 		TextBox.TextLabel.Text = #ResultFrame:GetChildren() - 1
@@ -1602,15 +1655,10 @@ function Compile(Object, StarterCompile, FileNumber)
 	if StarterCompile then
 		print("COMPILE FINISHED | Text Length: "..string.len(Text))
 		
-		if game.RunService:IsStudio() then
-			TextBoxNew()
-		else
-			local Copy = setclipboard or toclipboard or (Clipboard and Clipboard.set)
-			Copy(Text)
-			
-			if game.Players.LocalPlayer.PlayerGui:FindFirstChild("InstanceSaveGui") then
-				game.Players.LocalPlayer.PlayerGui.InstanceSaveGui:Destroy()
-			end
+		TextBoxNew()
+		
+		if not game.RunService:IsStudio() and game.Players.LocalPlayer.PlayerGui:FindFirstChild("InstanceSaveGui") then
+			game.Players.LocalPlayer.PlayerGui.InstanceSaveGui:Destroy()
 		end
 	else
 		return Text
