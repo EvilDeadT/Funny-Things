@@ -1,9 +1,9 @@
 local AllFunctions = {
 	PickUpEvents = {
-		Type = "BoolValue",
+		Type = "Bool",
 		Default = false,
 		
-		Info = {},
+		Info = {}
 	}
 }
 
