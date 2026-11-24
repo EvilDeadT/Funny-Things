@@ -111,17 +111,19 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 				end
 				
 				if AllFunctions.PickUpEvents.Info.CurrentEventLoot and AllFunctions.PickUpEvents.Info.CurrentEventLoot.Parent then
-					PromptInFrontOfCamera(AllFunctions.PickUpEvents.Info.CurrentEventLoot:FindFirstChildWhichIsA("ProximityPrompt", true))
+					PromptInFrontOfCamera(AllFunctions.PickUpEvents.Info.CurrentEventLoot:FindFirstChildWhichIsA("ProximityPrompt", true).Parent)
 					
 					if game.Players.LocalPlayer.Character then
 						game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpEvents.Info.CurrentEventLoot:GetPivot())
 					end
 				else
-					for _, EventLoot in game.Workspace.EventObjects:GetChildren() do
-						if EventLoot:FindFirstChildWhichIsA("ProximityPrompt", true) then
-							AllFunctions.PickUpEvents.Info.CurrentEventLoot = EventLoot
+					if #game.Workspace.EventObjects:GetChildren() > 0 then
+						for _, EventLoot in game.Workspace.EventObjects:GetChildren() do
+							if EventLoot:FindFirstChildWhichIsA("ProximityPrompt", true) then
+								AllFunctions.PickUpEvents.Info.CurrentEventLoot = EventLoot
 
-							break
+								break
+							end
 						end
 					end
 				end
@@ -166,7 +168,7 @@ for FuncName, Func in AllFunctions do
 	end)
 	
 	FuncInstance:GetPropertyChangedSignal("Parent"):Connect(function()
-		if FuncFunction then
+		if not FuncInstance.Parent and FuncFunction then
 			FuncFunction:Disconnect()
 			FuncFunction = nil
 		end
