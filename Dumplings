@@ -147,6 +147,8 @@ local AllFunctions = {
 	}
 }
 
+local FunctionsFolder = game.ReplicatedFirst:FindFirstChild("AllThings")
+
 function PromptClearPrompts()
 	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
 		for _, UsedPrompt in game.Workspace.PartInFrontOfCamera:GetChildren() do
@@ -239,6 +241,10 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 	Prompt:InputHoldEnd()
 end
 
+function BuyResourses(Resourses, FuncName)
+	
+end
+
 function CheckResoursesAvailability(CraftName, CraftType)
 	local Inventory = require(game.ReplicatedStorage.Shared.InventoryState)
 	local CookInfo = require(game.ReplicatedStorage.Shared.Dumplings)
@@ -301,7 +307,11 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 					end
 					
 					if game.Players.LocalPlayer.Character then
-						AllFunctions.PickUpEvents.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
+						if not FunctionsFolder.AutoCook:GetAttribute("TeleportBack")
+							or FunctionsFolder.AutoCook:GetAttribute("TeleportBack") and not AllFunctions.AutoCook.Info.LastPivot then
+							AllFunctions.PickUpEvents.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
+						end
+						
 						game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpEvents.Info.CurrentEventLoot:GetPivot())
 					end
 				else
@@ -347,7 +357,10 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 						end
 						
 						if game.Players.LocalPlayer.Character then
-							AllFunctions.AutoCook.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
+							if not FunctionsFolder.PickUpEvents:GetAttribute("TeleportBack")
+								or FunctionsFolder.PickUpEvents:GetAttribute("TeleportBack") and not AllFunctions.PickUpEvents.Info.LastPivot then
+								AllFunctions.AutoCook.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
+							end
 							
 							game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.Oven:GetPivot())
 						end
@@ -393,8 +406,6 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 		end
 	end
 end
-
-local FunctionsFolder = game.ReplicatedFirst:FindFirstChild("AllThings")
 
 if not FunctionsFolder then
 	FunctionsFolder = Instance.new("Folder")
