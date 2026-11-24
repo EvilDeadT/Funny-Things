@@ -343,9 +343,7 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 							AllFunctions.AutoCook.Info.Oven:GetAttribute("Capacity")
 						)
 						
-						if AllFunctions.AutoCook.Info.Oven:GetAttribute("CookRecipe") then
-							AllFunctions.AutoCook.Info.Oven = nil
-						end
+						AllFunctions.AutoCook.Info.Oven = nil
 					else
 						print("Write Dumpling Name")
 						
