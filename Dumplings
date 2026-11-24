@@ -283,6 +283,7 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 			while FuncInstance.Value do
 				if AllFunctions.PickUpEvents.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
 					game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpEvents.Info.LastPivot)
+					AllFunctions.PickUpEvents.Info.LastPivot = nil
 				end
 				
 				if not game.Workspace:FindFirstChild("EventObjects") then
@@ -333,6 +334,7 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 			while FuncInstance.Value do
 				if AllFunctions.AutoCook.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
 					game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.LastPivot)
+					AllFunctions.AutoCook.Info.LastPivot = nil
 				end
 				
 				if AllFunctions.AutoCook.Info.Oven then					
