@@ -337,15 +337,13 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 							game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.Oven:GetPivot())
 						end
 						
-						game.ReplicatedStorage.Remotes.StartCook:FireServer({
+						game.ReplicatedStorage.Remotes.StartCook:FireServer(
 							AllFunctions.AutoCook.Info.Oven,
 							"recipe_" .. AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling",
 							AllFunctions.AutoCook.Info.Oven:GetAttribute("Capacity")
-						})
+						)
 						
-						print(AllFunctions.AutoCook.Info.Oven == workspace:WaitForChild("HousesFolder"):WaitForChild("FreeBeansBSS_House"):WaitForChild("Placed"):WaitForChild("Oven"))
-						
-						if AllFunctions.AutoCook.Info.Oven then
+						if AllFunctions.AutoCook.Info.Oven:GetAttribute("CookRecipe") then
 							AllFunctions.AutoCook.Info.Oven = nil
 						end
 					else
