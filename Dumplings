@@ -341,7 +341,15 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 							AllFunctions.AutoCook.Info.Oven,
 							"recipe_" .. AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling",
 							AllFunctions.AutoCook.Info.Oven:GetAttribute("Capacity")
-						}):Play()
+						})
+						
+						print(AllFunctions.AutoCook.Info.Oven:GetFullName() == workspace:WaitForChild("HousesFolder"):WaitForChild("FreeBeansBSS_House"):WaitForChild("Placed"):WaitForChild("Oven"))
+						print("recipe_" .. AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling" == "recipe_basic_dumpling")
+						print(AllFunctions.AutoCook.Info.Oven:GetAttribute("Capacity") == 10)
+						print("========================")
+						
+						
+
 						
 						AllFunctions.AutoCook.Info.Oven = nil
 					else
