@@ -341,20 +341,7 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 							AllFunctions.AutoCook.Info.Oven,
 							"recipe_" .. AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling",
 							AllFunctions.AutoCook.Info.Oven:GetAttribute("Capacity")
-						})
-						
-						print(AllFunctions.AutoCook.Info.Oven:GetFullName())
-						print("recipe_" .. AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling")
-						print(AllFunctions.AutoCook.Info.Oven:GetAttribute("Capacity"))
-						print("========================")
-						
-						local args = {
-							workspace:WaitForChild("HousesFolder"):WaitForChild("FreeBeansBSS_House"):WaitForChild("Placed"):WaitForChild("Oven"),
-							"recipe_basic_dumpling",
-							10
-						}
-						game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("StartCook"):FireServer(unpack(args))
-
+						}):Play()
 						
 						AllFunctions.AutoCook.Info.Oven = nil
 					else
