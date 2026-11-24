@@ -324,17 +324,17 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 	if FuncInstance.Value then
 		AllFunctions.AutoCook.Info.While = task.spawn(function()
 			while FuncInstance.Value do
-				if AllFunctions.AutoCook.Info.Oven then
-					if game.Players.LocalPlayer.Character then
-						game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.Oven:GetPivot())
-					end
-					
+				if AllFunctions.AutoCook.Info.Oven then					
 					if type(FuncInstance:GetAttribute("DumplingName")) == "string"
 						and AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] then
 						if not CheckResoursesAvailability(AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling", "Cook") then
 							FuncInstance.Value = false
 							
 							return
+						end
+						
+						if game.Players.LocalPlayer.Character then
+							game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.Oven:GetPivot())
 						end
 						
 						game.ReplicatedStorage.Remotes.StartCook:FireServer({
