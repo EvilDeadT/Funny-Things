@@ -418,6 +418,8 @@ for FuncName, Func in AllFunctions do
 			FuncFunction:Disconnect()
 			FuncFunction = nil
 		end
+		
+		FuncInstance.Value = Func.Default
 	end)
 	
 	FuncInstance.Parent = FunctionsFolder
