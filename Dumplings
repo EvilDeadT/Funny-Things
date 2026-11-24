@@ -2,8 +2,146 @@ local AllFunctions = {
 	PickUpEvents = {
 		Type = "Bool",
 		Default = false,
+		Attributes = {
+			AutoCollect = true
+		},
 		
 		Info = {}
+	},
+	AutoCook = {
+		Type = "Bool",
+		Default = false,
+		Attributes = {
+			DumplingName = "Basic"
+		},
+		
+		Info = {
+			Dumplings = {
+				basic = "basic",
+				default = "basic",
+				b = "basic",
+				
+				potato = "potato",
+				p = "potato",
+				
+				spicy = "spicy",
+				sp = "spicy",
+				
+				cherry = "cherry",
+				c = "cherry",
+				
+				star = "star",
+				st = "star",
+				
+				glow = "glow",
+				gl = "glow",
+				
+				golden = "golden",
+				gol = "golden",
+				go = "golden",
+				
+				black = "black",
+				bl = "black",
+				
+				meat = "meat",
+				m = "meat",
+				
+				potatoonion = "potato_onion",
+				["potato-onion"] = "potato_onion",
+				potato_onion = "potato_onion",
+				["potato onion"] = "potato_onion",
+				onionpotato = "potato_onion",
+				["onion-potato"] = "potato_onion",
+				onion_potato = "potato_onion",
+				["onion potato"] = "potato_onion",
+				po = "potato_onion",
+				["p-o"] = "potato_onion",
+				p_o = "potato_onion",
+				["p o"] = "potato_onion",
+				op = "potato_onion",
+				["o-p"] = "potato_onion",
+				o_p = "potato_onion",
+				["o p"] = "potato_onion",
+				
+				butterpotato = "butter_potato",
+				["butter-potato"] = "butter_potato",
+				butter_potato = "butter_potato",
+				["butter potato"] = "butter_potato",
+				potatobutter = "butter_potato",
+				["potato-butter"] = "butter_potato",
+				potato_butter = "butter_potato",
+				["potato butter"] = "butter_potato",
+				bp = "butter_potato",
+				["b-p"] = "butter_potato",
+				b_p = "butter_potato",
+				["b p"] = "butter_potato",
+				pb = "butter_potato",
+				["p-b"] = "butter_potato",
+				p_b = "butter_potato",
+				["p b"] = "butter_potato",
+				
+				cherryhoney = "cherry_honey",
+				["cherry-honey"] = "cherry_honey",
+				cherry_honey = "cherry_honey",
+				["cherry honey"] = "cherry_honey",
+				honeycherry = "cherry_honey",
+				["honey-cherry"] = "cherry_honey",
+				honey_cherry = "cherry_honey",
+				["honey cherry"] = "cherry_honey",
+				ch = "cherry_honey",
+				["c-h"] = "cherry_honey",
+				c_h = "cherry_honey",
+				["c h"] = "cherry_honey",
+				hc = "cherry_honey",
+				["h-c"] = "cherry_honey",
+				h_c = "cherry_honey",
+				["h c"] = "cherry_honey",
+				
+				goldenhoney = "golden_honey",
+				["golden-honey"] = "golden_honey",
+				golden_honey = "golden_honey",
+				["golden honey"] = "golden_honey",
+				goldhoney = "golden_honey",
+				["gold-honey"] = "golden_honey",
+				gold_honey = "golden_honey",
+				["gold honey"] = "golden_honey",
+				honeygolden = "golden_honey",
+				["honey-golden"] = "golden_honey",
+				honey_golden = "golden_honey",
+				["honey golden"] = "golden_honey",
+				honeygold = "golden_honey",
+				["honey-gold"] = "golden_honey",
+				honey_gold = "golden_honey",
+				["honey gold"] = "golden_honey",
+				gh = "golden_honey",
+				["g-h"] = "golden_honey",
+				g_h = "golden_honey",
+				["g h"] = "golden_honey",
+				hg = "golden_honey",
+				["h-g"] = "golden_honey",
+				h_g = "golden_honey",
+				["h g"] = "golden_honey",
+				
+				stardust = "stardust",
+				["star-dust"] = "stardust",
+				star_dust = "stardust",
+				["star dust"] = "stardust",
+				duststar = "stardust",
+				["dust-star"] = "stardust",
+				dust_star = "stardust",
+				["dust star"] = "stardust",
+				sd = "stardust",
+				["s-d"] = "stardust",
+				s_d = "stardust",
+				["s d"] = "stardust",
+				ds = "stardust",
+				["d-s"] = "stardust",
+				d_s = "stardust",
+				["d s"] = "stardust",
+				dust = "stardust",
+				d = "stardust"
+			}
+		}
 	}
 }
 
@@ -83,9 +221,7 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 		PartInFrontOfCamera.Size = Vector3.new(0.5, 0.5, 0.5)
 	end
 
-	PartInFrontOfCamera.CFrame = CFrame.new(
-		game.Workspace.CurrentCamera.CFrame.Position + game.Workspace.CurrentCamera.CFrame.LookVector * PartOffset
-	) * CFrame.fromOrientation(0, 0, 0)
+	PartInFrontOfCamera.Position = game.Workspace.CurrentCamera.CFrame.Position + game.Workspace.CurrentCamera.CFrame.LookVector * PartOffset
 
 	if Prompt.Parent ~= PartInFrontOfCamera then
 		PromptClearPrompts()
@@ -101,6 +237,44 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 	Prompt:InputHoldEnd()
 end
 
+function CheckResoursesAvailability(CraftName, CraftType)
+	local Inventory = require(game.ReplicatedStorage.Shared.InventoryState)
+	local CookInfo = require(game.ReplicatedStorage.Shared.Dumplings)
+	
+	if not CookInfo[CraftName] then
+		print("Unknown CraftName")
+		return
+	end
+	
+	local MissingItems = false
+	
+	if CraftType == "Cook" then
+		if not Inventory.Items["recipe_" .. CraftName] then
+			print("You Don't Have Recipe!")
+			return
+		end
+		
+		for Name, Value in CookInfo[CraftName].ingredients do
+			if not Inventory.Items[Name] then
+				print("You Are Too Poor! " .. Name .. ": 0/" .. Value)
+				MissingItems = true
+			elseif Inventory.Items[Name] < Value then
+				print("You Are Too Poor! " .. Name .. ": " .. Inventory.Items[Name] .. "/" .. Value)
+				MissingItems = true
+			end
+		end
+	else
+		print("Unknown CraftType")
+		return
+	end
+	
+	if MissingItems then
+		return
+	end
+	
+	return true
+end
+
 AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 	if FuncInstance.Value then
 		AllFunctions.PickUpEvents.Info.While = task.spawn(function()
@@ -110,8 +284,14 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 					break
 				end
 				
-				if AllFunctions.PickUpEvents.Info.CurrentEventLoot and AllFunctions.PickUpEvents.Info.CurrentEventLoot.Parent then
-					PromptInFrontOfCamera(AllFunctions.PickUpEvents.Info.CurrentEventLoot:FindFirstChildWhichIsA("ProximityPrompt", true).Parent)
+				if AllFunctions.PickUpEvents.Info.CurrentEventLoot
+					and AllFunctions.PickUpEvents.Info.CurrentEventLoot.Parent then
+					
+					if AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt
+						and AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt.Parent
+						and FuncInstance:GetAttribute("AutoCollect") then
+						PromptInFrontOfCamera(AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt.Parent)
+					end
 					
 					if game.Players.LocalPlayer.Character then
 						game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpEvents.Info.CurrentEventLoot:GetPivot())
@@ -121,11 +301,71 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 						for _, EventLoot in game.Workspace.EventObjects:GetChildren() do
 							if EventLoot:FindFirstChildWhichIsA("ProximityPrompt", true) then
 								AllFunctions.PickUpEvents.Info.CurrentEventLoot = EventLoot
-
+								AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt = EventLoot:FindFirstChildWhichIsA("ProximityPrompt", true)
+								
 								break
 							end
 						end
 					end
+				end
+				
+				task.wait(0.1)
+			end
+		end)
+	else
+		if AllFunctions.PickUpEvents.Info.While then
+			task.cancel(AllFunctions.PickUpEvents.Info.While)
+			AllFunctions.PickUpEvents.Info.While = nil
+		end
+	end
+end
+
+AllFunctions.AutoCook.Actions = function(FuncInstance)
+	if FuncInstance.Value then
+		AllFunctions.AutoCook.Info.While = task.spawn(function()
+			while FuncInstance.Value do
+				if AllFunctions.AutoCook.Info.Oven then
+					if game.Players.LocalPlayer.Character then
+						game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.Oven:GetPivot())
+					end
+					
+					if type(FuncInstance:GetAttribute("DumplingName")) == "string"
+						and AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] then
+						if not CheckResoursesAvailability(AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling", "Cook") then
+							FuncInstance.Value = false
+							
+							return
+						end
+						
+						game.ReplicatedStorage.Remotes.StartCook:FireServer({
+							AllFunctions.AutoCook.Info.Oven,
+							"recipe_" .. AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling",
+							AllFunctions.AutoCook.Info.Oven:GetAttribute("Capacity")
+						})
+						
+						AllFunctions.AutoCook.Info.Oven = nil
+					else
+						print("Write Dumpling Name")
+						
+						AllFunctions.AutoCook.Info.AllowAutoSell = true
+						
+						FuncInstance.Value = false
+					end
+				end
+				
+				if game.Workspace.HousesFolder:FindFirstChild(game.Players.LocalPlayer.Name .. "_House") then
+					if game.Workspace.HousesFolder:FindFirstChild(game.Players.LocalPlayer.Name .. "_House"):FindFirstChild("Placed") then
+						for _, Oven in game.Workspace.HousesFolder:FindFirstChild(game.Players.LocalPlayer.Name .. "_House").Placed:GetChildren() do
+							if Oven:GetAttribute("BuildCategory") == "Ovens" and not Oven:GetAttribute("CookRecipe") then
+								AllFunctions.AutoCook.Info.Oven = Oven
+								AllFunctions.AutoCook.Info.AllowAutoSell = false
+							end
+						end
+					end
+				end
+				
+				if not AllFunctions.AutoCook.Info.Oven then
+					AllFunctions.AutoCook.Info.AllowAutoSell = true
 				end
 				
 				task.wait(0.1)
@@ -159,11 +399,17 @@ for FuncName, Func in AllFunctions do
 	FuncInstance.Name = FuncName
 	FuncInstance.Value = Func.Default
 	
+	if Func.Attributes then
+		for AttributeName, AttributeValue in Func.Attributes do
+			FuncInstance:SetAttribute(AttributeName, AttributeValue)
+		end
+	end
+	
 	local FuncFunction = FuncInstance:GetPropertyChangedSignal("Value"):Connect(function()
 		if Func.Actions then
 			Func.Actions(FuncInstance)
 		else
-			print(FuncName .. " is Useless")
+			print(FuncName .. " Function is Useless")
 		end
 	end)
 	
