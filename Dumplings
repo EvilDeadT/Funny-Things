@@ -367,7 +367,7 @@ function CheckResoursesAvailability(CraftName, CraftType, FuncInstance)
 	end
 	
 	if not ItemInfo[CraftName] then
-		UIStyle.Toast("Unknown " .. if CraftType == "Cook" then "Dumpling" elseif CraftType == "Craft" then "Craft" .. " Name!", "bad")
+		UIStyle.Toast("Unknown " .. if CraftType == "Cook" then "Dumpling" elseif CraftType == "Craft" then "Craft" else "NIL" .. " Name!", "bad")
 		return
 	end
 	
