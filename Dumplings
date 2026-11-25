@@ -340,7 +340,9 @@ function GetResourses(Resourses)
 		print("Layer " .. Layer .. ":")
 
 		for Category, CategoryInfo in LayerInfo do
-			print(Category .. ":")
+			if next(CategoryInfo) then
+				print(Category .. ":")
+			end
 			
 			for ItemName, ItemAmount in CategoryInfo do
 				print(ItemName .. ": " .. ItemAmount)
@@ -349,7 +351,7 @@ function GetResourses(Resourses)
 	end
 end
 
-function CheckResoursesAvailability(CraftName, CraftType)
+function CheckResoursesAvailability(CraftName, CraftType, FuncInstance)
 	local Inventory = require(game.ReplicatedStorage.Shared.InventoryState)
 	local CookInfo = require(game.ReplicatedStorage.Shared.Dumplings)
 	local CraftInfo = require(game.ReplicatedStorage.Shared.Crafting)
@@ -374,7 +376,7 @@ function CheckResoursesAvailability(CraftName, CraftType)
 	
 	local MissingItems = {}
 	
-	if CraftType == "Cook" and not Inventory.Items["recipe_" .. CraftName] then
+	if CraftType == "Cook" and not Inventory.Items["recipe_" .. CraftName] and (not FuncInstance or not FuncInstance:FindFirstChild("IgnoreNoRecipe")) then
 		UIStyle.Toast("You Don't Have Recipe!", "bad")
 		return
 	end
