@@ -422,7 +422,7 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 	end
 end
 
-AllFunctions.LeaveOnPlayers = function(FuncInstance)
+AllFunctions.LeaveOnPlayers.Actions = function(FuncInstance)
 	if FuncInstance.Value then
 		AllFunctions.LeaveOnPlayers.Info.While = task.spawn(function()
 			while FuncInstance.Value do
