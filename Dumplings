@@ -588,7 +588,11 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 							AllFunctions.AutoCook.Info.Oven = nil
 						end
 					else
-						UIStyle.Toast("Write Dumpling Name!", "bad")
+						if type(FuncInstance:GetAttribute("DumplingName")) ~= "string" then
+							UIStyle.Toast("Write Dumpling Name!", "bad")
+						elseif not AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] then
+							UIStyle.Toast("Unknown Dumpling Name!", "bad")						
+						end
 
 						AllFunctions.AutoCook.Info.AllowAutoSell = true
 
