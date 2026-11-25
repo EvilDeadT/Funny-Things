@@ -289,11 +289,6 @@ function CheckResoursesAvailability(CraftName, CraftType, FuncInstance, ItemsAmo
 	local CookInfo = require(game.ReplicatedStorage.Shared.Dumplings)
 	local CraftInfo = require(game.ReplicatedStorage.Shared.Crafting)
 
-	if not CookInfo[CraftName] then
-		UIStyle.Toast("Unknown CraftName", "bad")
-		return
-	end
-
 	local ItemInfo = nil
 
 	if CraftType == "Cook" then
