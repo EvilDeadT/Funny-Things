@@ -4,7 +4,11 @@ local AllFunctions = {
 		Default = false,
 		Attributes = {
 			AutoCollect = true,
-			TeleportBack = true
+			TeleportBack = true,
+			
+			Firefly = true,
+			GlowMushroom = true,
+			FallenStar = true
 		},
 
 		Info = {}
@@ -332,7 +336,8 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 				else
 					if #game.Workspace.EventObjects:GetChildren() > 0 then
 						for _, EventLoot in game.Workspace.EventObjects:GetChildren() do
-							if EventLoot:FindFirstChildWhichIsA("ProximityPrompt", true) then
+							if EventLoot:FindFirstChildWhichIsA("ProximityPrompt", true)
+								and (FuncInstance:GetAttribute(EventLoot.Name) == nil or FuncInstance:GetAttribute(EventLoot.Name)) then
 								AllFunctions.PickUpEvents.Info.CurrentEventLoot = EventLoot
 								AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt = EventLoot:FindFirstChildWhichIsA("ProximityPrompt", true)
 
