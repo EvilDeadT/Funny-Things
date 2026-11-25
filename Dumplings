@@ -19,6 +19,7 @@ local AllFunctions = {
 		Attributes = {
 			AutoCollect = true,
 			TeleportBack = true,
+			FastAsPossible = false,
 
 			Wheat = true,
 			GoldenWheat = false
@@ -341,8 +342,8 @@ function GetResourses(Resourses)
 		for Category, CategoryInfo in LayerInfo do
 			print(Category .. ":")
 			
-			print(type(Category))
-			print(table.unpack(Category))
+			print(type(CategoryInfo))
+			print(table.unpack(CategoryInfo))
 			
 			for ItemName, ItemAmount in CategoryInfo do
 				print(ItemName)
@@ -501,11 +502,7 @@ AllFunctions.PickUpWheat.Actions = function(FuncInstance)
 					if AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt
 						and AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt.Parent then
 						if FuncInstance:GetAttribute("AutoCollect") then
-							task.wait(0.5)
-
 							PromptInFrontOfCamera(AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt.Parent)
-
-							task.wait(0.5)
 						end
 					else
 						AllFunctions.PickUpWheat.Info.CurrentWheatLoot = nil
@@ -515,9 +512,8 @@ AllFunctions.PickUpWheat.Actions = function(FuncInstance)
 					if #game.Workspace.PlantsLive:GetChildren() > 0 then
 						for _, WheatLoot in game.Workspace.PlantsLive:GetChildren() do
 							if WheatLoot:FindFirstChildWhichIsA("ProximityPrompt", true)
-								and (FuncInstance:GetAttribute(WheatLoot.Name) == nil or FuncInstance:GetAttribute(WheatLoot.Name))
-								and type(WheatLoot:GetAttribute("SpawnTime")) == "number"
-								and WheatLoot:GetAttribute("SpawnTime") >= 10 then
+								and (WheatLoot:FindFirstChildWhichIsA("ProximityPrompt", true).Enabled or not FuncInstance:GetAttribute("FastAsPossible"))
+								and (FuncInstance:GetAttribute(WheatLoot.Name) == nil or FuncInstance:GetAttribute(WheatLoot.Name)) then
 								AllFunctions.PickUpWheat.Info.CurrentWheatLoot = WheatLoot
 								AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt = WheatLoot:FindFirstChildWhichIsA("ProximityPrompt", true)
 
@@ -711,26 +707,4 @@ end
 
 if FunctionsFolder.Parent ~= game.ReplicatedFirst then
 	FunctionsFolder.Parent = game.ReplicatedFirst
-end
-
-function WheatSpawned(Wheat)
-	if type(Wheat:GetAttribute("SpawnTime")) ~= "number" then
-		Wheat:SetAttribute("SpawnTime", 0)
-	end
-
-	if Wheat:GetAttribute("SpawnTime") < 10 then
-		task.spawn(function()
-			while type(Wheat:GetAttribute("SpawnTime")) == "number" and Wheat:GetAttribute("SpawnTime") < 10 do
-				Wheat:SetAttribute("SpawnTime", Wheat:GetAttribute("SpawnTime") + 1)
-
-				task.wait(1)
-			end
-		end)
-	end
-end
-
-AllSubFunctions.WheatSpawn = game.Workspace:WaitForChild("PlantsLive").ChildAdded:Connect(WheatSpawned)
-
-for _, Wheat in game.Workspace:WaitForChild("PlantsLive"):GetChildren() do
-	WheatSpawned(Wheat)
 end
