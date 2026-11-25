@@ -685,6 +685,12 @@ for FuncName, Func in AllFunctions do
 			end
 		end
 	end
+	
+	if Func.Actions then
+		Func.Actions(FuncInstance)
+	else
+		UIStyle.Toast(FuncName .. " Function is Useless!", "bad")
+	end
 
 	local FuncFunction = FuncInstance:GetPropertyChangedSignal("Value"):Connect(function()
 		if Func.Actions then
