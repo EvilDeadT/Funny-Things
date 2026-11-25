@@ -350,7 +350,7 @@ function CheckResoursesAvailability(CraftName, CraftType)
 	
 	
 	
-	local MissingItems = false
+	local MissingItems = {}
 	
 	if CraftType == "Cook" and not Inventory.Items["recipe_" .. CraftName] then
 		print("You Don't Have Recipe!")
