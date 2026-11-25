@@ -337,15 +337,9 @@ function GetResourses(Resourses)
 	end
 	
 	for Layer, LayerInfo in ItemsNeed do
-		print("Layer " .. Layer .. ":")
-
 		for Category, CategoryInfo in LayerInfo do
-			if next(CategoryInfo) then
-				print(Category .. ":")
-			end
-			
 			for ItemName, ItemAmount in CategoryInfo do
-				print(ItemName .. ": " .. ItemAmount)
+				print("Layer " .. Layer .. ": " .. Category .. ": " .. ItemName .. " - " .. ItemAmount)
 			end
 		end
 	end
@@ -556,7 +550,7 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 					if type(FuncInstance:GetAttribute("DumplingName")) == "string"
 						and AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] then
 						
-						local HaveResourses, MissingItems = CheckResoursesAvailability(AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling", "Cook")
+						local HaveResourses, MissingItems = CheckResoursesAvailability(AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling", "Cook", FuncInstance)
 						if not HaveResourses then
 							if MissingItems then
 								GetResourses(MissingItems)
@@ -567,7 +561,7 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 							end
 						end
 						
-						if not CheckResoursesAvailability(AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling", "Cook") then
+						if not CheckResoursesAvailability(AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling", "Cook", FuncInstance) then
 							FuncInstance.Value = false
 							
 							return
