@@ -301,23 +301,23 @@ function GetResourses(Resourses)
 	end
 	
 	local function ItemsList(LayerNum)
-		local ItemsNeed = {}
-		
-		for _, ItemCategory in {"Buy", "Craft", "Event"} do
-			if not ItemsNeed[ItemCategory] then
-				ItemsNeed[ItemCategory] = {}
-			end
-		end
+		local ItemsNeed = {
+			[LayerNum] = {
+				Buy = {},
+				Craft = {},
+				Event = {}
+			}
+		}
 
 		for ItemName, ItemAmount in Resourses do
 			if ItemName == "glow_mushroom" or ItemName == "star_shard" or ItemName == "stardust" then
-				ItemNeed[LayerNum][ItemName] = ItemAmount
+				ItemNeed[LayerNum].Event[ItemName] = ItemAmount
 			else
-				if GetResoursePrice(ItemName) then
-					ItemNeed[LayerNum][ItemName] = ItemAmount
+				if require(game.ReplicatedStorage.Shared.Crafting).List[ItemName] then
+					ItemNeed[LayerNum].Craft[ItemName] = ItemAmount
 				else
-					if require(game.ReplicatedStorage.Shared.Crafting).List[ItemName] then
-						ItemNeed[LayerNum][ItemName] = ItemAmount
+					if GetResoursePrice(ItemName) then
+						ItemNeed[LayerNum].Buy[ItemName] = ItemAmount
 					else
 						UIStyle.Toast("Unobtainable Item: " .. ItemName .. ": " .. ItemAmount, "bad")
 						return
@@ -336,10 +336,14 @@ function GetResourses(Resourses)
 	end
 	
 	for Layer, LayerInfo in ItemsNeed do
-		UIStyle.Toast("Layer " .. Layer .. ":", "bad")
-		
-		for ItemName, ItemAmount in LayerInfo do
-			UIStyle.Toast(ItemName .. ": " .. ItemAmount, "bad")
+		print("Layer " .. Layer .. ":")
+
+		for Category, CategoryInfo in LayerInfo do
+			print(Category .. ":")
+			
+			for ItemName, ItemAmount in CategoryInfo do
+				print(ItemName .. ": " .. ItemAmount)
+			end
 		end
 	end
 end
@@ -644,7 +648,11 @@ AllFunctions.LeaveOnPlayers.Actions = function(FuncInstance)
 	end
 end
 
-if not FunctionsFolder then
+if FunctionsFolder then
+	if FunctionsFolder:FindFirstChild("LeaveOnPlayers") and FunctionsFolder.LeaveOnPlayers:IsA("BoolValue") then
+		FunctionsFolder.LeaveOnPlayers.Value = false
+	end
+else
 	FunctionsFolder = Instance.new("Folder")
 	FunctionsFolder.Name = "AllThings"
 	FunctionsFolder.IconTint = Color3.fromRGB(250, 255, 255)
