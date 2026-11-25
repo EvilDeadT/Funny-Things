@@ -164,7 +164,7 @@ local AllFunctions = {
 	},
 	LeaveOnPlayers = {
 		Type = "Bool",
-		Default = false,
+		Default = true,
 		
 		Info = {
 			Folders = {
@@ -179,7 +179,17 @@ local AllFunctions = {
 	}
 }
 
+local AllSubFunctions = {}
+
 local FunctionsFolder = game.ReplicatedFirst:FindFirstChild("AllThings")
+
+function ScriptOverwrite()
+	for FuncName, _ in AllSubFunctions do
+		AllSubFunctions[FuncName]:Disconnect()
+	end
+	
+	AllSubFunctions = {}
+end
 
 function PromptClearPrompts()
 	if game.Workspace:FindFirstChild("PartInFrontOfCamera") then
@@ -403,7 +413,10 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 			AllFunctions.PickUpEvents.Info.While = nil
 		end
 		
-		AllFunctions.PickUpEvents.Info.LastPivot = nil
+		if AllFunctions.PickUpEvents.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
+			game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpEvents.Info.LastPivot)
+			AllFunctions.PickUpEvents.Info.LastPivot = nil
+		end
 	end
 end
 
@@ -431,6 +444,13 @@ AllFunctions.PickUpWheat.Actions = function(FuncInstance)
 					end
 
 					if game.Players.LocalPlayer.Character then
+						if game.Workspace:FindFirstChild("Zones")
+							and game.Workspace.Zones:FindFirstChild("old_mill")
+							and game.Workspace.Zones.old_mill:IsA("BasePart")
+							and game.Workspace.Zones.old_mill.CanCollide then
+							game.Workspace.Zones.old_mill.CanCollide = false
+						end
+						
 						if NoTeleportPivot() then
 							AllFunctions.PickUpWheat.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
 						end
@@ -441,7 +461,9 @@ AllFunctions.PickUpWheat.Actions = function(FuncInstance)
 					if #game.Workspace.PlantsLive:GetChildren() > 0 then
 						for _, WheatLoot in game.Workspace.PlantsLive:GetChildren() do
 							if WheatLoot:FindFirstChildWhichIsA("ProximityPrompt", true)
-								and (FuncInstance:GetAttribute(WheatLoot.Name) == nil or FuncInstance:GetAttribute(WheatLoot.Name)) then
+								and (FuncInstance:GetAttribute(WheatLoot.Name) == nil or FuncInstance:GetAttribute(WheatLoot.Name))
+								and type(WheatLoot:GetAttribute("SpawnTime")) == "number"
+								and WheatLoot:GetAttribute("SpawnTime") >= 10 then
 								AllFunctions.PickUpWheat.Info.CurrentWheatLoot = WheatLoot
 								AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt = WheatLoot:FindFirstChildWhichIsA("ProximityPrompt", true)
 
@@ -460,7 +482,10 @@ AllFunctions.PickUpWheat.Actions = function(FuncInstance)
 			AllFunctions.PickUpWheat.Info.While = nil
 		end
 		
-		AllFunctions.PickUpWheat.Info.LastPivot = nil
+		if AllFunctions.PickUpWheat.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
+			game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpWheat.Info.LastPivot)
+			AllFunctions.PickUpWheat.Info.LastPivot = nil
+		end
 	end
 end
 
@@ -536,7 +561,10 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 			AllFunctions.AutoCook.Info.While = nil
 		end
 		
-		AllFunctions.AutoCook.Info.LastPivot = nil
+		if AllFunctions.AutoCook.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
+			game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.LastPivot)
+			AllFunctions.AutoCook.Info.LastPivot = nil
+		end
 	end
 end
 
@@ -612,7 +640,8 @@ for FuncName, Func in AllFunctions do
 			FuncFunction:Disconnect()
 			FuncFunction = nil
 		end
-
+		
+		
 		FuncInstance.Value = Func.Default
 	end)
 
@@ -621,4 +650,26 @@ end
 
 if FunctionsFolder.Parent ~= game.ReplicatedFirst then
 	FunctionsFolder.Parent = game.ReplicatedFirst
+end
+
+function WheatSpawned(Wheat)
+	if type(Wheat:GetAttribute("SpawnTime")) ~= "number" then
+		Wheat:SetAttribute("SpawnTime", 0)
+	end
+
+	if Wheat:GetAttribute("SpawnTime") < 10 then
+		task.spawn(function()
+			while type(Wheat:GetAttribute("SpawnTime")) == "number" and Wheat:GetAttribute("SpawnTime") < 10 do
+				Wheat:SetAttribute("SpawnTime", Wheat:GetAttribute("SpawnTime") + 1)
+
+				task.wait(1)
+			end
+		end)
+	end
+end
+
+AllSubFunctions.WheatSpawn = game.Workspace:WaitForChild("PlantsLive").ChildAdded:Connect(WheatSpawned)
+
+for _, Wheat in game.Workspace:WaitForChild("PlantsLive"):GetChildren() do
+	WheatSpawned(Wheat)
 end
