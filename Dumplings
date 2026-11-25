@@ -341,6 +341,9 @@ function GetResourses(Resourses)
 		for Category, CategoryInfo in LayerInfo do
 			print(Category .. ":")
 			
+			print(type(Category))
+			print(table.unpack(Category))
+			
 			for ItemName, ItemAmount in CategoryInfo do
 				print(ItemName)
 				print(ItemAmount)
