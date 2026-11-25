@@ -21,7 +21,7 @@ local AllFunctions = {
 			TeleportBack = true,
 
 			Wheat = true,
-			GoldenWheat = true,
+			GoldenWheat = false
 		},
 
 		Info = {}
@@ -179,6 +179,7 @@ local AllFunctions = {
 }
 
 local AllSubFunctions = {}
+local UIStyle = require(game.ReplicatedStorage.Shared.UIStyle)
 
 local FunctionsFolder = game.ReplicatedFirst:FindFirstChild("AllThings")
 
@@ -299,30 +300,46 @@ function GetResourses(Resourses)
 		return
 	end
 	
-	
-	
-	local ItemsBuy = {}
-	local ItemsCraft = {}
-	local ItemsEvent = {}
-	local ItemsUnobtainable = {}
-	
-	for ItemName, ItemNeed in Resourses do
-		if ItemName == "glow_mushroom" or ItemName == "star_shard" or ItemName == "stardust" then
-			ItemsEvent[ItemName] = ItemNeed
-			print("ItemsEvent: " .. ItemName .. ": " .. ItemNeed)
-		else
-			if GetResoursePrice(ItemName) then
-				ItemsBuy[ItemName] = ItemNeed
-				print("ItemsBuy: " .. ItemName .. ": " .. ItemNeed)
+	local function ItemsList(LayerNum)
+		local ItemsNeed = {}
+		
+		for _, ItemCategory in {"Buy", "Craft", "Event"} do
+			if not ItemsNeed[ItemCategory] then
+				ItemsNeed[ItemCategory] = {}
+			end
+		end
+
+		for ItemName, ItemAmount in Resourses do
+			if ItemName == "glow_mushroom" or ItemName == "star_shard" or ItemName == "stardust" then
+				ItemNeed[LayerNum][ItemName] = ItemAmount
 			else
-				if require(game.ReplicatedStorage.Shared.Crafting).List[ItemName] then
-					ItemsCraft[ItemName] = ItemNeed
-					print("ItemsCraft: " .. ItemName .. ": " .. ItemNeed)
+				if GetResoursePrice(ItemName) then
+					ItemNeed[LayerNum][ItemName] = ItemAmount
 				else
-					ItemsUnobtainable[ItemName] = ItemNeed
-					print("ItemsUnobtainable: " .. ItemName .. ": " .. ItemNeed)
+					if require(game.ReplicatedStorage.Shared.Crafting).List[ItemName] then
+						ItemNeed[LayerNum][ItemName] = ItemAmount
+					else
+						UIStyle.Toast("Unobtainable Item: " .. ItemName .. ": " .. ItemAmount, "bad")
+						return
+					end
 				end
 			end
+		end
+		
+		return ItemsNeed
+	end
+	
+	local ItemsNeed = ItemsList(1)
+	
+	if not ItemsNeed then
+		return
+	end
+	
+	for Layer, LayerInfo in ItemsNeed do
+		UIStyle.Toast("Layer " .. Layer .. ":", "bad")
+		
+		for ItemName, ItemAmount in LayerInfo do
+			UIStyle.Toast(ItemName .. ": " .. ItemAmount, "bad")
 		end
 	end
 end
@@ -333,7 +350,7 @@ function CheckResoursesAvailability(CraftName, CraftType)
 	local CraftInfo = require(game.ReplicatedStorage.Shared.Crafting)
 
 	if not CookInfo[CraftName] then
-		print("Unknown CraftName")
+		UIStyle.Toast("Unknown CraftName", "bad")
 		return
 	end
 	
@@ -344,7 +361,7 @@ function CheckResoursesAvailability(CraftName, CraftType)
 	elseif CraftType == "Craft" then
 		ItemInfo = CraftInfo
 	else
-		print("Unknown CraftType")
+		UIStyle.Toast("Unknown CraftType", "bad")
 		return
 	end
 	
@@ -353,7 +370,7 @@ function CheckResoursesAvailability(CraftName, CraftType)
 	local MissingItems = {}
 	
 	if CraftType == "Cook" and not Inventory.Items["recipe_" .. CraftName] then
-		print("You Don't Have Recipe!")
+		UIStyle.Toast("You Don't Have Recipe!", "bad")
 		return
 	end
 
@@ -406,9 +423,13 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 					game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpEvents.Info.CurrentEventLoot:GetPivot())
 
 					if AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt
-						and AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt.Parent
-						and FuncInstance:GetAttribute("AutoCollect") then
-						PromptInFrontOfCamera(AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt.Parent)
+						and AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt.Parent then
+						if FuncInstance:GetAttribute("AutoCollect") then
+							PromptInFrontOfCamera(AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt.Parent)
+						end
+					else
+						AllFunctions.PickUpEvents.Info.CurrentEventLoot = nil
+						AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt = nil
 					end
 				else
 					if #game.Workspace.EventObjects:GetChildren() > 0 then
@@ -470,9 +491,17 @@ AllFunctions.PickUpWheat.Actions = function(FuncInstance)
 					game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpWheat.Info.CurrentWheatLoot:GetPivot())
 
 					if AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt
-						and AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt.Parent
-						and FuncInstance:GetAttribute("AutoCollect") then
-						PromptInFrontOfCamera(AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt.Parent)
+						and AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt.Parent then
+						if FuncInstance:GetAttribute("AutoCollect") then
+							task.wait(1)
+
+							PromptInFrontOfCamera(AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt.Parent)
+
+							task.wait(1)
+						end
+					else
+						AllFunctions.PickUpWheat.Info.CurrentWheatLoot = nil
+						AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt = nil
 					end
 				else
 					if #game.Workspace.PlantsLive:GetChildren() > 0 then
@@ -549,7 +578,7 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 							AllFunctions.AutoCook.Info.Oven = nil
 						end
 					else
-						print("Write Dumpling Name")
+						UIStyle.Toast("Write Dumpling Name", "bad")
 
 						AllFunctions.AutoCook.Info.AllowAutoSell = true
 
@@ -651,7 +680,7 @@ for FuncName, Func in AllFunctions do
 		if Func.Actions then
 			Func.Actions(FuncInstance)
 		else
-			print(FuncName .. " Function is Useless")
+			UIStyle.Toast(FuncName .. " Function is Useless", "bad")
 		end
 	end)
 
