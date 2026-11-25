@@ -284,7 +284,60 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 	Prompt:InputHoldEnd()
 end
 
-function GetResourses(Resourses)
+function CheckResoursesAvailability(CraftName, CraftType, FuncInstance, ItemsAmount)
+	local Inventory = require(game.ReplicatedStorage.Shared.InventoryState)
+	local CookInfo = require(game.ReplicatedStorage.Shared.Dumplings)
+	local CraftInfo = require(game.ReplicatedStorage.Shared.Crafting)
+
+	if not CookInfo[CraftName] then
+		UIStyle.Toast("Unknown CraftName", "bad")
+		return
+	end
+
+	local ItemInfo = nil
+
+	if CraftType == "Cook" then
+		ItemInfo = CookInfo
+	elseif CraftType == "Craft" then
+		ItemInfo = CraftInfo.List
+	else
+		UIStyle.Toast("Unknown CraftType", "bad")
+		return
+	end
+
+	if not ItemInfo[CraftName] then
+		UIStyle.Toast("Unknown " .. if CraftType == "Cook" then "Dumpling" elseif CraftType == "Craft" then "Craft" else "NIL" .. " Name!", "bad")
+		return
+	end
+
+	if CraftType == "Cook" and not Inventory.Items["recipe_" .. CraftName] and (not FuncInstance or not FuncInstance:FindFirstChild("IgnoreNoRecipe")) then
+		UIStyle.Toast("You Don't Have Recipe!", "bad")
+		return
+	end
+
+
+
+	local MissingItems = {}
+	local Multiplier = ItemsAmount or 1
+
+	for Name, Value in ItemInfo[CraftName].ingredients do
+		if not Inventory.Items[Name] then
+			MissingItems[Name] = (Value * Multiplier)
+		elseif Inventory.Items[Name] < (Value * Multiplier) then
+			MissingItems[Name] = (Value * Multiplier) - Inventory.Items[Name]
+		end
+	end
+
+	if next(MissingItems) then
+		return false, MissingItems
+	end
+
+	return true
+end
+
+function GetResourses(Resourses, FuncInstance)
+	local ItemsNeed = {}
+	
 	local function GetResoursePrice(ResourseName)
 		local NPCInfo = require(game.ReplicatedStorage.Shared.NPCs)
 		
@@ -301,16 +354,16 @@ function GetResourses(Resourses)
 		return
 	end
 	
-	local function ItemsList(LayerNum)
-		local ItemsNeed = {
+	local function ItemsList(Items, LayerNum)
+		ItemsNeed = {
 			[LayerNum] = {
 				Buy = {},
 				Craft = {},
 				Event = {}
 			}
 		}
-
-		for ItemName, ItemAmount in Resourses do
+		
+		for ItemName, ItemAmount in Items do
 			if ItemName == "glow_mushroom" or ItemName == "star_shard" or ItemName == "stardust" then
 				ItemsNeed[LayerNum].Event[ItemName] = ItemAmount
 			else
@@ -327,10 +380,24 @@ function GetResourses(Resourses)
 			end
 		end
 		
+		if next(ItemsNeed[LayerNum].Craft) then
+			for CraftName, CraftAmount in ItemsNeed[LayerNum].Craft do
+				local HaveResourses, MissingItems = CheckResoursesAvailability(CraftName, "Craft", FuncInstance, CraftAmount)
+				
+				if not HaveResourses then
+					if MissingItems then
+						return ItemsList(MissingItems, LayerNum + 1)
+					else
+						return
+					end
+				end
+			end
+		end
+		
 		return ItemsNeed
 	end
 	
-	local ItemsNeed = ItemsList(1)
+	local ItemsNeed = ItemsList(Resourses, 1)
 	
 	if not ItemsNeed then
 		return
@@ -343,56 +410,6 @@ function GetResourses(Resourses)
 			end
 		end
 	end
-end
-
-function CheckResoursesAvailability(CraftName, CraftType, FuncInstance)
-	local Inventory = require(game.ReplicatedStorage.Shared.InventoryState)
-	local CookInfo = require(game.ReplicatedStorage.Shared.Dumplings)
-	local CraftInfo = require(game.ReplicatedStorage.Shared.Crafting)
-
-	if not CookInfo[CraftName] then
-		UIStyle.Toast("Unknown CraftName", "bad")
-		return
-	end
-	
-	local ItemInfo = nil
-	
-	if CraftType == "Cook" then
-		ItemInfo = CookInfo
-	elseif CraftType == "Craft" then
-		ItemInfo = CraftInfo.List
-	else
-		UIStyle.Toast("Unknown CraftType", "bad")
-		return
-	end
-	
-	if not ItemInfo[CraftName] then
-		UIStyle.Toast("Unknown " .. if CraftType == "Cook" then "Dumpling" elseif CraftType == "Craft" then "Craft" else "NIL" .. " Name!", "bad")
-		return
-	end
-	
-	if CraftType == "Cook" and not Inventory.Items["recipe_" .. CraftName] and (not FuncInstance or not FuncInstance:FindFirstChild("IgnoreNoRecipe")) then
-		UIStyle.Toast("You Don't Have Recipe!", "bad")
-		return
-	end
-	
-	
-	
-	local MissingItems = {}
-
-	for Name, Value in ItemInfo[CraftName].ingredients do
-		if not Inventory.Items[Name] then
-			MissingItems[Name] = Value
-		elseif Inventory.Items[Name] < Value then
-			MissingItems[Name] = Inventory.Items[Name] - Value
-		end
-	end
-
-	if next(MissingItems) then
-		return false, MissingItems
-	end
-
-	return true
 end
 
 function NoTeleportPivot()
