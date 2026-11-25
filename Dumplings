@@ -342,12 +342,8 @@ function GetResourses(Resourses)
 		for Category, CategoryInfo in LayerInfo do
 			print(Category .. ":")
 			
-			print(type(CategoryInfo))
-			print(table.unpack(CategoryInfo))
-			
 			for ItemName, ItemAmount in CategoryInfo do
-				print(ItemName)
-				print(ItemAmount)
+				print(ItemName .. ": " .. ItemAmount)
 			end
 		end
 	end
@@ -391,7 +387,7 @@ function CheckResoursesAvailability(CraftName, CraftType)
 		end
 	end
 
-	if MissingItems then
+	if next(MissingItems) then
 		return false, MissingItems
 	end
 
@@ -512,8 +508,14 @@ AllFunctions.PickUpWheat.Actions = function(FuncInstance)
 					if #game.Workspace.PlantsLive:GetChildren() > 0 then
 						for _, WheatLoot in game.Workspace.PlantsLive:GetChildren() do
 							if WheatLoot:FindFirstChildWhichIsA("ProximityPrompt", true)
-								and (WheatLoot:FindFirstChildWhichIsA("ProximityPrompt", true).Enabled or not FuncInstance:GetAttribute("FastAsPossible"))
-								and (FuncInstance:GetAttribute(WheatLoot.Name) == nil or FuncInstance:GetAttribute(WheatLoot.Name)) then
+								and (WheatLoot:FindFirstChildWhichIsA("ProximityPrompt", true).Parent.Size == (
+									if game.ReplicatedStorage:FindFirstChild("PlantsModels") and game.ReplicatedStorage.PlantsModels:FindFirstChild(WheatLoot.Name) then
+										game.ReplicatedStorage.PlantsModels[WheatLoot.Name].Size
+										else
+										Vector3.new(2.3407185077667236, 4.52520751953125, 1.2734780311584473)
+									)
+										or not FuncInstance:GetAttribute("FastAsPossible"))
+									and (FuncInstance:GetAttribute(WheatLoot.Name) == nil or FuncInstance:GetAttribute(WheatLoot.Name)) then
 								AllFunctions.PickUpWheat.Info.CurrentWheatLoot = WheatLoot
 								AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt = WheatLoot:FindFirstChildWhichIsA("ProximityPrompt", true)
 
@@ -582,7 +584,7 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 							AllFunctions.AutoCook.Info.Oven = nil
 						end
 					else
-						UIStyle.Toast("Write Dumpling Name", "bad")
+						UIStyle.Toast("Write Dumpling Name!", "bad")
 
 						AllFunctions.AutoCook.Info.AllowAutoSell = true
 
@@ -688,7 +690,7 @@ for FuncName, Func in AllFunctions do
 		if Func.Actions then
 			Func.Actions(FuncInstance)
 		else
-			UIStyle.Toast(FuncName .. " Function is Useless", "bad")
+			UIStyle.Toast(FuncName .. " Function is Useless!", "bad")
 		end
 	end)
 
