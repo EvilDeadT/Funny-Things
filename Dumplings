@@ -8,7 +8,20 @@ local AllFunctions = {
 			
 			Firefly = true,
 			GlowMushroom = true,
-			FallenStar = true
+			FallenStar = false
+		},
+
+		Info = {}
+	},
+	PickUpWheat = {
+		Type = "Bool",
+		Default = false,
+		Attributes = {
+			AutoCollect = true,
+			TeleportBack = true,
+
+			Wheat = true,
+			GoldenWheat = true,
 		},
 
 		Info = {}
@@ -260,45 +273,80 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 	Prompt:InputHoldEnd()
 end
 
-function BuyResourses(Resourses, FuncName)
-
+function BuyResourses(Resourses)
+	local function GetResoursePrice(ResourseName)
+		local NPCInfo = require(game.ReplicatedStorage.Shared.NPCs)
+		
+		for NPCName, Info in NPCInfo.List do
+			if Info.stock then
+				for _, ItemInfo in Info.stock do
+					if ItemInfo.item == ResourseName then
+						return NPCInfo.Price(NPCName, ResourseName)
+					end
+				end
+			end
+		end
+		
+		return
+	end
+	
+	
 end
 
 function CheckResoursesAvailability(CraftName, CraftType)
 	local Inventory = require(game.ReplicatedStorage.Shared.InventoryState)
 	local CookInfo = require(game.ReplicatedStorage.Shared.Dumplings)
+	local CraftInfo = require(game.ReplicatedStorage.Shared.Crafting)
 
 	if not CookInfo[CraftName] then
 		print("Unknown CraftName")
 		return
 	end
-
-	local MissingItems = false
-
+	
+	local ItemInfo = nil
+	
 	if CraftType == "Cook" then
-		if not Inventory.Items["recipe_" .. CraftName] then
-			print("You Don't Have Recipe!")
-			return
-		end
-
-		for Name, Value in CookInfo[CraftName].ingredients do
-			if not Inventory.Items[Name] then
-				print("You Are Too Poor! " .. Name .. ": 0/" .. Value)
-				MissingItems = true
-			elseif Inventory.Items[Name] < Value then
-				print("You Are Too Poor! " .. Name .. ": " .. Inventory.Items[Name] .. "/" .. Value)
-				MissingItems = true
-			end
-		end
+		ItemInfo = CookInfo
+	elseif CraftType == "Craft" then
+		ItemInfo = CraftInfo
 	else
 		print("Unknown CraftType")
 		return
 	end
-
-	if MissingItems then
+	
+	
+	
+	local MissingItems = false
+	
+	if CraftType == "Cook" and not Inventory.Items["recipe_" .. CraftName] then
+		print("You Don't Have Recipe!")
 		return
 	end
 
+	for Name, Value in ItemInfo[CraftName].ingredients do
+		if not Inventory.Items[Name] then
+			table.insert(MissingItems, Name)
+		elseif Inventory.Items[Name] < Value then
+			table.insert(MissingItems, Name)
+		end
+	end
+
+	if MissingItems then
+		return false, MissingItems
+	end
+
+	return true
+end
+
+function NoTeleportPivot()
+	for FuncName, FuncInfo in AllFunctions do
+		if FuncInfo.Info and FunctionsFolder:FindFirstChild(FuncName) then
+			if FuncInfo.Info.LastPivot and FunctionsFolder[FuncName]:GetAttribute("TeleportBack") then
+				return false
+			end
+		end
+	end
+	
 	return true
 end
 
@@ -326,8 +374,7 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 					end
 
 					if game.Players.LocalPlayer.Character then
-						if not FunctionsFolder.AutoCook:GetAttribute("TeleportBack")
-							or FunctionsFolder.AutoCook:GetAttribute("TeleportBack") and not AllFunctions.AutoCook.Info.LastPivot then
+						if NoTeleportPivot() then
 							AllFunctions.PickUpEvents.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
 						end
 
@@ -355,6 +402,65 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 			task.cancel(AllFunctions.PickUpEvents.Info.While)
 			AllFunctions.PickUpEvents.Info.While = nil
 		end
+		
+		AllFunctions.PickUpEvents.Info.LastPivot = nil
+	end
+end
+
+AllFunctions.PickUpWheat.Actions = function(FuncInstance)
+	if FuncInstance.Value then
+		AllFunctions.PickUpWheat.Info.While = task.spawn(function()
+			while FuncInstance.Value do
+				if AllFunctions.PickUpWheat.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
+					game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpWheat.Info.LastPivot)
+					AllFunctions.PickUpWheat.Info.LastPivot = nil
+				end
+
+				if not game.Workspace:FindFirstChild("PlantsLive") then
+					warn("PlantsLive Folder Gone")
+					break
+				end
+
+				if AllFunctions.PickUpWheat.Info.CurrentWheatLoot
+					and AllFunctions.PickUpWheat.Info.CurrentWheatLoot.Parent then
+
+					if AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt
+						and AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt.Parent
+						and FuncInstance:GetAttribute("AutoCollect") then
+						PromptInFrontOfCamera(AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt.Parent)
+					end
+
+					if game.Players.LocalPlayer.Character then
+						if NoTeleportPivot() then
+							AllFunctions.PickUpWheat.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
+						end
+
+						game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpWheat.Info.CurrentWheatLoot:GetPivot())
+					end
+				else
+					if #game.Workspace.PlantsLive:GetChildren() > 0 then
+						for _, WheatLoot in game.Workspace.PlantsLive:GetChildren() do
+							if WheatLoot:FindFirstChildWhichIsA("ProximityPrompt", true)
+								and (FuncInstance:GetAttribute(WheatLoot.Name) == nil or FuncInstance:GetAttribute(WheatLoot.Name)) then
+								AllFunctions.PickUpWheat.Info.CurrentWheatLoot = WheatLoot
+								AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt = WheatLoot:FindFirstChildWhichIsA("ProximityPrompt", true)
+
+								break
+							end
+						end
+					end
+				end
+
+				task.wait(0.1)
+			end
+		end)
+	else
+		if AllFunctions.PickUpWheat.Info.While then
+			task.cancel(AllFunctions.PickUpWheat.Info.While)
+			AllFunctions.PickUpWheat.Info.While = nil
+		end
+		
+		AllFunctions.PickUpWheat.Info.LastPivot = nil
 	end
 end
 
@@ -370,15 +476,20 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 				if AllFunctions.AutoCook.Info.Oven then					
 					if type(FuncInstance:GetAttribute("DumplingName")) == "string"
 						and AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] then
-						if not CheckResoursesAvailability(AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling", "Cook") then
-							FuncInstance.Value = false
+						
+						local HaveResourses, MissingItems = CheckResoursesAvailability(AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling", "Cook")
+						if not HaveResourses then
+							if MissingItems then
+								BuyResourses(MissingItems)
+							else
+								FuncInstance.Value = false
 
-							return
+								return
+							end
 						end
 
 						if game.Players.LocalPlayer.Character then
-							if not FunctionsFolder.PickUpEvents:GetAttribute("TeleportBack")
-								or FunctionsFolder.PickUpEvents:GetAttribute("TeleportBack") and not AllFunctions.PickUpEvents.Info.LastPivot then
+							if NoTeleportPivot() then
 								AllFunctions.AutoCook.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
 							end
 
@@ -424,6 +535,8 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 			task.cancel(AllFunctions.AutoCook.Info.While)
 			AllFunctions.AutoCook.Info.While = nil
 		end
+		
+		AllFunctions.AutoCook.Info.LastPivot = nil
 	end
 end
 
