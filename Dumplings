@@ -57,7 +57,7 @@ local AllFunctions = {
 				gl = "glow",
 
 				golden = "golden",
-				gol = "golden",
+				goln = "golden",
 				go = "golden",
 
 				black = "black",
@@ -360,20 +360,28 @@ function CheckResoursesAvailability(CraftName, CraftType, FuncInstance)
 	if CraftType == "Cook" then
 		ItemInfo = CookInfo
 	elseif CraftType == "Craft" then
-		ItemInfo = CraftInfo
+		ItemInfo = CraftInfo.List
 	else
 		UIStyle.Toast("Unknown CraftType", "bad")
+		return
+	end
+	
+	if not CookInfo[CraftName] then
+		UIStyle.Toast("Unknown Dumpling Name!", "bad")
+		return
+	elseif not CraftInfo.List[CraftName] then
+		UIStyle.Toast("Unknown Craft Name!", "bad")
+		return
+	end
+	
+	if CraftType == "Cook" and not Inventory.Items["recipe_" .. CraftName] and (not FuncInstance or not FuncInstance:FindFirstChild("IgnoreNoRecipe")) then
+		UIStyle.Toast("You Don't Have Recipe!", "bad")
 		return
 	end
 	
 	
 	
 	local MissingItems = {}
-	
-	if CraftType == "Cook" and not Inventory.Items["recipe_" .. CraftName] and (not FuncInstance or not FuncInstance:FindFirstChild("IgnoreNoRecipe")) then
-		UIStyle.Toast("You Don't Have Recipe!", "bad")
-		return
-	end
 
 	for Name, Value in ItemInfo[CraftName].ingredients do
 		if not Inventory.Items[Name] then
