@@ -350,12 +350,10 @@ function GetResourses(Resourses, FuncInstance)
 	end
 	
 	local function ItemsList(Items, LayerNum)
-		ItemsNeed = {
-			[LayerNum] = {
-				Buy = {},
-				Craft = {},
-				Event = {}
-			}
+		ItemsNeed[LayerNum] = {
+			Buy = {},
+			Craft = {},
+			Event = {}
 		}
 		
 		for ItemName, ItemAmount in Items do
