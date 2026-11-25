@@ -6,7 +6,7 @@ local AllFunctions = {
 			AutoCollect = true,
 			TeleportBack = true
 		},
-		
+
 		Info = {}
 	},
 	AutoCook = {
@@ -16,38 +16,38 @@ local AllFunctions = {
 			DumplingName = "Basic",
 			TeleportBack = true
 		},
-		
+
 		Info = {
 			Dumplings = {
 				basic = "basic",
 				default = "basic",
 				b = "basic",
-				
+
 				potato = "potato",
 				p = "potato",
-				
+
 				spicy = "spicy",
 				sp = "spicy",
-				
+
 				cherry = "cherry",
 				c = "cherry",
-				
+
 				star = "star",
 				st = "star",
-				
+
 				glow = "glow",
 				gl = "glow",
-				
+
 				golden = "golden",
 				gol = "golden",
 				go = "golden",
-				
+
 				black = "black",
 				bl = "black",
-				
+
 				meat = "meat",
 				m = "meat",
-				
+
 				potatoonion = "potato_onion",
 				["potato-onion"] = "potato_onion",
 				potato_onion = "potato_onion",
@@ -64,7 +64,7 @@ local AllFunctions = {
 				["o-p"] = "potato_onion",
 				o_p = "potato_onion",
 				["o p"] = "potato_onion",
-				
+
 				butterpotato = "butter_potato",
 				["butter-potato"] = "butter_potato",
 				butter_potato = "butter_potato",
@@ -81,7 +81,7 @@ local AllFunctions = {
 				["p-b"] = "butter_potato",
 				p_b = "butter_potato",
 				["p b"] = "butter_potato",
-				
+
 				cherryhoney = "cherry_honey",
 				["cherry-honey"] = "cherry_honey",
 				cherry_honey = "cherry_honey",
@@ -98,7 +98,7 @@ local AllFunctions = {
 				["h-c"] = "cherry_honey",
 				h_c = "cherry_honey",
 				["h c"] = "cherry_honey",
-				
+
 				goldenhoney = "golden_honey",
 				["golden-honey"] = "golden_honey",
 				golden_honey = "golden_honey",
@@ -123,7 +123,7 @@ local AllFunctions = {
 				["h-g"] = "golden_honey",
 				h_g = "golden_honey",
 				["h g"] = "golden_honey",
-				
+
 				stardust = "stardust",
 				["star-dust"] = "stardust",
 				star_dust = "stardust",
@@ -142,6 +142,21 @@ local AllFunctions = {
 				["d s"] = "stardust",
 				dust = "stardust",
 				d = "stardust"
+			}
+		}
+	},
+	LeaveOnPlayers = {
+		Type = "Bool",
+		Default = false,
+		
+		Info = {
+			Folders = {
+				"evildeadtula",
+				"AllRooms",
+				"sana009990",
+				"Mineromkos",
+				"Cinnatical",
+				"MD_DaDbI4"
 			}
 		}
 	}
@@ -242,26 +257,26 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 end
 
 function BuyResourses(Resourses, FuncName)
-	
+
 end
 
 function CheckResoursesAvailability(CraftName, CraftType)
 	local Inventory = require(game.ReplicatedStorage.Shared.InventoryState)
 	local CookInfo = require(game.ReplicatedStorage.Shared.Dumplings)
-	
+
 	if not CookInfo[CraftName] then
 		print("Unknown CraftName")
 		return
 	end
-	
+
 	local MissingItems = false
-	
+
 	if CraftType == "Cook" then
 		if not Inventory.Items["recipe_" .. CraftName] then
 			print("You Don't Have Recipe!")
 			return
 		end
-		
+
 		for Name, Value in CookInfo[CraftName].ingredients do
 			if not Inventory.Items[Name] then
 				print("You Are Too Poor! " .. Name .. ": 0/" .. Value)
@@ -275,11 +290,11 @@ function CheckResoursesAvailability(CraftName, CraftType)
 		print("Unknown CraftType")
 		return
 	end
-	
+
 	if MissingItems then
 		return
 	end
-	
+
 	return true
 end
 
@@ -291,27 +306,27 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 					game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpEvents.Info.LastPivot)
 					AllFunctions.PickUpEvents.Info.LastPivot = nil
 				end
-				
+
 				if not game.Workspace:FindFirstChild("EventObjects") then
 					warn("EventObjects Folder Gone")
 					break
 				end
-				
+
 				if AllFunctions.PickUpEvents.Info.CurrentEventLoot
 					and AllFunctions.PickUpEvents.Info.CurrentEventLoot.Parent then
-					
+
 					if AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt
 						and AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt.Parent
 						and FuncInstance:GetAttribute("AutoCollect") then
 						PromptInFrontOfCamera(AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt.Parent)
 					end
-					
+
 					if game.Players.LocalPlayer.Character then
 						if not FunctionsFolder.AutoCook:GetAttribute("TeleportBack")
 							or FunctionsFolder.AutoCook:GetAttribute("TeleportBack") and not AllFunctions.AutoCook.Info.LastPivot then
 							AllFunctions.PickUpEvents.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
 						end
-						
+
 						game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpEvents.Info.CurrentEventLoot:GetPivot())
 					end
 				else
@@ -320,13 +335,13 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 							if EventLoot:FindFirstChildWhichIsA("ProximityPrompt", true) then
 								AllFunctions.PickUpEvents.Info.CurrentEventLoot = EventLoot
 								AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt = EventLoot:FindFirstChildWhichIsA("ProximityPrompt", true)
-								
+
 								break
 							end
 						end
 					end
 				end
-				
+
 				task.wait(0.1)
 			end
 		end)
@@ -346,41 +361,41 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 					game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.LastPivot)
 					AllFunctions.AutoCook.Info.LastPivot = nil
 				end
-				
+
 				if AllFunctions.AutoCook.Info.Oven then					
 					if type(FuncInstance:GetAttribute("DumplingName")) == "string"
 						and AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] then
 						if not CheckResoursesAvailability(AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling", "Cook") then
 							FuncInstance.Value = false
-							
+
 							return
 						end
-						
+
 						if game.Players.LocalPlayer.Character then
 							if not FunctionsFolder.PickUpEvents:GetAttribute("TeleportBack")
 								or FunctionsFolder.PickUpEvents:GetAttribute("TeleportBack") and not AllFunctions.PickUpEvents.Info.LastPivot then
 								AllFunctions.AutoCook.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
 							end
-							
+
 							game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.Oven:GetPivot())
 						end
-						
+
 						game.ReplicatedStorage.Remotes.StartCook:FireServer(
 							AllFunctions.AutoCook.Info.Oven,
 							"recipe_" .. AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling",
 							AllFunctions.AutoCook.Info.Oven:GetAttribute("Capacity")
 						)
-						
+
 						AllFunctions.AutoCook.Info.Oven = nil
 					else
 						print("Write Dumpling Name")
-						
+
 						AllFunctions.AutoCook.Info.AllowAutoSell = true
-						
+
 						FuncInstance.Value = false
 					end
 				end
-				
+
 				if game.Workspace.HousesFolder:FindFirstChild(game.Players.LocalPlayer.Name .. "_House") then
 					if game.Workspace.HousesFolder:FindFirstChild(game.Players.LocalPlayer.Name .. "_House"):FindFirstChild("Placed") then
 						for _, Oven in game.Workspace.HousesFolder:FindFirstChild(game.Players.LocalPlayer.Name .. "_House").Placed:GetChildren() do
@@ -391,11 +406,11 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 						end
 					end
 				end
-				
+
 				if not AllFunctions.AutoCook.Info.Oven then
 					AllFunctions.AutoCook.Info.AllowAutoSell = true
 				end
-				
+
 				task.wait(0.1)
 			end
 		end)
@@ -403,6 +418,33 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 		if AllFunctions.AutoCook.Info.While then
 			task.cancel(AllFunctions.AutoCook.Info.While)
 			AllFunctions.AutoCook.Info.While = nil
+		end
+	end
+end
+
+AllFunctions.LeaveOnPlayers = function(FuncInstance)
+	if FuncInstance.Value then
+		AllFunctions.LeaveOnPlayers.Info.While = task.spawn(function()
+			while FuncInstance.Value do
+				local Exeptions = {}
+				
+				for _, PlayerName in FuncInstance:GetChildren() do
+					table.insert(Exeptions, string.lower(PlayerName.Name))
+				end
+				
+				for _, Player in game.Players:GetPlayers() do
+					if not table.find(Exeptions, string.lower(Player.Name)) and Player ~= game.Players.LocalPlayer then
+						game.Players.LocalPlayer:Kick("AutoKick Because Of: " .. Player.Name)
+					end
+				end
+				
+				task.wait(0.1)
+			end
+		end)
+	else
+		if AllFunctions.LeaveOnPlayers.Info.While then
+			task.cancel(AllFunctions.LeaveOnPlayers.Info.While)
+			AllFunctions.LeaveOnPlayers.Info.While = nil
 		end
 	end
 end
@@ -417,20 +459,28 @@ FunctionsFolder:ClearAllChildren()
 
 for FuncName, Func in AllFunctions do
 	local FuncInstance = nil
-	
+
 	if Func.Type == "Bool" then
 		FuncInstance = Instance.new("BoolValue")
 	end
-	
+
 	FuncInstance.Name = FuncName
 	FuncInstance.Value = Func.Default
-	
+
 	if Func.Attributes then
 		for AttributeName, AttributeValue in Func.Attributes do
 			FuncInstance:SetAttribute(AttributeName, AttributeValue)
 		end
 	end
 	
+	if Func.Info.Folders then
+		for _, FolderName in Func.Info.Folders do
+			if not FuncInstance:FindFirstChild(FolderName) then
+				Instance.new("Folder", FuncInstance).Name = FolderName
+			end
+		end
+	end
+
 	local FuncFunction = FuncInstance:GetPropertyChangedSignal("Value"):Connect(function()
 		if Func.Actions then
 			Func.Actions(FuncInstance)
@@ -438,16 +488,16 @@ for FuncName, Func in AllFunctions do
 			print(FuncName .. " Function is Useless")
 		end
 	end)
-	
+
 	FuncInstance:GetPropertyChangedSignal("Parent"):Connect(function()
 		if not FuncInstance.Parent and FuncFunction then
 			FuncFunction:Disconnect()
 			FuncFunction = nil
 		end
-		
+
 		FuncInstance.Value = Func.Default
 	end)
-	
+
 	FuncInstance.Parent = FunctionsFolder
 end
 
