@@ -315,7 +315,7 @@ function GetResourses(Resourses)
 				ItemsBuy[ItemName] = ItemNeed
 				print("ItemsBuy: " .. ItemName .. ": " .. ItemNeed)
 			else
-				if require(game.ReplicatedStorage.Shared.Crafting)[ItemName] then
+				if require(game.ReplicatedStorage.Shared.Crafting).List[ItemName] then
 					ItemsCraft[ItemName] = ItemNeed
 					print("ItemsCraft: " .. ItemName .. ": " .. ItemNeed)
 				else
