@@ -312,13 +312,13 @@ function GetResourses(Resourses)
 
 		for ItemName, ItemAmount in Resourses do
 			if ItemName == "glow_mushroom" or ItemName == "star_shard" or ItemName == "stardust" then
-				ItemNeed[LayerNum].Event[ItemName] = ItemAmount
+				ItemsNeed[LayerNum].Event[ItemName] = ItemAmount
 			else
 				if require(game.ReplicatedStorage.Shared.Crafting).List[ItemName] then
-					ItemNeed[LayerNum].Craft[ItemName] = ItemAmount
+					ItemsNeed[LayerNum].Craft[ItemName] = ItemAmount
 				else
 					if GetResoursePrice(ItemName) then
-						ItemNeed[LayerNum].Buy[ItemName] = ItemAmount
+						ItemsNeed[LayerNum].Buy[ItemName] = ItemAmount
 					else
 						UIStyle.Toast("Unobtainable Item: " .. ItemName .. ": " .. ItemAmount, "bad")
 						return
@@ -514,7 +514,7 @@ AllFunctions.PickUpWheat.Actions = function(FuncInstance)
 										else
 										Vector3.new(2.3407185077667236, 4.52520751953125, 1.2734780311584473)
 									)
-										or not FuncInstance:GetAttribute("FastAsPossible"))
+										or FuncInstance:GetAttribute("FastAsPossible"))
 									and (FuncInstance:GetAttribute(WheatLoot.Name) == nil or FuncInstance:GetAttribute(WheatLoot.Name)) then
 								AllFunctions.PickUpWheat.Info.CurrentWheatLoot = WheatLoot
 								AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt = WheatLoot:FindFirstChildWhichIsA("ProximityPrompt", true)
