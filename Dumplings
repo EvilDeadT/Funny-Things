@@ -169,7 +169,6 @@ local AllFunctions = {
 		Info = {
 			Folders = {
 				"evildeadtula",
-				"AllRooms",
 				"sana009990",
 				"Mineromkos",
 				"Cinnatical",
@@ -283,7 +282,7 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 	Prompt:InputHoldEnd()
 end
 
-function BuyResourses(Resourses)
+function GetResourses(Resourses)
 	local function GetResoursePrice(ResourseName)
 		local NPCInfo = require(game.ReplicatedStorage.Shared.NPCs)
 		
@@ -301,6 +300,31 @@ function BuyResourses(Resourses)
 	end
 	
 	
+	
+	local ItemsBuy = {}
+	local ItemsCraft = {}
+	local ItemsEvent = {}
+	local ItemsUnobtainable = {}
+	
+	for ItemName, ItemNeed in Resourses do
+		if ItemName == "glow_mushroom" or ItemName == "star_shard" or ItemName == "stardust" then
+			ItemsEvent[ItemName] = ItemNeed
+			print("ItemsEvent: " .. ItemName .. ": " .. ItemNeed)
+		else
+			if GetResoursePrice(ItemName) then
+				ItemsBuy[ItemName] = ItemNeed
+				print("ItemsBuy: " .. ItemName .. ": " .. ItemNeed)
+			else
+				if require(game.ReplicatedStorage.Shared.Crafting)[ItemName] then
+					ItemsCraft[ItemName] = ItemNeed
+					print("ItemsCraft: " .. ItemName .. ": " .. ItemNeed)
+				else
+					ItemsUnobtainable[ItemName] = ItemNeed
+					print("ItemsUnobtainable: " .. ItemName .. ": " .. ItemNeed)
+				end
+			end
+		end
+	end
 end
 
 function CheckResoursesAvailability(CraftName, CraftType)
@@ -335,9 +359,9 @@ function CheckResoursesAvailability(CraftName, CraftType)
 
 	for Name, Value in ItemInfo[CraftName].ingredients do
 		if not Inventory.Items[Name] then
-			table.insert(MissingItems, Name)
+			MissingItems[Name] = Value
 		elseif Inventory.Items[Name] < Value then
-			table.insert(MissingItems, Name)
+			MissingItems[Name] = Inventory.Items[Name] - Value
 		end
 	end
 
@@ -375,20 +399,16 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 				end
 
 				if AllFunctions.PickUpEvents.Info.CurrentEventLoot
-					and AllFunctions.PickUpEvents.Info.CurrentEventLoot.Parent then
+					and AllFunctions.PickUpEvents.Info.CurrentEventLoot.Parent
+					and NoTeleportPivot()
+					and game.Players.LocalPlayer.Character then
+					AllFunctions.PickUpEvents.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
+					game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpEvents.Info.CurrentEventLoot:GetPivot())
 
 					if AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt
 						and AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt.Parent
 						and FuncInstance:GetAttribute("AutoCollect") then
 						PromptInFrontOfCamera(AllFunctions.PickUpEvents.Info.CurrentEventLootPrompt.Parent)
-					end
-
-					if game.Players.LocalPlayer.Character then
-						if NoTeleportPivot() then
-							AllFunctions.PickUpEvents.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
-						end
-
-						game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpEvents.Info.CurrentEventLoot:GetPivot())
 					end
 				else
 					if #game.Workspace.EventObjects:GetChildren() > 0 then
@@ -435,27 +455,24 @@ AllFunctions.PickUpWheat.Actions = function(FuncInstance)
 				end
 
 				if AllFunctions.PickUpWheat.Info.CurrentWheatLoot
-					and AllFunctions.PickUpWheat.Info.CurrentWheatLoot.Parent then
+					and AllFunctions.PickUpWheat.Info.CurrentWheatLoot.Parent
+					and NoTeleportPivot()
+					and game.Players.LocalPlayer.Character then
+
+					if game.Workspace:FindFirstChild("Zones")
+						and game.Workspace.Zones:FindFirstChild("old_mill")
+						and game.Workspace.Zones.old_mill:IsA("BasePart")
+						and game.Workspace.Zones.old_mill.CanCollide then
+						game.Workspace.Zones.old_mill.CanCollide = false
+					end
+
+					AllFunctions.PickUpWheat.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
+					game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpWheat.Info.CurrentWheatLoot:GetPivot())
 
 					if AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt
 						and AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt.Parent
 						and FuncInstance:GetAttribute("AutoCollect") then
 						PromptInFrontOfCamera(AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt.Parent)
-					end
-
-					if game.Players.LocalPlayer.Character then
-						if game.Workspace:FindFirstChild("Zones")
-							and game.Workspace.Zones:FindFirstChild("old_mill")
-							and game.Workspace.Zones.old_mill:IsA("BasePart")
-							and game.Workspace.Zones.old_mill.CanCollide then
-							game.Workspace.Zones.old_mill.CanCollide = false
-						end
-						
-						if NoTeleportPivot() then
-							AllFunctions.PickUpWheat.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
-						end
-
-						game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpWheat.Info.CurrentWheatLoot:GetPivot())
 					end
 				else
 					if #game.Workspace.PlantsLive:GetChildren() > 0 then
@@ -505,29 +522,32 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 						local HaveResourses, MissingItems = CheckResoursesAvailability(AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling", "Cook")
 						if not HaveResourses then
 							if MissingItems then
-								BuyResourses(MissingItems)
+								GetResourses(MissingItems)
 							else
 								FuncInstance.Value = false
 
 								return
 							end
 						end
-
-						if game.Players.LocalPlayer.Character then
-							if NoTeleportPivot() then
-								AllFunctions.AutoCook.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
-							end
-
-							game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.Oven:GetPivot())
+						
+						if not CheckResoursesAvailability(AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling", "Cook") then
+							FuncInstance.Value = false
+							
+							return
 						end
 
-						game.ReplicatedStorage.Remotes.StartCook:FireServer(
-							AllFunctions.AutoCook.Info.Oven,
-							"recipe_" .. AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling",
-							AllFunctions.AutoCook.Info.Oven:GetAttribute("Capacity")
-						)
+						if NoTeleportPivot() and game.Players.LocalPlayer.Character then
+							AllFunctions.AutoCook.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
+							game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.Oven:GetPivot())
 
-						AllFunctions.AutoCook.Info.Oven = nil
+							game.ReplicatedStorage.Remotes.StartCook:FireServer(
+								AllFunctions.AutoCook.Info.Oven,
+								"recipe_" .. AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling",
+								AllFunctions.AutoCook.Info.Oven:GetAttribute("Capacity")
+							)
+
+							AllFunctions.AutoCook.Info.Oven = nil
+						end
 					else
 						print("Write Dumpling Name")
 
