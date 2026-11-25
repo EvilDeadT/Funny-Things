@@ -341,6 +341,9 @@ function GetResourses(Resourses)
 		for Category, CategoryInfo in LayerInfo do
 			print(Category .. ":")
 			
+			print("CategoryInfo:")
+			print(CategoryInfo)
+			
 			for ItemName, ItemAmount in CategoryInfo do
 				print(ItemName .. ": " .. ItemAmount)
 			end
