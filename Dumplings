@@ -343,6 +343,22 @@ function CheckResoursesAvailability(CraftName, CraftType, FuncInstance, ItemsAmo
 	return true
 end
 
+function GetResoursePrice(ResourseName)
+	local NPCInfo = require(game.ReplicatedStorage.Shared.NPCs)
+
+	for NPCName, Info in NPCInfo.List do
+		if Info.stock then
+			for _, ItemInfo in Info.stock do
+				if ItemInfo.item == ResourseName then
+					return NPCInfo.Price(NPCName, ResourseName)
+				end
+			end
+		end
+	end
+
+	return
+end
+
 function BuyResourse(ResourseName, Amount)
 	local NPCInfo = require(game.ReplicatedStorage.Shared.NPCs)
 	local Inventory = require(game.ReplicatedStorage.Shared.InventoryState)
@@ -405,22 +421,6 @@ end
 
 function GetResourses(Resourses, FuncInstance)
 	local ItemsNeed = {}
-	
-	local function GetResoursePrice(ResourseName)
-		local NPCInfo = require(game.ReplicatedStorage.Shared.NPCs)
-		
-		for NPCName, Info in NPCInfo.List do
-			if Info.stock then
-				for _, ItemInfo in Info.stock do
-					if ItemInfo.item == ResourseName then
-						return NPCInfo.Price(NPCName, ResourseName)
-					end
-				end
-			end
-		end
-		
-		return
-	end
 	
 	local function ItemsList(Items, LayerNum)
 		ItemsNeed[LayerNum] = {
@@ -485,7 +485,7 @@ function GetResourses(Resourses, FuncInstance)
 		local MoneyNeed = 0
 		
 		for ItemName, ItemAmount in ItemsBuy do
-			MoneyNeed += ItemAmount
+			MoneyNeed += GetResoursePrice(ItemName)
 		end
 		
 		if game.Players.LocalPlayer:GetAttribute("Money") < MoneyNeed then
@@ -650,7 +650,7 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 						local HaveResourses, MissingItems = CheckResoursesAvailability(AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling", "Cook", FuncInstance)
 						if not HaveResourses then
 							if MissingItems then
-								GetResourses(MissingItems)
+								GetResourses(MissingItems, FuncInstance)
 							else
 								FuncInstance.Value = false
 
