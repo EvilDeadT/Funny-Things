@@ -350,7 +350,8 @@ function GetResoursePrice(ResourseName)
 		if Info.stock then
 			for _, ItemInfo in Info.stock do
 				if ItemInfo.item == ResourseName then
-					return NPCInfo.Price(NPCName, ResourseName)
+					local Price = NPCInfo.Price(NPCName, ResourseName)
+					return Price
 				end
 			end
 		end
