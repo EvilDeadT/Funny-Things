@@ -423,7 +423,7 @@ function BuyResourse(ResourseName, AmountNeed)
 				return
 			end
 		end
-	until (Timer - os.time()) > 20
+	until (os.time() - Timer) > 20
 end
 
 function CraftResourse(ResourseName, AmountNeed, FuncInstance)
@@ -497,7 +497,7 @@ function CraftResourse(ResourseName, AmountNeed, FuncInstance)
 				return
 			end
 		end
-	until (Timer - os.time()) > 20
+	until (os.time() - Timer) > 20
 end
 
 function GetResourses(Resourses, FuncInstance)
@@ -594,8 +594,11 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 	if FuncInstance.Value then
 		AllFunctions.PickUpEvents.Info.While = task.spawn(function()
 			while FuncInstance.Value do
-				if AllFunctions.PickUpEvents.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
-					game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpEvents.Info.LastPivot)
+				if AllFunctions.PickUpEvents.Info.LastPivot then
+					if FuncInstance:GetAttribute("TeleportBack") then
+						game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpEvents.Info.LastPivot)
+					end
+					
 					AllFunctions.PickUpEvents.Info.LastPivot = nil
 				end
 
@@ -646,8 +649,11 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 			AllFunctions.PickUpEvents.Info.While = nil
 		end
 
-		if AllFunctions.PickUpEvents.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
-			game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpEvents.Info.LastPivot)
+		if AllFunctions.PickUpEvents.Info.LastPivot then
+			if FuncInstance:GetAttribute("TeleportBack") then
+				game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpEvents.Info.LastPivot)
+			end
+			
 			AllFunctions.PickUpEvents.Info.LastPivot = nil
 		end
 	end
@@ -657,8 +663,11 @@ AllFunctions.PickUpWheat.Actions = function(FuncInstance)
 	if FuncInstance.Value then
 		AllFunctions.PickUpWheat.Info.While = task.spawn(function()
 			while FuncInstance.Value do
-				if AllFunctions.PickUpWheat.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
-					game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpWheat.Info.LastPivot)
+				if AllFunctions.PickUpWheat.Info.LastPivot then
+					if FuncInstance:GetAttribute("TeleportBack") then
+						game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpWheat.Info.LastPivot)
+					end
+					
 					AllFunctions.PickUpWheat.Info.LastPivot = nil
 				end
 
@@ -724,8 +733,11 @@ AllFunctions.PickUpWheat.Actions = function(FuncInstance)
 			AllFunctions.PickUpWheat.Info.While = nil
 		end
 
-		if AllFunctions.PickUpWheat.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
-			game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpWheat.Info.LastPivot)
+		if AllFunctions.PickUpWheat.Info.LastPivot then
+			if FuncInstance:GetAttribute("TeleportBack") then
+				game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpWheat.Info.LastPivot)
+			end
+			
 			AllFunctions.PickUpWheat.Info.LastPivot = nil
 		end
 	end
@@ -735,8 +747,11 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 	if FuncInstance.Value then
 		AllFunctions.AutoCook.Info.While = task.spawn(function()
 			while FuncInstance.Value do
-				if AllFunctions.AutoCook.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
-					game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.LastPivot)
+				if AllFunctions.AutoCook.Info.LastPivot then
+					if FuncInstance:GetAttribute("TeleportBack") then
+						game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.LastPivot)
+					end
+					
 					AllFunctions.AutoCook.Info.LastPivot = nil
 				end
 
@@ -815,8 +830,11 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 			AllFunctions.AutoCook.Info.While = nil
 		end
 
-		if AllFunctions.AutoCook.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
-			game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.LastPivot)
+		if AllFunctions.AutoCook.Info.LastPivot then
+			if FuncInstance:GetAttribute("TeleportBack") then
+				game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.LastPivot)
+			end
+			
 			AllFunctions.AutoCook.Info.LastPivot = nil
 		end
 	end
@@ -824,12 +842,16 @@ end
 
 AllFunctions.AutoSell.Actions = function(FuncInstance)
 	if FuncInstance.Value then
+		local DemandInfo = require(game.ReplicatedStorage.Shared.Demand)
 		local Inventory = require(game.ReplicatedStorage.Shared.InventoryState)
 		
 		AllFunctions.AutoSell.Info.While = task.spawn(function()
 			while FuncInstance.Value do
-				if AllFunctions.AutoSell.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
-					game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoSell.Info.LastPivot)
+				if AllFunctions.AutoSell.Info.LastPivot then
+					if FuncInstance:GetAttribute("TeleportBack") then
+						game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoSell.Info.LastPivot)
+					end
+					
 					AllFunctions.AutoSell.Info.LastPivot = nil
 				end
 				
@@ -855,7 +877,7 @@ AllFunctions.AutoSell.Actions = function(FuncInstance)
 							task.wait(0.5)
 
 							if not Inventory.Items[AllFunctions.AutoSell.Info.DumplingToSell] or Inventory.Items[AllFunctions.AutoSell.Info.DumplingToSell] <= 0 then
-								return
+								break
 							end
 
 							game.ReplicatedStorage.Remotes.SellItem:FireServer(
@@ -867,16 +889,14 @@ AllFunctions.AutoSell.Actions = function(FuncInstance)
 								task.wait(0.1)
 
 								if not Inventory.Items[AllFunctions.AutoSell.Info.DumplingToSell] or Inventory.Items[AllFunctions.AutoSell.Info.DumplingToSell] <= 0 then
-									return
+									break
 								end
 							end
-						until (Timer - os.time()) > 20
+						until (os.time() - Timer) > 20
 						
 						AllFunctions.AutoSell.Info.DumplingToSell = nil
 					end
 				else
-					local DemandInfo = require(game.ReplicatedStorage.Shared.Demand)
-					
 					for Order = 1, DemandInfo.UnlockedSlots() do
 						local Name = DemandInfo.GetOrder()[Order]
 						if ((DemandInfo.Multiplier(Name) - 1) * 100) >= FuncInstance:GetAttribute("MinPercent") and Inventory.Items[Name] then
@@ -895,8 +915,11 @@ AllFunctions.AutoSell.Actions = function(FuncInstance)
 			AllFunctions.AutoSell.Info.While = nil
 		end
 
-		if AllFunctions.AutoSell.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
-			game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoSell.Info.LastPivot)
+		if AllFunctions.AutoSell.Info.LastPivot then
+			if FuncInstance:GetAttribute("TeleportBack") then
+				game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoSell.Info.LastPivot)
+			end
+			
 			AllFunctions.AutoSell.Info.LastPivot = nil
 		end
 	end
