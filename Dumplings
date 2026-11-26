@@ -378,13 +378,6 @@ function BuyResourse(ResourseName, AmountNeed) -- WIP Давать количе�
 
 	if not ShopName or not game.Workspace:FindFirstChild(NPCInfo.List[ShopName].path)
 		or (Inventory.Items[ResourseName] and Inventory.Items[ResourseName] >= AmountNeed) then
-		print("Return " .. ResourseName .. ": " .. AmountNeed)
-		print(ShopName, NPCInfo.List[ShopName].path, Inventory.Items[ResourseName])
-		print(ShopName ~= nil, game.Workspace:FindFirstChild(NPCInfo.List[ShopName].path) ~= nil, Inventory.Items[ResourseName] ~= nil)
-
-		if Inventory.Items[ResourseName] then
-			print("Numbs: ", Inventory.Items[ResourseName] >= AmountNeed)
-		end
 		return
 	end
 
@@ -496,6 +489,7 @@ function GetResourses(Resourses, FuncInstance)
 		end
 
 		for ItemName, ItemAmount in ItemsBuy do
+			print("Buy Item: " .. ItemName .. ": " .. ItemAmount)
 			BuyResourse(ItemName, ItemAmount * (if FuncInstance:GetAttribute("BuyX2Items") then 2 else 1))
 		end
 	end
