@@ -379,6 +379,7 @@ function BuyResourse(ResourseName, Amount)
 	if not ShopName or not game.Workspace:FindFirstChild(NPCInfo.List[ShopName].path)
 		or (Inventory.Items[ResourseName] and Inventory.Items[ResourseName] >= Amount) then
 		print("Return " .. ResourseName .. ": " .. Amount)
+		print(ShopName, NPCInfo.List[ShopName].path, Inventory.Items[ResourseName])
 		print(ShopName ~= nil, game.Workspace:FindFirstChild(NPCInfo.List[ShopName].path) ~= nil, Inventory.Items[ResourseName] ~= nil)
 		
 		if Inventory.Items[ResourseName] then
