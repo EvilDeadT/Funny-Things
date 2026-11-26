@@ -164,6 +164,16 @@ local AllFunctions = {
 			}
 		}
 	},
+	AutoSell = {
+		Type = "Bool",
+		Default = false,
+		Attributes = {
+			MinPercent = 90,
+			TeleportBack = true
+		},
+		
+		Info = {}
+	},
 	LeaveOnPlayers = {
 		Type = "Bool",
 		Default = true,
@@ -590,6 +600,9 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 
 				if not game.Workspace:FindFirstChild("EventObjects") then
 					warn("EventObjects Folder Gone")
+					
+					FuncInstance.Value = false
+					
 					break
 				end
 
@@ -650,6 +663,9 @@ AllFunctions.PickUpWheat.Actions = function(FuncInstance)
 
 				if not game.Workspace:FindFirstChild("PlantsLive") then
 					warn("PlantsLive Folder Gone")
+					
+					FuncInstance.Value = false
+					
 					break
 				end
 
@@ -775,8 +791,6 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 							UIStyle.Toast("Unknown Dumpling Name!", "bad")						
 						end
 
-						AllFunctions.AutoCook.Info.AllowAutoSell = true
-
 						FuncInstance.Value = false
 					end
 				end
@@ -786,14 +800,9 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 						for _, Oven in game.Workspace.HousesFolder:FindFirstChild(game.Players.LocalPlayer.Name .. "_House").Placed:GetChildren() do
 							if Oven:GetAttribute("BuildCategory") == "Ovens" and not Oven:GetAttribute("CookRecipe") then
 								AllFunctions.AutoCook.Info.Oven = Oven
-								AllFunctions.AutoCook.Info.AllowAutoSell = false
 							end
 						end
 					end
-				end
-
-				if not AllFunctions.AutoCook.Info.Oven then
-					AllFunctions.AutoCook.Info.AllowAutoSell = true
 				end
 
 				task.wait(0.1)
@@ -808,6 +817,85 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 		if AllFunctions.AutoCook.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
 			game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.LastPivot)
 			AllFunctions.AutoCook.Info.LastPivot = nil
+		end
+	end
+end
+
+AllFunctions.AutoSell.Actions = function(FuncInstance)
+	if FuncInstance.Value then
+		local Inventory = require(game.ReplicatedStorage.Shared.InventoryState)
+		
+		AllFunctions.AutoSell.Info.While = task.spawn(function()
+			while FuncInstance.Value do
+				if AllFunctions.AutoSell.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
+					game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoSell.Info.LastPivot)
+					AllFunctions.AutoSell.Info.LastPivot = nil
+				end
+				
+				if AllFunctions.AutoSell.Info.DumplingToSell and Inventory.Items[AllFunctions.AutoSell.Info.DumplingToSell] then
+					if NoTeleportPivot() and game.Players.LocalPlayer.Character then
+						local Timer = os.time()
+
+						if not AllFunctions.AutoSell.Info.LastPivot then
+							AllFunctions.AutoSell.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
+						end
+
+						repeat
+							if not game.Workspace:FindFirstChild("ClimberNPC") then
+								warn("ClimberNPC Gone")
+								
+								FuncInstance.Value = false
+								
+								break
+							end
+							
+							if game.Players.LocalPlayer.Character then
+								game.Players.LocalPlayer.Character:PivotTo(game.Workspace.ClimberNPC:GetPivot())
+							end
+
+							task.wait(0.5)
+
+							if not Inventory.Items[AllFunctions.AutoSell.Info.DumplingToSell] or Inventory.Items[AllFunctions.AutoSell.Info.DumplingToSell] <= 0 then
+								return
+							end
+
+							game.ReplicatedStorage.Remotes.SellItem:FireServer(
+								AllFunctions.AutoSell.Info.DumplingToSell,
+								Inventory.Items[AllFunctions.AutoSell.Info.DumplingToSell]
+							)
+
+							for _ = 1, 10 do
+								task.wait(0.1)
+
+								if not Inventory.Items[AllFunctions.AutoSell.Info.DumplingToSell] or Inventory.Items[AllFunctions.AutoSell.Info.DumplingToSell] <= 0 then
+									return
+								end
+							end
+						until (Timer - os.time()) > 20
+					end
+				else
+					local DemandInfo = require(game.ReplicatedStorage.Shared.Demand)
+					
+					for Order = 1, DemandInfo.UnlockedSlots() do
+						local Name = DemandInfo.GetOrder()[Order]
+						if ((DemandInfo.Multiplier(Name) - 1) * 100) >= FuncInstance:GetAttribute("MinPercent") then
+							AllFunctions.AutoSell.Info.DumplingToSell = Name
+						end
+					end
+				end
+				
+				task.wait(0.1)
+			end
+		end)
+	else
+		if AllFunctions.AutoSell.Info.While then
+			task.cancel(AllFunctions.AutoSell.Info.While)
+			AllFunctions.AutoSell.Info.While = nil
+		end
+
+		if AllFunctions.AutoSell.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
+			game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoSell.Info.LastPivot)
+			AllFunctions.AutoSell.Info.LastPivot = nil
 		end
 	end
 end
