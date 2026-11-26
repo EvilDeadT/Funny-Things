@@ -878,8 +878,9 @@ AllFunctions.AutoSell.Actions = function(FuncInstance)
 					
 					for Order = 1, DemandInfo.UnlockedSlots() do
 						local Name = DemandInfo.GetOrder()[Order]
-						if ((DemandInfo.Multiplier(Name) - 1) * 100) >= FuncInstance:GetAttribute("MinPercent") then
+						if ((DemandInfo.Multiplier(Name) - 1) * 100) >= FuncInstance:GetAttribute("MinPercent") and Inventory.Items[Name] then
 							AllFunctions.AutoSell.Info.DumplingToSell = Name
+							break
 						end
 					end
 				end
