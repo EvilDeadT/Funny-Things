@@ -359,9 +359,11 @@ function BuyResourse(ResourseName, Amount)
 	end
 	
 	if not ShopName or not game.Workspace:FindFirstChild(NPCInfo.List[ShopName].path)
-		or (not Inventory.Items[ResourseName] or Inventory.Items[ResourseName] >= Amount) then
+		or not Inventory.Items[ResourseName] or Inventory.Items[ResourseName] >= Amount then print("Return 1")
 		return
 	end
+	
+	print("After Return")
 	
 	local Timer = os.time()
 	
