@@ -489,8 +489,19 @@ function GetResourses(Resourses, FuncInstance)
 		end
 
 		for ItemName, ItemAmount in ItemsBuy do
-			print("Buy Item: " .. ItemName .. ": " .. ItemAmount)
 			BuyResourse(ItemName, ItemAmount * (if FuncInstance:GetAttribute("BuyX2Items") then 2 else 1))
+		end
+		
+		local FreeOvens = 0
+		
+		for _, Oven in game.Workspace.HousesFolder:FindFirstChild(game.Players.LocalPlayer.Name .. "_House").Placed:GetChildren() do
+			if Oven:GetAttribute("BuildCategory") == "Ovens" and not Oven:GetAttribute("CookRecipe") then
+				FreeOvens += 1
+			end
+		end
+		
+		if FreeOvens <= 1 then
+			task.wait(0.5)
 		end
 	end
 end
