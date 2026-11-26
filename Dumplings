@@ -981,6 +981,14 @@ AllFunctions.CraftItem.Actions = function(FuncInstance)
 		elseif MissingItems then
 			GetResourses(MissingItems, FuncInstance)
 		end
+		
+		if AllFunctions.AutoCook.Info.LastPivot then
+			if FuncInstance:GetAttribute("TeleportBack") then
+				game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.LastPivot)
+			end
+
+			AllFunctions.AutoCook.Info.LastPivot = nil
+		end
 
 		FuncInstance.Value = false
 	end
