@@ -188,6 +188,17 @@ local AllFunctions = {
 		
 		Info = {}
 	},
+	CraftItem = {
+		Type = "Bool",
+		Default = false,
+		Attributes = {
+			Item = "",
+			Amount = 1,
+			TeleportBack = true
+		},
+
+		Info = {}
+	},
 	LeaveOnPlayers = {
 		Type = "Bool",
 		Default = true,
@@ -944,6 +955,34 @@ AllFunctions.AutoSell.Actions = function(FuncInstance)
 			
 			AllFunctions.AutoSell.Info.LastPivot = nil
 		end
+	end
+end
+
+AllFunctions.CraftItem.Actions = function(FuncInstance)
+	if FuncInstance.Value then
+		if type(FuncInstance:GetAttribute("Item")) ~= "string" then
+			UIStyle.Toast("Write Item Name!", "bad")
+			
+			FuncInstance.Value = false
+			
+			return
+		elseif type(FuncInstance:GetAttribute("Amount")) ~= "number" then
+			UIStyle.Toast("Write Amount Of Items!", "bad")
+			
+			FuncInstance.Value = false
+			
+			return
+		end
+		
+		local HaveResourses, MissingItems = CheckResoursesAvailability(FuncInstance:GetAttribute("Item"), "Cook", FuncInstance, FuncInstance:GetAttribute("Amount"))
+		
+		if HaveResourses then
+			CraftResourse(FuncInstance:GetAttribute("Item"), FuncInstance:GetAttribute("Amount"), FuncInstance)
+		elseif MissingItems then
+			GetResourses(MissingItems, FuncInstance)
+		end
+
+		FuncInstance.Value = false
 	end
 end
 
