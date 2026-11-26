@@ -974,10 +974,10 @@ AllFunctions.CraftItem.Actions = function(FuncInstance)
 			return
 		end
 		
-		local HaveResourses, MissingItems = CheckResoursesAvailability(FuncInstance:GetAttribute("Item"), "Craft", FuncInstance, FuncInstance:GetAttribute("Amount"))
+		local HaveResourses, MissingItems = CheckResoursesAvailability(string.lower(FuncInstance:GetAttribute("Item")), "Craft", FuncInstance, FuncInstance:GetAttribute("Amount"))
 		
 		if HaveResourses then
-			CraftResourse(FuncInstance:GetAttribute("Item"), FuncInstance:GetAttribute("Amount"), FuncInstance)
+			CraftResourse(string.lower(FuncInstance:GetAttribute("Item")), FuncInstance:GetAttribute("Amount"), FuncInstance)
 		elseif MissingItems then
 			GetResourses(MissingItems, FuncInstance)
 		end
