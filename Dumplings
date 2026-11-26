@@ -19,7 +19,7 @@ local AllFunctions = {
 		Attributes = {
 			AutoCollect = true,
 			TeleportBack = true,
-			FastAsPossible = false,
+			Kill = false,
 
 			Wheat = true,
 			GoldenWheat = false
@@ -284,6 +284,18 @@ function PromptInFrontOfCamera(PromptPart, LookVectorOffset)
 	Prompt:InputHoldEnd()
 end
 
+function NoTeleportPivot(Exception)
+	for FuncName, FuncInfo in AllFunctions do
+		if FuncInfo.Info and FunctionsFolder:FindFirstChild(FuncName) and FuncName ~= Exception then
+			if FuncInfo.Info.LastPivot and FunctionsFolder[FuncName]:GetAttribute("TeleportBack") then
+				return false
+			end
+		end
+	end
+
+	return true
+end
+
 function CheckResoursesAvailability(CraftName, CraftType, FuncInstance, ItemsAmount)
 	local Inventory = require(game.ReplicatedStorage.Shared.InventoryState)
 	local CookInfo = require(game.ReplicatedStorage.Shared.Dumplings)
@@ -328,6 +340,61 @@ function CheckResoursesAvailability(CraftName, CraftType, FuncInstance, ItemsAmo
 	end
 
 	return true
+end
+
+function BuyResourse(ResourseName, Amount)
+	local NPCInfo = require(game.ReplicatedStorage.Shared.NPCs)
+	local Inventory = require(game.ReplicatedStorage.Shared.InventoryState)
+	
+	local ShopName = nil
+
+	for NPCName, Info in NPCInfo.List do
+		if Info.stock then
+			for _, ItemInfo in Info.stock do
+				if ItemInfo.item == ResourseName then
+					ShopName = NPCName
+				end
+			end
+		end
+	end
+	
+	if not ShopName or not game.Workspace:FindFirstChild(NPCInfo.List[ShopName].path) or Inventory.Items[ResourseName] >= Amount then
+		return
+	end
+	
+	local Timer = os.time()
+	
+	if not AllFunctions.AutoCook.Info.LastPivot then
+		AllFunctions.AutoCook.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
+	end
+	
+	repeat		
+		if game.Players.LocalPlayer.Character then
+			game.Players.LocalPlayer.Character:PivotTo(game.Workspace[NPCInfo.List[ShopName].path]:GetPivot())
+		end
+		
+		task.wait(0.5)
+		
+		if Inventory.Items[ResourseName] >= Amount then
+			return true
+		end
+		
+		game.ReplicatedStorage.Remotes.BuyItem:FireServer(
+			ShopName,
+			ResourseName,
+			Amount
+		)
+		
+		for _ = 1, 10 do
+			task.wait(0.1)
+			
+			if Inventory.Items[ResourseName] >= Amount then
+				return true
+			end
+		end
+	until (Timer - os.time()) > 20
+	
+	return
 end
 
 function GetResourses(Resourses, FuncInstance)
@@ -396,25 +463,34 @@ function GetResourses(Resourses, FuncInstance)
 		return
 	end
 	
+	local ItemsBuy = {}
+	
 	for Layer, LayerInfo in ItemsNeed do
 		for Category, CategoryInfo in LayerInfo do
 			for ItemName, ItemAmount in CategoryInfo do
-				print("Layer " .. Layer .. ": " .. Category .. ": " .. ItemName .. " - " .. ItemAmount)
-			end
-		end
-	end
-end
-
-function NoTeleportPivot()
-	for FuncName, FuncInfo in AllFunctions do
-		if FuncInfo.Info and FunctionsFolder:FindFirstChild(FuncName) then
-			if FuncInfo.Info.LastPivot and FunctionsFolder[FuncName]:GetAttribute("TeleportBack") then
-				return false
+				if Category == "Buy" then
+					ItemsBuy[ItemName] = (ItemsBuy[ItemName] or 0) + ItemAmount
+				end
 			end
 		end
 	end
 	
-	return true
+	if next(ItemsBuy) then
+		local MoneyNeed = 0
+		
+		for ItemName, ItemAmount in ItemsBuy do
+			MoneyNeed += ItemAmount
+		end
+		
+		if game.Players.LocalPlayer:GetAttribute("Money") < MoneyNeed then
+			UIStyle.Toast("You Are Too Poor! Money Need: " .. MoneyNeed, "bad")
+			return
+		end
+		
+		for ItemName, ItemAmount in ItemsBuy do
+			BuyResourse(ItemName, ItemAmount)
+		end
+	end
 end
 
 AllFunctions.PickUpEvents.Actions = function(FuncInstance)
@@ -525,7 +601,7 @@ AllFunctions.PickUpWheat.Actions = function(FuncInstance)
 										else
 										Vector3.new(2.3407185077667236, 4.52520751953125, 1.2734780311584473)
 									)
-										or FuncInstance:GetAttribute("FastAsPossible"))
+										or FuncInstance:GetAttribute("Kill"))
 									and (FuncInstance:GetAttribute(WheatLoot.Name) == nil or FuncInstance:GetAttribute(WheatLoot.Name)) then
 								AllFunctions.PickUpWheat.Info.CurrentWheatLoot = WheatLoot
 								AllFunctions.PickUpWheat.Info.CurrentWheatLootPrompt = WheatLoot:FindFirstChildWhichIsA("ProximityPrompt", true)
