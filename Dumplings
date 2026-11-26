@@ -836,9 +836,7 @@ AllFunctions.AutoSell.Actions = function(FuncInstance)
 					if NoTeleportPivot() and game.Players.LocalPlayer.Character then
 						local Timer = os.time()
 
-						if not AllFunctions.AutoSell.Info.LastPivot then
-							AllFunctions.AutoSell.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
-						end
+						AllFunctions.AutoSell.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
 
 						repeat
 							if not game.Workspace:FindFirstChild("ClimberNPC") then
@@ -872,6 +870,8 @@ AllFunctions.AutoSell.Actions = function(FuncInstance)
 								end
 							end
 						until (Timer - os.time()) > 20
+						
+						AllFunctions.AutoSell.Info.DumplingToSell = nil
 					end
 				else
 					local DemandInfo = require(game.ReplicatedStorage.Shared.Demand)
