@@ -5,7 +5,7 @@ local AllFunctions = {
 		Attributes = {
 			AutoCollect = true,
 			TeleportBack = true,
-			
+
 			Firefly = true,
 			GlowMushroom = true,
 			FallenStar = false
@@ -167,7 +167,7 @@ local AllFunctions = {
 	LeaveOnPlayers = {
 		Type = "Bool",
 		Default = true,
-		
+
 		Info = {
 			Folders = {
 				"evildeadtula",
@@ -189,7 +189,7 @@ function ScriptOverwrite()
 	for FuncName, _ in AllSubFunctions do
 		AllSubFunctions[FuncName]:Disconnect()
 	end
-	
+
 	AllSubFunctions = {}
 end
 
@@ -330,9 +330,9 @@ function CheckResoursesAvailability(CraftName, CraftType, FuncInstance, ItemsAmo
 
 	for Name, Value in ItemInfo[CraftName].ingredients do
 		if not Inventory.Items[Name] then
-			MissingItems[Name] = (Value * Multiplier)
+			MissingItems[Name] = Value * Multiplier
 		elseif Inventory.Items[Name] < (Value * Multiplier) then
-			MissingItems[Name] = (Value * Multiplier) - Inventory.Items[Name]
+			MissingItems[Name] = Value * Multiplier
 		end
 	end
 
@@ -363,7 +363,7 @@ end
 function BuyResourse(ResourseName, AmountNeed) -- WIP Давать количество сколько надо купить исходя из рецепта пельменя
 	local NPCInfo = require(game.ReplicatedStorage.Shared.NPCs)
 	local Inventory = require(game.ReplicatedStorage.Shared.InventoryState)
-	
+
 	local ShopName = nil
 
 	for NPCName, Info in NPCInfo.List do
@@ -375,45 +375,45 @@ function BuyResourse(ResourseName, AmountNeed) -- WIP Давать количе�
 			end
 		end
 	end
-	
+
 	if not ShopName or not game.Workspace:FindFirstChild(NPCInfo.List[ShopName].path)
 		or (Inventory.Items[ResourseName] and Inventory.Items[ResourseName] >= AmountNeed) then
 		print("Return " .. ResourseName .. ": " .. AmountNeed)
 		print(ShopName, NPCInfo.List[ShopName].path, Inventory.Items[ResourseName])
 		print(ShopName ~= nil, game.Workspace:FindFirstChild(NPCInfo.List[ShopName].path) ~= nil, Inventory.Items[ResourseName] ~= nil)
-		
+
 		if Inventory.Items[ResourseName] then
 			print("Numbs: ", Inventory.Items[ResourseName] >= AmountNeed)
 		end
 		return
 	end
-	
+
 	local Timer = os.time()
-	
+
 	if not AllFunctions.AutoCook.Info.LastPivot then
 		AllFunctions.AutoCook.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
 	end
-	
+
 	repeat		
 		if game.Players.LocalPlayer.Character then
 			game.Players.LocalPlayer.Character:PivotTo(game.Workspace[NPCInfo.List[ShopName].path]:GetPivot())
 		end
-		
+
 		task.wait(0.5)
-		
+
 		if Inventory.Items[ResourseName] and Inventory.Items[ResourseName] >= AmountNeed then
 			return
 		end
-		
+
 		game.ReplicatedStorage.Remotes.BuyItem:FireServer(
 			ShopName,
 			ResourseName,
-			AmountNeed - Inventory.Items[ResourseName]
+			AmountNeed - if Inventory.Items[ResourseName] then Inventory.Items[ResourseName] else 0
 		)
-		
+
 		for _ = 1, 10 do
 			task.wait(0.1)
-			
+
 			if Inventory.Items[ResourseName] and Inventory.Items[ResourseName] >= AmountNeed then
 				return
 			end
@@ -423,14 +423,14 @@ end
 
 function GetResourses(Resourses, FuncInstance)
 	local ItemsNeed = {}
-	
+
 	local function ItemsList(Items, LayerNum)
 		ItemsNeed[LayerNum] = {
 			Buy = {},
 			Craft = {},
 			Event = {}
 		}
-		
+
 		for ItemName, ItemAmount in Items do
 			if ItemName == "glow_mushroom" or ItemName == "star_shard" or ItemName == "stardust" then
 				ItemsNeed[LayerNum].Event[ItemName] = ItemAmount
@@ -447,11 +447,11 @@ function GetResourses(Resourses, FuncInstance)
 				end
 			end
 		end
-		
+
 		if next(ItemsNeed[LayerNum].Craft) then
 			for CraftName, CraftAmount in ItemsNeed[LayerNum].Craft do
 				local HaveResourses, MissingItems = CheckResoursesAvailability(CraftName, "Craft", FuncInstance, CraftAmount)
-				
+
 				if not HaveResourses then
 					if MissingItems then
 						return ItemsList(MissingItems, LayerNum + 1)
@@ -461,18 +461,18 @@ function GetResourses(Resourses, FuncInstance)
 				end
 			end
 		end
-		
+
 		return ItemsNeed
 	end
-	
+
 	local ItemsNeed = ItemsList(Resourses, 1)
-	
+
 	if not ItemsNeed then
 		return
 	end
-	
+
 	local ItemsBuy = {}
-	
+
 	for Layer, LayerInfo in ItemsNeed do
 		for Category, CategoryInfo in LayerInfo do
 			for ItemName, ItemAmount in CategoryInfo do
@@ -482,19 +482,19 @@ function GetResourses(Resourses, FuncInstance)
 			end
 		end
 	end
-	
+
 	if next(ItemsBuy) then
 		local MoneyNeed = 0
-		
+
 		for ItemName, ItemAmount in ItemsBuy do
 			MoneyNeed += GetResoursePrice(ItemName)
 		end
-		
+
 		if game.Players.LocalPlayer:GetAttribute("Money") < MoneyNeed then
 			UIStyle.Toast("You Are Too Poor! Money Need: " .. MoneyNeed, "bad")
 			return
 		end
-		
+
 		for ItemName, ItemAmount in ItemsBuy do
 			BuyResourse(ItemName, ItemAmount * (if FuncInstance:GetAttribute("BuyX2Items") then 2 else 1))
 		end
@@ -553,7 +553,7 @@ AllFunctions.PickUpEvents.Actions = function(FuncInstance)
 			task.cancel(AllFunctions.PickUpEvents.Info.While)
 			AllFunctions.PickUpEvents.Info.While = nil
 		end
-		
+
 		if AllFunctions.PickUpEvents.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
 			game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpEvents.Info.LastPivot)
 			AllFunctions.PickUpEvents.Info.LastPivot = nil
@@ -628,7 +628,7 @@ AllFunctions.PickUpWheat.Actions = function(FuncInstance)
 			task.cancel(AllFunctions.PickUpWheat.Info.While)
 			AllFunctions.PickUpWheat.Info.While = nil
 		end
-		
+
 		if AllFunctions.PickUpWheat.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
 			game.Players.LocalPlayer.Character:PivotTo(AllFunctions.PickUpWheat.Info.LastPivot)
 			AllFunctions.PickUpWheat.Info.LastPivot = nil
@@ -648,7 +648,7 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 				if AllFunctions.AutoCook.Info.Oven then					
 					if type(FuncInstance:GetAttribute("DumplingName")) == "string"
 						and AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] then
-						
+
 						local HaveResourses, MissingItems = CheckResoursesAvailability(AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling", "Cook", FuncInstance)
 						if not HaveResourses then
 							if MissingItems then
@@ -659,10 +659,10 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 								return
 							end
 						end
-						
+
 						if not CheckResoursesAvailability(AllFunctions.AutoCook.Info.Dumplings[string.lower(FuncInstance:GetAttribute("DumplingName"))] .. "_dumpling", "Cook", FuncInstance) then
 							FuncInstance.Value = false
-							
+
 							return
 						end
 
@@ -714,7 +714,7 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 			task.cancel(AllFunctions.AutoCook.Info.While)
 			AllFunctions.AutoCook.Info.While = nil
 		end
-		
+
 		if AllFunctions.AutoCook.Info.LastPivot and FuncInstance:GetAttribute("TeleportBack") then
 			game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.LastPivot)
 			AllFunctions.AutoCook.Info.LastPivot = nil
@@ -727,17 +727,17 @@ AllFunctions.LeaveOnPlayers.Actions = function(FuncInstance)
 		AllFunctions.LeaveOnPlayers.Info.While = task.spawn(function()
 			while FuncInstance.Value do
 				local Exeptions = {}
-				
+
 				for _, PlayerName in FuncInstance:GetChildren() do
 					table.insert(Exeptions, string.lower(PlayerName.Name))
 				end
-				
+
 				for _, Player in game.Players:GetPlayers() do
 					if not table.find(Exeptions, string.lower(Player.Name)) and Player ~= game.Players.LocalPlayer then
 						game.Players.LocalPlayer:Kick("AutoKick Because Of: " .. Player.Name)
 					end
 				end
-				
+
 				task.wait(0.1)
 			end
 		end)
@@ -776,7 +776,7 @@ for FuncName, Func in AllFunctions do
 			FuncInstance:SetAttribute(AttributeName, AttributeValue)
 		end
 	end
-	
+
 	if Func.Info.Folders then
 		for _, FolderName in Func.Info.Folders do
 			if not FuncInstance:FindFirstChild(FolderName) then
@@ -784,7 +784,7 @@ for FuncName, Func in AllFunctions do
 			end
 		end
 	end
-	
+
 	if Func.Actions then
 		Func.Actions(FuncInstance)
 	else
@@ -804,8 +804,8 @@ for FuncName, Func in AllFunctions do
 			FuncFunction:Disconnect()
 			FuncFunction = nil
 		end
-		
-		
+
+
 		FuncInstance.Value = Func.Default
 	end)
 
