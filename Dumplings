@@ -360,7 +360,7 @@ function GetResoursePrice(ResourseName)
 	return
 end
 
-function BuyResourse(ResourseName, AmountNeed) -- WIP Давать количество сколько надо купить исходя из рецепта пельменя
+function BuyResourse(ResourseName, AmountNeed)
 	local NPCInfo = require(game.ReplicatedStorage.Shared.NPCs)
 	local Inventory = require(game.ReplicatedStorage.Shared.InventoryState)
 
@@ -400,6 +400,80 @@ function BuyResourse(ResourseName, AmountNeed) -- WIP Давать количе�
 
 		game.ReplicatedStorage.Remotes.BuyItem:FireServer(
 			ShopName,
+			ResourseName,
+			AmountNeed - if Inventory.Items[ResourseName] then Inventory.Items[ResourseName] else 0
+		)
+
+		for _ = 1, 10 do
+			task.wait(0.1)
+
+			if Inventory.Items[ResourseName] and Inventory.Items[ResourseName] >= AmountNeed then
+				return
+			end
+		end
+	until (Timer - os.time()) > 20
+end
+
+function CraftResourse(ResourseName, AmountNeed, FuncInstance)
+	local CraftInfo = require(game.ReplicatedStorage.Shared.Crafting)
+	local Inventory = require(game.ReplicatedStorage.Shared.InventoryState)
+	
+	if not CraftInfo.List[ResourseName] then
+		UIStyle.Toast("Unknown Craft. " .. ResourseName .. ": " .. AmountNeed, "bad")
+		return
+	elseif not CraftInfo.List[ResourseName].ingredients then
+		UIStyle.Toast("Craft Does Not Have Recipe. " .. ResourseName .. ": " .. AmountNeed, "bad")
+		return
+	end
+	
+	local Success, MissingItems = CheckResoursesAvailability(ResourseName, "Craft", FuncInstance)
+	
+	if not Success then
+		if MissingItems then
+			GetResourses(MissingItems, FuncInstance)
+		else
+			return
+		end
+	end
+	
+	if not CheckResoursesAvailability(ResourseName, "Craft", FuncInstance) then
+		return
+	end
+	
+	local Workbench = game.Workspace.HousesFolder:FindFirstChild(game.Players.LocalPlayer.Name .. "_House").Placed:FindFirstChild("Workbench")
+	
+	if Workbench or Workbench:GetAttribute("BuildId") ~= "Workbench" then
+		for _, WorkbenchTo in game.Workspace.HousesFolder:FindFirstChild(game.Players.LocalPlayer.Name .. "_House").Placed:GetChildren() do
+			if WorkbenchTo:GetAttribute("BuildId") == "Workbench" then
+				Workbench = WorkbenchTo
+			end
+		end
+	end
+	
+	if not Workbench then
+		UIStyle.Toast("Place Workbench First!", "bad")
+		return
+	end
+	
+	local Timer = os.time()
+
+	if not AllFunctions.AutoCook.Info.LastPivot then
+		AllFunctions.AutoCook.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
+	end
+
+	repeat		
+		if game.Players.LocalPlayer.Character then
+			game.Players.LocalPlayer.Character:PivotTo(Workbench:GetPivot())
+		end
+
+		task.wait(0.5)
+
+		if Inventory.Items[ResourseName] and Inventory.Items[ResourseName] >= AmountNeed then
+			return
+		end
+
+		game.ReplicatedStorage.Remotes.CraftItem:FireServer(
+			Workbench,
 			ResourseName,
 			AmountNeed - if Inventory.Items[ResourseName] then Inventory.Items[ResourseName] else 0
 		)
@@ -465,15 +539,19 @@ function GetResourses(Resourses, FuncInstance)
 	end
 
 	local ItemsBuy = {}
+	local MaxLayer = 0
 
 	for Layer, LayerInfo in ItemsNeed do
-		for Category, CategoryInfo in LayerInfo do
-			for ItemName, ItemAmount in CategoryInfo do
-				if Category == "Buy" then
-					ItemsBuy[ItemName] = (ItemsBuy[ItemName] or 0) + ItemAmount
-				end
-			end
+		MaxLayer = Layer
+		
+		for ItemName, ItemAmount in LayerInfo.Buy do
+			ItemsBuy[ItemName] = (ItemsBuy[ItemName] or 0) + ItemAmount
 		end
+	end
+	
+	if MaxLayer == 0 then
+		UIStyle.Toast("Zero Layers", "bad")
+		return
 	end
 
 	if next(ItemsBuy) then
@@ -489,19 +567,13 @@ function GetResourses(Resourses, FuncInstance)
 		end
 
 		for ItemName, ItemAmount in ItemsBuy do
-			BuyResourse(ItemName, ItemAmount * (if FuncInstance:GetAttribute("BuyX2Items") then 2 else 1))
+			BuyResourse(ItemName, ItemAmount * (if FuncInstance:GetAttribute("BuyX2Items") then 2 else 1), FuncInstance)
 		end
-		
-		local FreeOvens = 0
-		
-		for _, Oven in game.Workspace.HousesFolder:FindFirstChild(game.Players.LocalPlayer.Name .. "_House").Placed:GetChildren() do
-			if Oven:GetAttribute("BuildCategory") == "Ovens" and not Oven:GetAttribute("CookRecipe") then
-				FreeOvens += 1
-			end
-		end
-		
-		if FreeOvens <= 1 then
-			task.wait(0.5)
+	end
+	
+	for Layer = 1, MaxLayer do
+		for ItemName, ItemAmount in ItemsNeed[MaxLayer - (Layer - 1)].Craft do
+			CraftResourse(ItemName, ItemAmount * (if FuncInstance:GetAttribute("BuyX2Items") then 2 else 1), FuncInstance)
 		end
 	end
 end
@@ -674,6 +746,14 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 						if NoTeleportPivot() and game.Players.LocalPlayer.Character then
 							AllFunctions.AutoCook.Info.LastPivot = game.Players.LocalPlayer.Character:GetPivot()
 							game.Players.LocalPlayer.Character:PivotTo(AllFunctions.AutoCook.Info.Oven:GetPivot())
+							
+							local FreeOvens = 0
+
+							for _, Oven in game.Workspace.HousesFolder:FindFirstChild(game.Players.LocalPlayer.Name .. "_House").Placed:GetChildren() do
+								if Oven:GetAttribute("BuildCategory") == "Ovens" and not Oven:GetAttribute("CookRecipe") then
+									FreeOvens += 1
+								end
+							end
 
 							game.ReplicatedStorage.Remotes.StartCook:FireServer(
 								AllFunctions.AutoCook.Info.Oven,
@@ -682,6 +762,10 @@ AllFunctions.AutoCook.Actions = function(FuncInstance)
 							)
 
 							AllFunctions.AutoCook.Info.Oven = nil
+
+							if FreeOvens <= 1 then
+								task.wait(1)
+							end
 						end
 					else
 						if type(FuncInstance:GetAttribute("DumplingName")) ~= "string" then
