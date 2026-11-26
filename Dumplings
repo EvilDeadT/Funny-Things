@@ -33,10 +33,24 @@ local AllFunctions = {
 		Attributes = {
 			DumplingName = "Basic",
 			TeleportBack = true,
-			BuyX2Items = false
+			ItemsBuy_X = 1,
+			DefaultDumpling = "Golden",
+			CookMostExpensive = false
 		},
 
 		Info = {
+			EasyCook = {
+				"basic",
+				"potato",
+				"spicy",
+				"cherry",
+				"glow",
+				"golden",
+				--"black",
+				"meat",
+				--"potato_onion",
+				"butter_potato",
+			},
 			Dumplings = {
 				basic = "basic",
 				default = "basic",
@@ -579,13 +593,21 @@ function GetResourses(Resourses, FuncInstance)
 		end
 
 		for ItemName, ItemAmount in ItemsBuy do
-			BuyResourse(ItemName, ItemAmount * (if FuncInstance:GetAttribute("BuyX2Items") then 2 else 1), FuncInstance)
+			BuyResourse(
+				ItemName,
+				ItemAmount * (if type(FuncInstance:GetAttribute("ItemsBuy_X")) == "number" then FuncInstance:GetAttribute("ItemsBuy_X") else 1),
+				FuncInstance
+			)
 		end
 	end
 	
 	for Layer = 1, MaxLayer do
 		for ItemName, ItemAmount in ItemsNeed[MaxLayer - (Layer - 1)].Craft do
-			CraftResourse(ItemName, ItemAmount * (if FuncInstance:GetAttribute("BuyX2Items") then 2 else 1), FuncInstance)
+			CraftResourse(
+				ItemName,
+				ItemAmount * (if type(FuncInstance:GetAttribute("ItemsBuy_X")) == "number" then FuncInstance:GetAttribute("ItemsBuy_X") else 1),
+				FuncInstance
+			)
 		end
 	end
 end
