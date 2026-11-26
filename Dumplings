@@ -58,7 +58,7 @@ local AllFunctions = {
 				gl = "glow",
 
 				golden = "golden",
-				goln = "golden",
+				gold = "golden",
 				go = "golden",
 
 				black = "black",
@@ -454,7 +454,7 @@ function CraftResourse(ResourseName, AmountNeed, FuncInstance)
 	
 	local Workbench = game.Workspace.HousesFolder:FindFirstChild(game.Players.LocalPlayer.Name .. "_House").Placed:FindFirstChild("Workbench")
 	
-	if Workbench or Workbench:GetAttribute("BuildId") ~= "Workbench" then
+	if Workbench and Workbench:GetAttribute("BuildId") ~= "Workbench" then
 		for _, WorkbenchTo in game.Workspace.HousesFolder:FindFirstChild(game.Players.LocalPlayer.Name .. "_House").Placed:GetChildren() do
 			if WorkbenchTo:GetAttribute("BuildId") == "Workbench" then
 				Workbench = WorkbenchTo
@@ -1018,3 +1018,12 @@ end
 if FunctionsFolder.Parent ~= game.ReplicatedFirst then
 	FunctionsFolder.Parent = game.ReplicatedFirst
 end
+
+
+--[[
+
+game.ReplicatedStorage.Remotes.TurnInQuest:FireServer("big_stomach1") - Quest Completed
+
+game.ReplicatedStorage.Remotes.AcceptQuest:FireServer("big_stomach2") - Quest Accept
+
+]]
